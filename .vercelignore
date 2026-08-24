@@ -1,0 +1,15 @@
+# Exclude Flask / Python artifacts from Vercel build context
+app.py
+requirements.txt
+templates/
+muids.json
+karma.db
+venv/
+__pycache__/
+*.pyc
+
+# Exclude local dev files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

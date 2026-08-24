@@ -11,6 +11,97 @@
   padding: 0;
 }
 
+/* ==============================================
+  Loading & Error screens
+  ==============================================
+*/
+.loading-screen,
+.error-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 1rem;
+  background-color: #220f08;
+  color: #fbf8f8;
+  font-family: "Poppins", sans-serif;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-spinner {
+  width: 44px;
+  height: 44px;
+  border: 4px solid rgba(251,248,248,0.15);
+  border-top-color: #fbf8f8;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.retry-btn {
+  margin-top: 0.5rem;
+  padding: 0.5rem 1.5rem;
+  background: #462913;
+  color: #fbf8f8;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+.retry-btn:hover { background: #5a3316; }
+
+/* ==============================================
+  Sync button & status
+  ==============================================
+*/
+.sync-btn {
+  padding: 0.4rem 1rem;
+  background: #462913;
+  color: #fbf8f8;
+  border: 1px solid rgba(251,248,248,0.2);
+  border-radius: 2rem;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background 0.2s, transform 0.15s;
+  flex-shrink: 0;
+}
+.sync-btn:hover:not(:disabled) {
+  background: #5a3316;
+  transform: translateY(-1px);
+}
+.sync-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.sync-status {
+  text-align: center;
+  font-size: 0.85rem;
+  font-family: "Poppins", sans-serif;
+  padding: 0.4rem 0;
+  margin-bottom: 0.5rem;
+}
+.sync-status.ok   { color: #6ee7b7; }
+.sync-status.fail { color: #fca5a5; }
+
+.no-monthly {
+  text-align: center;
+  font-size: 0.82rem;
+  color: rgba(251,248,248,0.5);
+  padding: 1rem 2rem;
+  font-family: "Poppins", sans-serif;
+}
+.no-monthly code {
+  background: rgba(255,255,255,0.08);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
 html,
 body {
   width: 100%;

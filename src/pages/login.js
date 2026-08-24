@@ -1,31 +1,29 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import supabase from "../supabaseClient";
-import "./login.css"; // Import the stylesheet
+import "./login.css";
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [feedback, setFeedback] = useState(null); // { type: "success"|"error", msg }
   const navigate = useNavigate();
 
-  const handleAuthAction = async (action) => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
     setLoading(true);
-    const { error } = await action();
+    setFeedback(null);
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+
     if (error) {
-      alert(error.message);
+      setFeedback({ type: "error", msg: error.message });
     } else {
-      alert("Logged in!");
-      navigate("/dashboard");
+      setFeedback({ type: "success", msg: "Logged in! Redirecting…" });
+      setTimeout(() => navigate("/dashboard"), 800);
     }
     setLoading(false);
-  };
-
-  const handleLogin = (e) => {
-    e.preventDefault();
-    handleAuthAction(() =>
-      supabase.auth.signInWithPassword({ email, password })
-    );
   };
 
   return (
@@ -33,7 +31,8 @@ export default function Auth() {
       <div className="auth-container">
         <h1 className="auth-title">Welcome Boss</h1>
         <p className="auth-subtitle">Only for MuAdmins</p>
-        <form className="auth-form">
+
+        <form className="auth-form" onSubmit={handleLogin}>
           <input
             className="auth-input"
             type="email"
@@ -41,6 +40,7 @@ export default function Auth() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
             disabled={loading}
+            required
           />
           <input
             className="auth-input"
@@ -49,14 +49,21 @@ export default function Auth() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
             disabled={loading}
+            required
           />
+
+          {/* inline feedback — no alert() */}
+          {feedback && (
+            <p className={`auth-feedback ${feedback.type}`}>{feedback.msg}</p>
+          )}
+
           <div className="auth-actions">
             <button
               className="auth-button primary"
-              onClick={handleLogin}
+              type="submit"
               disabled={loading}
             >
-              {loading ? "Logging in..." : "Login"}
+              {loading ? "Logging in…" : "Login"}
             </button>
           </div>
         </form>
