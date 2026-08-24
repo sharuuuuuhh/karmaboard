@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 MUIDS_FILE = "muids.json"
 # Real muLearn JSON API — no headless browser needed
-MULEARN_API = "https://api.mulearn.org/api/v1/dashboard/profile/user-profile/{}/"
+MULEARN_API = "https://mulearn.org/api/v1/dashboard/profile/user-profile/{}/"
 
 
 # ── persistence helpers ──────────────────────────────────────────────────────

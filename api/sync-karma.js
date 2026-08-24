@@ -6,7 +6,7 @@
 const { createClient } = require("@supabase/supabase-js");
 
 const MULEARN_API =
-  "https://api.mulearn.org/api/v1/dashboard/profile/user-profile/";
+  "https://mulearn.org/api/v1/dashboard/profile/user-profile/";
 
 // Server-side Supabase client — uses the service key when available so RLS
 // doesn't block writes; falls back to the anon key if only that is set.
