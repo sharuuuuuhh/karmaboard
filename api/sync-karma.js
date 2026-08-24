@@ -11,13 +11,20 @@ const MULEARN_API =
 // Server-side Supabase client — uses the service key when available so RLS
 // doesn't block writes; falls back to the anon key if only that is set.
 function getSupabase() {
-  const url = process.env.REACT_APP_SUPABASE_URL;
+  // Try multiple env var names — Vercel exposes all dashboard vars to serverless
+  const url =
+    process.env.SUPABASE_URL ||
+    process.env.REACT_APP_SUPABASE_URL;
+
   const key =
-    process.env.SUPABASE_SERVICE_KEY || process.env.REACT_APP_SUPABASE_ANON_KEY;
+    process.env.SUPABASE_SERVICE_KEY ||
+    process.env.SUPABASE_ANON_KEY ||
+    process.env.REACT_APP_SUPABASE_ANON_KEY;
 
   if (!url || !key) {
     throw new Error(
-      "Missing REACT_APP_SUPABASE_URL or SUPABASE_SERVICE_KEY env vars"
+      `Supabase env vars missing. Got url=${!!url}, key=${!!key}. ` +
+      `Set SUPABASE_URL and SUPABASE_ANON_KEY in Vercel environment variables.`
     );
   }
   return createClient(url, key);
