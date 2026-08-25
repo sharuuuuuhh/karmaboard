@@ -84,6 +84,28 @@ def fetch_karma(muid):
         }
 
     except requests.exceptions.HTTPError as e:
+        if e.response is not None and e.response.status_code in (400, 403):
+            try:
+                search_url = "https://mulearn.org/api/v1/dashboard/user/search/"
+                s_resp = requests.get(search_url, params={"search": muid}, timeout=12,
+                                      headers={"Accept": "application/json"})
+                s_resp.raise_for_status()
+                s_data = s_resp.json()
+                results = s_data.get("response", {}).get("data", [])
+                found = next((r for r in results if r.get("muid", "").lower() == muid.lower()), None)
+                if found:
+                    karma_val = found.get("karma")
+                    karma = int(karma_val) if karma_val is not None else None
+                    return {
+                        "muid":  muid,
+                        "name":  found.get("full_name") or muid,
+                        "karma": karma,
+                        "rank":  None,
+                        "error": None if karma is not None else "karma key not found in search fallback",
+                        "raw":   s_data,
+                    }
+            except Exception:
+                pass
         return {"muid": muid, "name": muid, "karma": None, "rank": None,
                 "error": f"HTTP {e.response.status_code}", "raw": None}
     except requests.exceptions.ConnectionError:

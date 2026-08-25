@@ -50,6 +50,40 @@ async function fetchOne(muid) {
       signal: AbortSignal.timeout(12_000),
     });
     if (!res.ok) {
+      if (res.status === 400 || res.status === 403) {
+        try {
+          const searchRes = await fetch(
+            `https://mulearn.org/api/v1/dashboard/user/search/?search=${encodeURIComponent(muid)}`,
+            {
+              headers: { Accept: "application/json" },
+              signal: AbortSignal.timeout(12_000),
+            }
+          );
+          if (searchRes.ok) {
+            const searchJson = await searchRes.json();
+            const results = searchJson?.response?.data ?? [];
+            const found = results.find(
+              (r) => r.muid?.toLowerCase() === muid.toLowerCase()
+            );
+            if (found) {
+              const karma =
+                found.karma !== undefined && found.karma !== null
+                  ? parseInt(found.karma, 10)
+                  : null;
+              return {
+                muid,
+                ok: karma !== null,
+                karma,
+                rank: null,
+                full_name: found.full_name ?? null,
+                error: null,
+              };
+            }
+          }
+        } catch (searchErr) {
+          // Fall back to original HTTP error reporting
+        }
+      }
       return { muid, ok: false, error: `HTTP ${res.status}` };
     }
     const json = await res.json();
