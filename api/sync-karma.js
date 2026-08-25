@@ -147,6 +147,56 @@ module.exports = async function handler(req, res) {
         })
     );
 
+    // 4. Update Campus Details
+    try {
+      const searchRes = await fetch("https://mulearn.org/api/v1/dashboard/college/?search=Thalassery");
+      if (searchRes.ok) {
+        const searchJson = await searchRes.json();
+        const colleges = searchJson?.response?.data ?? [];
+        const campusData = colleges.find(c => c.id === "108b6e26-66fd-40fe-98e6-ff1ca90686fa");
+        
+        if (campusData) {
+          const campusKarma = campusData.total_karma?.total_karma_gained ?? 0;
+          const campusTotalMembers = campusData.number_of_members?.member_count ?? 0;
+          
+          // Count active members locally (karma > 0)
+          const { count: localActiveCount } = await supabase
+            .from("students")
+            .select("*", { count: "exact", head: true })
+            .gt("karma", 0);
+            
+          const { data: existingDetails } = await supabase
+            .from("campus_details")
+            .select("*")
+            .order("id", { ascending: false })
+            .limit(1);
+            
+          const updatePayload = {
+            karma: campusKarma,
+            active_members: localActiveCount ?? 0,
+            total_members: campusTotalMembers,
+            updated_at: new Date().toISOString()
+          };
+          
+          if (existingDetails && existingDetails.length > 0) {
+            // Update details and preserve existing rank
+            await supabase
+              .from("campus_details")
+              .update(updatePayload)
+              .eq("id", existingDetails[0].id);
+          } else {
+            // Insert default row with rank 0
+            updatePayload.rank = 0;
+            await supabase
+              .from("campus_details")
+              .insert(updatePayload);
+          }
+        }
+      }
+    } catch (campusErr) {
+      console.warn("Failed to sync campus details:", campusErr.message);
+    }
+
     return res.status(200).json({
       synced: updates.filter((u) => u.success).length,
       failed: results.filter((r) => !r.ok),
