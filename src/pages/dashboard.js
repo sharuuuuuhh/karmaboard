@@ -47,7 +47,8 @@ export default function Dashboard() {
       const { data, error } = await supabase
         .from("students")
         .select("*")
-        .or(`full_name.ilike.%${searchTerm}%,team.ilike.%${searchTerm}%`);
+        .or(`full_name.ilike.%${searchTerm}%,team.ilike.%${searchTerm}%`)
+        .order("karma", { ascending: false });
 
       if (error) throw error;
       setResults(data);

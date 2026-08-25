@@ -26,7 +26,7 @@ export default function Home() {
 
     const [monthlyResult, studentsResult, campusResult] = await Promise.allSettled([
       supabase.rpc("get_students_with_monthly_karma", { p_start_date: startDate }),
-      supabase.from("students").select("*").order("rank", { ascending: true }),
+      supabase.from("students").select("*").order("karma", { ascending: false }),
       supabase.from("campus_details").select("*").order("id", { ascending: false }).limit(1),
     ]);
 
