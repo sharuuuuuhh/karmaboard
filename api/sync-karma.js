@@ -130,6 +130,7 @@ module.exports = async function handler(req, res) {
     }
 
     // 3. Write successful results back to Supabase
+    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
     const updates = await Promise.all(
       results
         .filter((r) => r.ok)
@@ -146,6 +147,43 @@ module.exports = async function handler(req, res) {
           return { muid, success: !error, error: error?.message ?? null };
         })
     );
+
+    // 3b. Snapshot today's karma into karma_history so the monthly RPC has a
+    //     baseline. We only record the FIRST snapshot of each day — if a row
+    //     for (muid, today) already exists we leave it alone so the baseline
+    //     stays at the start-of-day value, not the latest sync value.
+    try {
+      const successfulResults = results.filter((r) => r.ok);
+      if (successfulResults.length > 0) {
+        // Check which (muid, today) pairs already have a snapshot
+        const muids = successfulResults.map((r) => r.muid);
+        const { data: existingSnapshots } = await supabase
+          .from("karma_history")
+          .select("muid")
+          .in("muid", muids)
+          .eq("recorded_at", today);
+
+        const alreadySnapped = new Set(
+          (existingSnapshots ?? []).map((row) => row.muid)
+        );
+
+        // Only insert rows that don't have a snapshot yet today
+        const newSnapshots = successfulResults
+          .filter((r) => !alreadySnapped.has(r.muid))
+          .map((r) => ({ muid: r.muid, karma: r.karma, recorded_at: today }));
+
+        if (newSnapshots.length > 0) {
+          const { error: histErr } = await supabase
+            .from("karma_history")
+            .insert(newSnapshots);
+          if (histErr) {
+            console.warn("karma_history insert failed:", histErr.message);
+          }
+        }
+      }
+    } catch (histErr) {
+      console.warn("Failed to snapshot karma_history:", histErr.message);
+    }
 
     // 4. Update Campus Details — uses public leaderboard API (single fast request)
     try {
