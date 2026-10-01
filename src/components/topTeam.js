@@ -67,7 +67,7 @@ const TopTeam = ({ students }) => {
               filteredStudents.map((student, index) => (
                 <div
                   className={`m-card rank${index + 1}`}
-                  key={student.user_id}
+                  key={student.user_id || student.muid || index}
                 >
                   <div className="m-name">
                     {index + 1}. {student.full_name}

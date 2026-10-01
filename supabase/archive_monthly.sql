@@ -87,3 +87,4 @@ SELECT cron.schedule(
   '5 0 1 * *', -- 12:05 AM on the 1st of every month
   $$SELECT archive_monthly_leaderboard();$$
 );
+

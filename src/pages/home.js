@@ -8,29 +8,41 @@ import "./styles.css";
 export default function Home() {
   const [campusDetails, setCampusDetails] = useState(null); // null = not yet loaded
   const [monthlyStudents, setMonthlyStudents] = useState([]);
+  const [lastMonthStudents, setLastMonthStudents] = useState([]);
+  const [selectedPeriod, setSelectedPeriod] = useState("current"); // "current" | "last"
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState(null); // { ok, message }
   const [error, setError] = useState(null);
 
+  const today = new Date();
+  const currentMonthStart = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-01`;
+  const lastMonthDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+  const lastMonthStart = `${lastMonthDate.getFullYear()}-${String(lastMonthDate.getMonth() + 1).padStart(2, "0")}-01`;
+
+  const currentMonthLabel = today.toLocaleString("en-US", { month: "long", year: "numeric" });
+  const lastMonthLabel = lastMonthDate.toLocaleString("en-US", { month: "long", year: "numeric" });
+
   // ── fetch all data in one shot ───────────────────────────────────────────
   const fetchAll = useCallback(async () => {
     setLoading(true);
     setError(null);
 
-    const today = new Date();
-    const startDate = new Date(today.getFullYear(), today.getMonth(), 1)
-      .toISOString()
-      .split("T")[0];
+    const [monthlyResult, lastMonthArchiveResult, lastMonthRpcResult, studentsResult, campusResult] =
+      await Promise.allSettled([
+        supabase.rpc("get_students_with_monthly_karma", { p_start_date: currentMonthStart }),
+        supabase
+          .from("monthly_archives")
+          .select("*")
+          .eq("archive_month", lastMonthStart)
+          .order("monthly_karma", { ascending: false }),
+        supabase.rpc("get_students_with_monthly_karma", { p_start_date: lastMonthStart }),
+        supabase.from("students").select("*").order("karma", { ascending: false }),
+        supabase.from("campus_details").select("*").order("id", { ascending: false }).limit(1),
+      ]);
 
-    const [monthlyResult, studentsResult, campusResult] = await Promise.allSettled([
-      supabase.rpc("get_students_with_monthly_karma", { p_start_date: startDate }),
-      supabase.from("students").select("*").order("karma", { ascending: false }),
-      supabase.from("campus_details").select("*").order("id", { ascending: false }).limit(1),
-    ]);
-
-    // monthly students — RPC may not exist yet; fail gracefully
+    // current month students
     if (monthlyResult.status === "fulfilled" && !monthlyResult.value.error) {
       setMonthlyStudents(monthlyResult.value.data ?? []);
     } else {
@@ -38,9 +50,32 @@ export default function Home() {
         monthlyResult.status === "rejected"
           ? monthlyResult.reason?.message
           : monthlyResult.value.error?.message;
-      console.warn("Monthly karma RPC unavailable:", msg);
-      setMonthlyStudents([]); // show empty instead of crashing
+      console.warn("Current monthly karma RPC unavailable:", msg);
+      setMonthlyStudents([]);
     }
+
+    // last month students: prioritize monthly_archives table, fallback to RPC
+    let lastMonthData = [];
+    if (
+      lastMonthArchiveResult.status === "fulfilled" &&
+      !lastMonthArchiveResult.value.error &&
+      lastMonthArchiveResult.value.data &&
+      lastMonthArchiveResult.value.data.length > 0
+    ) {
+      lastMonthData = lastMonthArchiveResult.value.data.map((r, i) => ({
+        user_id: r.muid || `archive-${r.id || i}`,
+        muid: r.muid,
+        full_name: r.full_name,
+        karma: r.karma,
+        rank: r.rank,
+        monthly_karma: r.monthly_karma,
+        department: r.department,
+        team: r.team,
+      }));
+    } else if (lastMonthRpcResult.status === "fulfilled" && !lastMonthRpcResult.value.error) {
+      lastMonthData = lastMonthRpcResult.value.data ?? [];
+    }
+    setLastMonthStudents(lastMonthData);
 
     // all students
     if (studentsResult.status === "fulfilled" && !studentsResult.value.error) {
@@ -53,7 +88,7 @@ export default function Home() {
       setError(msg ?? "Failed to load students");
     }
 
-    // campus details — may be empty; guard before rendering
+    // campus details
     if (campusResult.status === "fulfilled" && !campusResult.value.error) {
       const rows = campusResult.value.data ?? [];
       setCampusDetails(rows.length > 0 ? rows[0] : null);
@@ -62,7 +97,7 @@ export default function Home() {
     }
 
     setLoading(false);
-  }, []);
+  }, [currentMonthStart, lastMonthStart]);
 
   useEffect(() => {
     fetchAll();
@@ -76,11 +111,11 @@ export default function Home() {
       const res = await fetch("/api/sync-karma", { method: "POST" });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? "Sync failed");
-      
-      setSyncStatus({ 
-        ok: true, 
+
+      setSyncStatus({
+        ok: true,
         message: `✓ Synced ${json.synced} students successfully.`,
-        failed: json.failed ?? []
+        failed: json.failed ?? [],
       });
       await fetchAll(); // refresh table after sync
     } catch (err) {
@@ -96,6 +131,8 @@ export default function Home() {
     compactDisplay: "short",
     maximumFractionDigits: 0,
   });
+
+  const activeMonthlyStudents = selectedPeriod === "last" ? lastMonthStudents : monthlyStudents;
 
   // ── render ───────────────────────────────────────────────────────────────
   if (loading) {
@@ -145,15 +182,25 @@ export default function Home() {
           {campusDetails ? campusDetails.total_members ?? "—" : "—"}
         </div>
 
-        {/* sync button sits beside the stats */}
-        <button
-          className="sync-btn"
-          onClick={handleSync}
-          disabled={syncing}
-          title="Fetch latest karma from muLearn API"
-        >
-          {syncing ? "Syncing…" : "⟳ Sync Karma"}
-        </button>
+        {/* Action buttons sitting beside stats */}
+        <div className="header-action-buttons">
+          <button
+            className={`period-toggle-quick-btn ${selectedPeriod === "last" ? "active-period" : ""}`}
+            onClick={() => setSelectedPeriod(selectedPeriod === "current" ? "last" : "current")}
+            title={selectedPeriod === "current" ? `View progress for ${lastMonthLabel}` : `View progress for ${currentMonthLabel}`}
+          >
+            {selectedPeriod === "current" ? "📅 View Last Month Progress" : "⚡ View Current Month"}
+          </button>
+
+          <button
+            className="sync-btn"
+            onClick={handleSync}
+            disabled={syncing}
+            title="Fetch latest karma from muLearn API"
+          >
+            {syncing ? "Syncing…" : "⟳ Sync Karma"}
+          </button>
+        </div>
       </div>
 
       {/* sync status toast */}
@@ -182,22 +229,64 @@ export default function Home() {
       )}
 
       {/* monthly leaderboard */}
-      {monthlyStudents.length === 0 ? (
-        <p className="no-monthly">
-          Monthly ranking not available — run the SQL in{" "}
-          <code>supabase/monthly_karma_fn.sql</code> to enable it.
-        </p>
-      ) : (
-        <div className="main-container">
-          <div className="monthly">
-            <h2 className="monthly-heading">Monthly Ranking</h2>
-            <MonthlyKarma students={monthlyStudents} />
+      <div className="main-container">
+        <div className="monthly">
+          {/* Header with Title & Period Selector */}
+          <div className="monthly-header-bar">
+            <div className="monthly-heading-group">
+              <h2 className="monthly-heading">
+                {selectedPeriod === "last" ? "Last Month Ranking" : "Monthly Ranking"}
+              </h2>
+              <span className="period-badge">
+                {selectedPeriod === "last" ? lastMonthLabel : currentMonthLabel}
+              </span>
+            </div>
+
+            {/* Toggle Switch Tabs */}
+            <div className="period-tabs">
+              <button
+                type="button"
+                className={`period-tab ${selectedPeriod === "current" ? "active" : ""}`}
+                onClick={() => setSelectedPeriod("current")}
+              >
+                ⚡ This Month
+              </button>
+              <button
+                type="button"
+                className={`period-tab ${selectedPeriod === "last" ? "active" : ""}`}
+                onClick={() => setSelectedPeriod("last")}
+              >
+                📅 Last Month
+              </button>
+            </div>
           </div>
-          <div className="team-section-container">
-            <TopTeam students={monthlyStudents} />
-          </div>
+
+          {activeMonthlyStudents.length === 0 ? (
+            <div className="empty-monthly-state">
+              <p className="no-monthly">
+                {selectedPeriod === "last"
+                  ? `No recorded progress found for ${lastMonthLabel} yet.`
+                  : "Monthly ranking not available — run the SQL in supabase/monthly_karma_fn.sql to enable it."}
+              </p>
+              {selectedPeriod === "last" && (
+                <button
+                  type="button"
+                  className="switch-back-btn"
+                  onClick={() => setSelectedPeriod("current")}
+                >
+                  ← Switch to This Month ({currentMonthLabel})
+                </button>
+              )}
+            </div>
+          ) : (
+            <MonthlyKarma students={activeMonthlyStudents} />
+          )}
         </div>
-      )}
+
+        <div className="team-section-container">
+          <TopTeam students={activeMonthlyStudents} />
+        </div>
+      </div>
 
       {/* overall rankings */}
       <div className="overall">
