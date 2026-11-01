@@ -1,0 +1,71 @@
+/* Logo container queries & responsive rules */
+
+.karmayodha-logo-link {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: opacity 150ms ease;
+}
+
+.karmayodha-logo-link:hover {
+  opacity: 0.88;
+}
+
+/* Base horizontal lockup */
+.karmayodha-logo--horizontal {
+  flex-direction: row !important;
+}
+
+/* Stacked lockup */
+.karmayodha-logo--stacked {
+  flex-direction: column !important;
+  text-align: center;
+}
+
+/* Mark only */
+.karmayodha-logo--mark .karmayodha-wordmark {
+  display: none !important;
+}
+
+/* Auto variant:
+ * - Drops wordmark if container narrower than 190px
+ * - Drops wordmark if viewport narrower than 640px
+ * - Drops wordmark if mark taller than 48px in horizontal lockup
+ * - Drops wordmark if collapsed sidebar
+ */
+.karmayodha-logo--auto {
+  flex-direction: row;
+}
+
+/* When mark is taller than 48px (size lg or xl) in horizontal/auto, drop wordmark */
+.karmayodha-logo--auto.karmayodha-logo--size-lg .karmayodha-wordmark,
+.karmayodha-logo--auto.karmayodha-logo--size-xl .karmayodha-wordmark {
+  display: none !important;
+}
+
+/* Container query support */
+@container (max-width: 190px) {
+  .karmayodha-logo--auto .karmayodha-wordmark {
+    display: none !important;
+  }
+}
+
+@container (max-width: 160px) {
+  .karmayodha-logo--stacked .karmayodha-wordmark {
+    display: none !important;
+  }
+}
+
+/* Viewport fallback (< 640px) */
+@media (max-width: 640px) {
+  .karmayodha-logo--auto .karmayodha-wordmark {
+    display: none !important;
+  }
+}
+
+/* In collapsed or icon-only sidebar */
+.sidebar-collapsed .karmayodha-wordmark,
+[data-collapsed="true"] .karmayodha-wordmark {
+  display: none !important;
+}
+

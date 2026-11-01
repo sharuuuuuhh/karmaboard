@@ -1,0 +1,278 @@
+import React from "react";
+import { Link } from "react-router-dom";
+import { ChevronRight } from "lucide-react";
+import { getGroupToken } from "../../utils/groupTokens";
+import { formatRelativeTime } from "../../utils/dateUtils";
+import { karmaStore } from "../../data/karmaStore";
+import Crest from "../../crests";
+
+export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
+  const rows = activities.slice(0, maxRows);
+
+  // Check if any event is under 24 hours old
+  const isAnyLive = rows.some((act) => {
+    const ts = act.timestamp || act.created_at;
+    if (!ts) return false;
+    const diffHours = (Date.now() - new Date(ts).getTime()) / (1000 * 60 * 60);
+    return diffHours < 24 && diffHours >= 0;
+  });
+
+  const getMemberName = (act) => {
+    if (act.member_name && act.member_name !== "Member") return act.member_name;
+    if (act.student_name && act.student_name !== "Member") return act.student_name;
+    if (act.name && act.name !== "Member") return act.name;
+    if (act.muid) {
+      const found = karmaStore.getMemberByMuid ? karmaStore.getMemberByMuid(act.muid) : null;
+      if (found && found.name) return found.name;
+      return act.muid.split("@")[0];
+    }
+    return "Student";
+  };
+
+  const getInitials = (name) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map((p) => p[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+  };
+
+  const formatActivityTime = (timestamp) => {
+    if (!timestamp) return "just now";
+    const date = new Date(timestamp);
+    const diffMs = Date.now() - date.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    if (diffDays > 7) {
+      // Absolute date after 7 days (e.g. "24 Oct")
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      return `${date.getDate()} ${months[date.getMonth()]}`;
+    }
+    return formatRelativeTime(timestamp);
+  };
+
+  return (
+    <div
+      style={{
+        background: "#FFFFFF",
+        border: "1px solid var(--border)",
+        borderRadius: "var(--radius-card)",
+        padding: "24px",
+        boxShadow: "var(--shadow-soft)",
+      }}
+    >
+      {/* Header: Title + Live/Recent status + See all */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: 16,
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <h3
+            style={{
+              margin: 0,
+              fontSize: 18,
+              fontWeight: 700,
+              color: "var(--text-primary)",
+              letterSpacing: "-0.01em",
+            }}
+          >
+            Recent activity
+          </h3>
+
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 5,
+              padding: "2px 8px",
+              borderRadius: "var(--radius-pill)",
+              background: isAnyLive ? "rgba(46, 154, 87, 0.1)" : "var(--surface-subtle)",
+              color: isAnyLive ? "var(--status-up)" : "var(--text-secondary)",
+              fontSize: 11,
+              fontWeight: 700,
+            }}
+          >
+            {isAnyLive && (
+              <span
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: "50%",
+                  background: "var(--status-up)",
+                }}
+              />
+            )}
+            <span>{isAnyLive ? "Live" : "Recent"}</span>
+          </div>
+        </div>
+
+        <Link
+          to="/activity"
+          style={{
+            fontSize: 12,
+            fontWeight: 600,
+            color: "var(--text-secondary)",
+            textDecoration: "none",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 3,
+            transition: "color 0.15s ease",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text-primary)")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
+        >
+          <span>See all</span>
+          <ChevronRight size={14} />
+        </Link>
+      </div>
+
+      {/* Rows with internal scroll */}
+      {rows.length === 0 ? (
+        <div
+          style={{
+            padding: "36px 16px",
+            textAlign: "center",
+            color: "var(--text-muted)",
+            fontSize: 13,
+          }}
+        >
+          No recent activity recorded.
+        </div>
+      ) : (
+        <div
+          className="custom-scrollbar"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            maxHeight: 380,
+            overflowY: "auto",
+            paddingRight: 4,
+          }}
+        >
+          {rows.map((act, idx) => {
+            const memberName = getMemberName(act);
+            const token = getGroupToken(act.group_name || act.group_id);
+            const points = act.delta || act.karma_points || act.points || 300;
+            const timeStr = formatActivityTime(act.timestamp || act.created_at);
+
+            return (
+              <div
+                key={act.id || idx}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "12px 4px",
+                  borderBottom:
+                    idx < rows.length - 1 ? "1px solid var(--border)" : "none",
+                  gap: 12,
+                }}
+              >
+                {/* Left: Initials Avatar + Name + Fixed-width Crest + Points */}
+                <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0, flex: 1, flexWrap: "wrap" }}>
+                  <div
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: "50%",
+                      background: token.pastel,
+                      color: token.ink,
+                      fontSize: 11,
+                      fontWeight: 700,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {getInitials(memberName)}
+                  </div>
+
+                  {/* Name */}
+                  <div style={{ minWidth: 120, maxWidth: 170 }}>
+                    {act.muid ? (
+                      <Link
+                        to={`/u/${encodeURIComponent(act.muid)}`}
+                        style={{
+                          fontWeight: 600,
+                          fontSize: 13,
+                          color: "var(--text-primary)",
+                          textDecoration: "none",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          display: "block",
+                        }}
+                      >
+                        {memberName}
+                      </Link>
+                    ) : (
+                      <span
+                        style={{
+                          fontWeight: 600,
+                          fontSize: 13,
+                          color: "var(--text-primary)",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          display: "block",
+                        }}
+                      >
+                        {memberName}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Fixed-width Crest */}
+                  <div
+                    style={{
+                      width: 32,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Crest group={act.group_name || act.group_id} size="xs" />
+                  </div>
+
+                  {/* Points Earned */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
+                    <span style={{ color: "var(--text-secondary)" }}>earned</span>
+                    <span
+                      className="tabular-nums"
+                      style={{
+                        fontWeight: 700,
+                        color: "var(--status-up)",
+                      }}
+                    >
+                      +{points} karma
+                    </span>
+                  </div>
+                </div>
+
+                {/* Right: Relative/Absolute Timestamp */}
+                <span
+                  style={{
+                    fontSize: 12,
+                    color: "var(--text-muted)",
+                    whiteSpace: "nowrap",
+                    flexShrink: 0,
+                  }}
+                >
+                  {timeStr}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+

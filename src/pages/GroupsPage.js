@@ -1,0 +1,556 @@
+import React, { useState, useEffect, useMemo } from "react";
+import { motion } from "framer-motion";
+import {
+  Sparkles,
+  Swords,
+  Award,
+  ArrowUpDown,
+} from "lucide-react";
+import PageHeader from "../components/shell/PageHeader";
+import PageGrid, { PageCol } from "../components/common/PageGrid";
+import PeriodCalendarPopover from "../components/common/PeriodCalendarPopover";
+import GroupCard from "../components/common/GroupCard";
+import { karmaStore } from "../data/karmaStore";
+import { getGroupToken, isOfficialTeam } from "../utils/groupTokens";
+import { computeDefaultGroupTarget } from "../utils/goalUtils";
+import {
+  getWeekBoundaries,
+  getMonthBoundaries,
+  getISTDate,
+} from "../utils/dateUtils";
+import Crest from "../crests";
+
+export default function GroupsPage() {
+  const [, setDataVersion] = useState(0);
+  const [period, setPeriod] = useState("week");
+  const [offset, setOffset] = useState(0);
+  const [filter, setFilter] = useState("all"); // 'all' | 'teams' | 'groups'
+  const [sortBy, setSortBy] = useState("rank"); // 'rank' | 'name' | 'members'
+
+  useEffect(() => {
+    const unsub = karmaStore.subscribe(() => {
+      setDataVersion((v) => v + 1);
+    });
+    return unsub;
+  }, []);
+
+  const handlePeriodChange = (newPeriod) => {
+    setPeriod(newPeriod);
+    setOffset(0);
+  };
+
+  // Date and month display formatting
+  const dateRangeInfo = useMemo(() => {
+    if (period === "all") {
+      return {
+        label: "All Time",
+        sublabel: "Overall campus score",
+        cardLabel: "all time",
+      };
+    }
+    if (period === "week") {
+      const b = getWeekBoundaries(offset);
+      const startIST = getISTDate(b.start);
+      const year = startIST.getUTCFullYear();
+      return {
+        label: `${b.label} ${year}`,
+        sublabel: b.label,
+        cardLabel: `this week (${b.label})`,
+      };
+    }
+    // Month
+    const b = getMonthBoundaries(offset);
+    const months = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+    const startIST = getISTDate(b.start);
+    const endIST = getISTDate(b.end);
+    const dateRangeStr = `${startIST.getUTCDate()} ${months[startIST.getUTCMonth()]} - ${endIST.getUTCDate()} ${months[endIST.getUTCMonth()]}`;
+    return {
+      label: `${b.label} • ${dateRangeStr}`,
+      sublabel: `${dateRangeStr} (${b.label})`,
+      cardLabel: `in ${b.label}`,
+    };
+  }, [period, offset]);
+
+  // Fetch groups with period and offset applied
+  const groups = useMemo(() => {
+    return karmaStore.getLeaderboard
+      ? karmaStore.getLeaderboard({
+          period,
+          view: "groups",
+          weekOffset: period === "week" ? offset : 0,
+          monthOffset: period === "month" ? offset : 0,
+        })
+      : [];
+  }, [period, offset]);
+
+  // Attach overall campus rank before filtering/sorting
+  const rankedGroups = useMemo(() => {
+    return groups.map((g, idx) => ({
+      ...g,
+      overallRank: idx + 1,
+    }));
+  }, [groups]);
+
+  // Official Teams (Fixed 7: leads, tech, creative, media, content, operation, marketing)
+  const teamsList = useMemo(() => {
+    return rankedGroups.filter((g) => isOfficialTeam(g));
+  }, [rankedGroups]);
+
+  // Campus Groups (All other groups present or added from now on)
+  const groupsList = useMemo(() => {
+    return rankedGroups.filter((g) => !isOfficialTeam(g));
+  }, [rankedGroups]);
+
+  // Displayed groups filtered and sorted
+  const displayedGroups = useMemo(() => {
+    let list = rankedGroups;
+    if (filter === "teams") list = teamsList;
+    else if (filter === "groups") list = groupsList;
+
+    if (sortBy === "name") {
+      return [...list].sort((a, b) => {
+        const nameA = (a.name || a.id || "").toLowerCase();
+        const nameB = (b.name || b.id || "").toLowerCase();
+        return nameA.localeCompare(nameB);
+      });
+    }
+    if (sortBy === "members") {
+      return [...list].sort((a, b) => {
+        const countA = a.member_count || a.members_count || 6;
+        const countB = b.member_count || b.members_count || 6;
+        return countB - countA;
+      });
+    }
+    // Default: 'rank' (preserves karma ranking order)
+    return list;
+  }, [rankedGroups, filter, teamsList, groupsList, sortBy]);
+
+  const filterOptions = [
+    { id: "all", label: "All", count: rankedGroups.length },
+    { id: "teams", label: "Teams", count: teamsList.length },
+    { id: "groups", label: "Groups", count: groupsList.length },
+  ];
+
+  const subtitle = useMemo(() => {
+    if (filter === "teams") {
+      return `Official campus skill teams (${teamsList.length}) • ${dateRangeInfo.label}`;
+    }
+    if (filter === "groups") {
+      return `Campus interest groups & skill guilds (${groupsList.length}) • ${dateRangeInfo.label}`;
+    }
+    return `All ${rankedGroups.length} campus teams and groups • ${dateRangeInfo.label}`;
+  }, [filter, teamsList.length, groupsList.length, rankedGroups.length, dateRangeInfo.label]);
+
+  // Campus summary stats
+  const totalCampusKarma = useMemo(() => {
+    return groups.reduce((acc, g) => acc + (g.karma || 0), 0);
+  }, [groups]);
+
+  const totalWarriors = useMemo(() => {
+    return groups.reduce((acc, g) => acc + (g.member_count || g.members_count || 6), 0);
+  }, [groups]);
+
+  // Closest race calculation
+  const closestRace = useMemo(() => {
+    if (groups.length < 2) return null;
+    let minDiff = Infinity;
+    let teamA = groups[0];
+    let teamB = groups[1];
+
+    for (let i = 0; i < groups.length - 1; i++) {
+      const g1 = groups[i];
+      const g2 = groups[i + 1];
+      const diff = Math.abs((g1.karma || 0) - (g2.karma || 0));
+      if (diff < minDiff && (g1.karma > 0 || g2.karma > 0)) {
+        minDiff = diff;
+        teamA = g1;
+        teamB = g2;
+      }
+    }
+
+    if (minDiff === Infinity) {
+      teamA = groups[0];
+      teamB = groups[1];
+      minDiff = Math.abs((teamA.karma || 0) - (teamB.karma || 0));
+    }
+
+    return {
+      teamA,
+      teamB,
+      gap: minDiff,
+      tokenA: getGroupToken(teamA),
+      tokenB: getGroupToken(teamB),
+    };
+  }, [groups]);
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <PageHeader
+        title="Teams & Groups"
+        subtitle={subtitle}
+        centerActions={true}
+        rightActions={
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              flexWrap: "wrap",
+            }}
+          >
+            <PeriodCalendarPopover
+              period={period}
+              offset={offset}
+              dateLabel={dateRangeInfo.label}
+              onPeriodChange={handlePeriodChange}
+              onOffsetChange={(newOffset) => setOffset(newOffset)}
+              onDateSelect={(selectedDate) => {
+                const now = new Date();
+                if (period === "month") {
+                  const monthDiff = (selectedDate.getFullYear() - now.getFullYear()) * 12 + (selectedDate.getMonth() - now.getMonth());
+                  setOffset(Math.min(0, monthDiff));
+                } else if (period === "week") {
+                  const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+                  const weekDiff = Math.round((selectedDate.getTime() - now.getTime()) / msPerWeek);
+                  setOffset(Math.min(0, weekDiff));
+                }
+              }}
+            />
+          </div>
+        }
+      />
+
+      {/* Category Filter & Sort Bar */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: 12,
+        }}
+      >
+        {/* All / Teams / Groups Segmented Control */}
+        <div
+          role="tablist"
+          aria-label="Filter teams and groups"
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            background: "#FFFFFF",
+            borderRadius: "var(--radius-pill)",
+            padding: 4,
+            border: "1px solid var(--border)",
+            boxShadow: "var(--shadow-soft)",
+            gap: 4,
+          }}
+        >
+          {filterOptions.map((opt) => {
+            const isActive = filter === opt.id;
+            return (
+              <button
+                key={opt.id}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => setFilter(opt.id)}
+                style={{
+                  padding: "6px 16px",
+                  borderRadius: "var(--radius-pill)",
+                  fontSize: 13,
+                  fontWeight: isActive ? 700 : 500,
+                  color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
+                  background: isActive ? "var(--surface-subtle)" : "transparent",
+                  boxShadow: isActive ? "0 1px 3px rgba(0, 0, 0, 0.06)" : "none",
+                  border: isActive ? "1px solid var(--border-strong)" : "1px solid transparent",
+                  cursor: "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                  transition: "all 0.18s cubic-bezier(0.16, 1, 0.3, 1)",
+                }}
+              >
+                <span>{opt.label}</span>
+                <span
+                  className="tabular-nums"
+                  style={{
+                    fontSize: 11,
+                    fontWeight: 700,
+                    padding: "2px 7px",
+                    borderRadius: "var(--radius-pill)",
+                    background: isActive ? "var(--text-primary)" : "rgba(0, 0, 0, 0.06)",
+                    color: isActive ? "#FFFFFF" : "var(--text-secondary)",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  {opt.count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Sort by Dropdown */}
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            fontSize: 12.5,
+            color: "var(--text-secondary)",
+            fontWeight: 600,
+          }}
+        >
+          <ArrowUpDown size={14} color="var(--text-muted)" />
+          <span>Sort:</span>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            style={{
+              padding: "6px 14px",
+              borderRadius: "var(--radius-pill)",
+              border: "1px solid var(--border)",
+              background: "#FFFFFF",
+              fontSize: 12.5,
+              fontWeight: 600,
+              color: "var(--text-primary)",
+              cursor: "pointer",
+              outline: "none",
+            }}
+          >
+            <option value="rank">Rank (Highest Karma)</option>
+            <option value="name">Name (A-Z)</option>
+            <option value="members">Warriors Count</option>
+          </select>
+        </div>
+      </div>
+
+      <PageGrid gap={20}>
+        {/* Left Column (Span 9): 7 Group Cards in 2 Rows (4 + 3) */}
+        <PageCol col={12} colLg={9}>
+          <div
+            className="groups-cards-grid"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(min(340px, 100%), 1fr))",
+              gap: 16,
+            }}
+          >
+            {displayedGroups.length === 0 ? (
+              <div
+                style={{
+                  gridColumn: "1 / -1",
+                  padding: "48px 24px",
+                  textAlign: "center",
+                  background: "#FFFFFF",
+                  borderRadius: "var(--radius-card)",
+                  border: "1px solid var(--border)",
+                  color: "var(--text-secondary)",
+                }}
+              >
+                <div style={{ fontSize: 16, fontWeight: 700, color: "var(--text-primary)", marginBottom: 4 }}>
+                  No campus groups found
+                </div>
+                <div style={{ fontSize: 13 }}>
+                  All campus special interest groups and community clubs added to Karmayodha will appear here.
+                </div>
+              </div>
+            ) : (
+              displayedGroups.map((grp, idx) => {
+                const memberCount = grp.member_count || grp.members_count || 6;
+                const target = computeDefaultGroupTarget([], memberCount);
+
+                return (
+                  <motion.div
+                    key={grp.id || grp.name || idx}
+                    layout
+                    transition={{
+                      layout: {
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 32,
+                        mass: 0.6,
+                      },
+                    }}
+                    style={{ display: "flex", flexDirection: "column", height: "100%" }}
+                  >
+                    <GroupCard
+                      group={grp}
+                      rank={grp.overallRank || idx + 1}
+                      karma={grp.karma || 0}
+                      memberCount={memberCount}
+                      target={target}
+                      variant="full"
+                      style={{ height: "100%" }}
+                    />
+                  </motion.div>
+                );
+              })
+            )}
+          </div>
+        </PageCol>
+
+        {/* Right Summary Column (Span 3): Campus Totals, Closest Race, and Goal Progress List */}
+        <PageCol col={12} colLg={3}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 16,
+              position: "sticky",
+              top: 24,
+            }}
+          >
+            {/* 1. Campus Totals Card */}
+            <div
+              style={{
+                background: "#FFFFFF",
+                border: "1px solid var(--border)",
+                borderRadius: "var(--radius-card)",
+                padding: "18px 20px",
+                boxShadow: "var(--shadow-soft)",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 12 }}>
+                <Sparkles size={16} color="var(--chart-line)" />
+                <span style={{ fontSize: 12, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  Campus Overview
+                </span>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div style={{ background: "var(--surface-subtle)", padding: "12px", borderRadius: 10 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)" }}>CAMPUS KARMA</div>
+                  <div className="tabular-nums" style={{ fontSize: 20, fontWeight: 800, color: "var(--text-primary)", marginTop: 2 }}>
+                    {totalCampusKarma.toLocaleString()}
+                  </div>
+                </div>
+
+                <div style={{ background: "var(--surface-subtle)", padding: "12px", borderRadius: 10 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)" }}>WARRIORS</div>
+                  <div className="tabular-nums" style={{ fontSize: 20, fontWeight: 800, color: "var(--text-primary)", marginTop: 2 }}>
+                    {totalWarriors}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Closest Race Card */}
+            {closestRace && (
+              <div
+                style={{
+                  background: "#FFFFFF",
+                  border: "1px solid var(--border)",
+                  borderRadius: "var(--radius-card)",
+                  padding: "18px 20px",
+                  boxShadow: "var(--shadow-soft)",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 12 }}>
+                  <Swords size={16} color="#DC2626" />
+                  <span style={{ fontSize: 12, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    Closest Race
+                  </span>
+                </div>
+
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "12px 14px",
+                    borderRadius: 12,
+                    background: "var(--surface-subtle)",
+                    border: "1px solid var(--border)",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <Crest group={closestRace.teamA} size="sm" />
+                    <div>
+                      <div style={{ fontSize: 12.5, fontWeight: 800 }}>{closestRace.tokenA.name}</div>
+                      <div className="tabular-nums" style={{ fontSize: 11, color: "var(--text-secondary)", fontWeight: 600 }}>
+                        {(closestRace.teamA.karma || 0).toLocaleString()} pts
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ textAlign: "center", padding: "0 6px" }}>
+                    <span
+                      style={{
+                        fontSize: 10.5,
+                        fontWeight: 800,
+                        color: "#DC2626",
+                        background: "#FEE2E2",
+                        padding: "2px 6px",
+                        borderRadius: 6,
+                      }}
+                    >
+                      {closestRace.gap === 0 ? "TIED" : `Δ ${closestRace.gap}`}
+                    </span>
+                  </div>
+
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexDirection: "row-reverse", textAlign: "right" }}>
+                    <Crest group={closestRace.teamB} size="sm" />
+                    <div>
+                      <div style={{ fontSize: 12.5, fontWeight: 800 }}>{closestRace.tokenB.name}</div>
+                      <div className="tabular-nums" style={{ fontSize: 11, color: "var(--text-secondary)", fontWeight: 600 }}>
+                        {(closestRace.teamB.karma || 0).toLocaleString()} pts
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 3. Goal Progress List */}
+            <div
+              style={{
+                background: "#FFFFFF",
+                border: "1px solid var(--border)",
+                borderRadius: "var(--radius-card)",
+                padding: "18px 20px",
+                boxShadow: "var(--shadow-soft)",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 12 }}>
+                <Award size={16} color="var(--chart-line)" />
+                <span style={{ fontSize: 12, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  Goal Pace
+                </span>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {displayedGroups.map((grp) => {
+                  const token = getGroupToken(grp);
+                  const memberCount = grp.member_count || grp.members_count || 6;
+                  const target = computeDefaultGroupTarget([], memberCount);
+                  const pct = Math.min(100, Math.round(((grp.karma || 0) / target) * 100));
+
+                  return (
+                    <div key={grp.id || grp.name}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 3, fontSize: 11.5 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                          <Crest group={grp} size="xs" />
+                          <span style={{ fontWeight: 700, color: "var(--text-primary)" }}>{token.name}</span>
+                        </div>
+                        <span className="tabular-nums" style={{ fontWeight: 700, color: token.ink }}>
+                          {pct}%
+                        </span>
+                      </div>
+                      <div style={{ width: "100%", height: 5, borderRadius: 9999, background: "var(--surface-subtle)", overflow: "hidden" }}>
+                        <div style={{ width: `${pct}%`, height: "100%", background: token.ink, borderRadius: 9999 }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </PageCol>
+      </PageGrid>
+    </div>
+  );
+}

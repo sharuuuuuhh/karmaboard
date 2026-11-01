@@ -1,0 +1,220 @@
+import React, { useState, useEffect, useMemo } from "react";
+import PageHeader from "../components/shell/PageHeader";
+import PageGrid, { PageCol } from "../components/common/PageGrid";
+import PeriodCalendarPopover from "../components/common/PeriodCalendarPopover";
+import ChartCard from "../components/dashboard/ChartCard";
+import TopGroupsCards from "../components/dashboard/TopGroupsCards";
+import LeaderboardTableCard from "../components/dashboard/LeaderboardTableCard";
+import DarkPromoCard from "../components/dashboard/DarkPromoCard";
+import RecentActivityCard from "../components/dashboard/RecentActivityCard";
+import { karmaStore } from "../data/karmaStore";
+import {
+  getWeekBoundaries,
+  getMonthBoundaries,
+  getISTDate,
+  getWeekCountdown,
+} from "../utils/dateUtils";
+
+export default function HomePage() {
+  const [, setDataVersion] = useState(0);
+  const [period, setPeriod] = useState("week");
+  const [offset, setOffset] = useState(0);
+  const [selectedGroupId, setSelectedGroupId] = useState("all");
+
+  useEffect(() => {
+    const unsub = karmaStore.subscribe(() => {
+      setDataVersion((v) => v + 1);
+    });
+    return unsub;
+  }, []);
+
+  const handlePeriodChange = (newPeriod) => {
+    setPeriod(newPeriod);
+    setOffset(0);
+  };
+
+  // Date and month display formatting
+  const dateRangeInfo = useMemo(() => {
+    if (period === "all") {
+      return {
+        label: "All Time",
+        sublabel: "Overall campus score",
+        cardLabel: "all time",
+      };
+    }
+    if (period === "week") {
+      const b = getWeekBoundaries(offset);
+      const startIST = getISTDate(b.start);
+      const year = startIST.getUTCFullYear();
+      return {
+        label: `${b.label} ${year}`,
+        sublabel: b.label,
+        cardLabel: `this week (${b.label})`,
+      };
+    }
+    // Month
+    const b = getMonthBoundaries(offset);
+    const months = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    ];
+    const startIST = getISTDate(b.start);
+    const endIST = getISTDate(b.end);
+    const dateRangeStr = `${startIST.getUTCDate()} ${months[startIST.getUTCMonth()]} - ${endIST.getUTCDate()} ${months[endIST.getUTCMonth()]}`;
+    return {
+      label: `${b.label} • ${dateRangeStr}`,
+      sublabel: `${dateRangeStr} (${b.label})`,
+      cardLabel: `in ${b.label}`,
+    };
+  }, [period, offset]);
+
+  // Boundaries & Countdown
+  const weekInfo = useMemo(() => getWeekBoundaries(offset), [offset]);
+  const countdown = useMemo(() => getWeekCountdown(weekInfo.end), [weekInfo]);
+
+  // Real store data with period and offset applied
+  const groupStandings = useMemo(() => {
+    return karmaStore.getLeaderboard
+      ? karmaStore.getLeaderboard({
+          period,
+          view: "groups",
+          weekOffset: period === "week" ? offset : 0,
+          monthOffset: period === "month" ? offset : 0,
+        })
+      : [];
+  }, [period, offset]);
+
+  const rawIndividualStandings = useMemo(() => {
+    return karmaStore.getLeaderboard
+      ? karmaStore.getLeaderboard({
+          period,
+          view: "individuals",
+          weekOffset: period === "week" ? offset : 0,
+          monthOffset: period === "month" ? offset : 0,
+        })
+      : [];
+  }, [period, offset]);
+
+  const allEvents = useMemo(() => karmaStore.karmaEvents || [], []);
+
+  // Filter individuals by group if a chip is selected
+  const displayedIndividuals = useMemo(() => {
+    if (selectedGroupId === "all") return rawIndividualStandings;
+    return rawIndividualStandings.filter(
+      (m) => m.group_id === selectedGroupId || m.group_name === selectedGroupId
+    );
+  }, [rawIndividualStandings, selectedGroupId]);
+
+  // Filter activities by group if selected
+  const displayedActivities = useMemo(() => {
+    if (selectedGroupId === "all") return allEvents;
+    return allEvents.filter(
+      (act) => act.group_id === selectedGroupId || act.group_name === selectedGroupId
+    );
+  }, [allEvents, selectedGroupId]);
+
+  // Total weekly campus karma
+  const totalWeeklyKarma = useMemo(() => {
+    return groupStandings.reduce((sum, g) => sum + (g.karma || 0), 0);
+  }, [groupStandings]);
+
+  // Active members with > 0 karma this week
+  const activeMembersCount = useMemo(() => {
+    return rawIndividualStandings.filter((m) => (m.karma || 0) > 0).length;
+  }, [rawIndividualStandings]);
+
+  // Subtitle format
+  const subtitle = useMemo(() => {
+    if (period === "all") {
+      return "All Time • Overall campus standings";
+    }
+    if (period === "month") {
+      return `${dateRangeInfo.label} • Monthly campus race`;
+    }
+    return offset === 0
+      ? `${weekInfo.label} • ${countdown}`
+      : `${weekInfo.label} • Past week`;
+  }, [period, offset, weekInfo, countdown, dateRangeInfo]);
+
+  const chartBaseDate = useMemo(() => {
+    return period === "week"
+      ? new Date(Date.now() + offset * 7 * 24 * 60 * 60 * 1000)
+      : new Date();
+  }, [period, offset]);
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+      {/* Page Header: Title + Subtitle + Single Prominent Period Popover Selector */}
+      <PageHeader
+        title="Overview"
+        subtitle={subtitle}
+        rightActions={
+          <PeriodCalendarPopover
+            period={period}
+            offset={offset}
+            dateLabel={dateRangeInfo.label}
+            onPeriodChange={handlePeriodChange}
+            onOffsetChange={(newOffset) => setOffset(newOffset)}
+            onDateSelect={(selectedDate) => {
+              const now = new Date();
+              if (period === "month") {
+                const monthDiff =
+                  (selectedDate.getFullYear() - now.getFullYear()) * 12 +
+                  (selectedDate.getMonth() - now.getMonth());
+                setOffset(Math.min(0, monthDiff));
+              } else if (period === "week") {
+                const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+                const weekDiff = Math.round(
+                  (selectedDate.getTime() - now.getTime()) / msPerWeek
+                );
+                setOffset(Math.min(0, weekDiff));
+              }
+            }}
+          />
+        }
+      />
+
+      {/* Row 1: Karma Chart (span 6) | Top Groups Stack (span 3) | This Week Dark Card (span 3) */}
+      <PageGrid gap={20}>
+        <PageCol span={6} spanLg={6} spanMd={2} spanSm={1}>
+          <ChartCard
+            events={allEvents}
+            totalKarma={totalWeeklyKarma}
+            percentageChange="+14.2%"
+            range={period}
+            baseDate={chartBaseDate}
+          />
+        </PageCol>
+
+        <PageCol span={3} spanLg={3} spanMd={1} spanSm={1}>
+          <TopGroupsCards groups={groupStandings} />
+        </PageCol>
+
+        <PageCol span={3} spanLg={3} spanMd={1} spanSm={1}>
+          <DarkPromoCard
+            groups={groupStandings}
+            countdown={countdown}
+            activeMemberCount={activeMembersCount}
+          />
+        </PageCol>
+      </PageGrid>
+
+      {/* Row 2: Leaderboard Table (span 7) | Recent Activity (span 5) */}
+      <PageGrid gap={20}>
+        <PageCol span={7} spanLg={7} spanMd={2} spanSm={1}>
+          <LeaderboardTableCard
+            individuals={displayedIndividuals}
+            groups={groupStandings}
+            period={period}
+            selectedGroupId={selectedGroupId}
+            onSelectGroup={(id) => setSelectedGroupId(id)}
+          />
+        </PageCol>
+
+        <PageCol span={5} spanLg={5} spanMd={2} spanSm={1}>
+          <RecentActivityCard activities={displayedActivities} maxRows={6} />
+        </PageCol>
+      </PageGrid>
+    </div>
+  );
+}

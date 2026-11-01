@@ -1,26 +1,28 @@
+import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/home";
-import Login from "./pages/login";
-import Dashboard from "./pages/dashboard";
-import ProtectedRoute from "./components/protectedRoute";
-import { Analytics } from "@vercel/analytics/react";
+import AppShell from "./components/shell/AppShell";
+import HomePage from "./pages/HomePage";
+import LeaderboardPage from "./pages/LeaderboardPage";
+import GroupsPage from "./pages/GroupsPage";
+import GroupDetailPage from "./pages/GroupDetailPage";
+import ProfilePage from "./pages/ProfilePage";
+import ActivityPage from "./pages/ActivityPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 export default function App() {
   return (
     <BrowserRouter>
-      <Analytics />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
+      <AppShell>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/leaderboard" element={<LeaderboardPage />} />
+          <Route path="/groups" element={<GroupsPage />} />
+          <Route path="/groups/:id" element={<GroupDetailPage />} />
+          <Route path="/u/:muid" element={<ProfilePage />} />
+          <Route path="/activity" element={<ActivityPage />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </AppShell>
     </BrowserRouter>
   );
 }

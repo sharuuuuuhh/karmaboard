@@ -1,0 +1,514 @@
+/* ==========================================================================
+   KARMAYODHA - LIGHT OVERVIEW FINTECH DASHBOARD DESIGN SYSTEM
+   Calm, Light, Friendly, Premium Fintech Dashboard.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* --------------------------------------------------------------------------
+     1. Surfaces & Frames
+     -------------------------------------------------------------------------- */
+  --page-backdrop: #E8F1FB;
+  --app-frame: #1B1B1D;
+  --content-panel: #FFFFFF;
+  --sidebar-w: 72px;
+  --logo-tile: #F7F0D8;
+
+  /* Global alias mappings */
+  --bg: var(--page-backdrop);
+  --canvas: var(--page-backdrop);
+  --surface: #FFFFFF;
+  --surface-subtle: #F6F7F9;
+  --surface-solid: #FFFFFF;
+
+  /* --------------------------------------------------------------------------
+     2. Text Hierarchy
+     -------------------------------------------------------------------------- */
+  --text-primary: #121214;
+  --text-secondary: #6B6B73;
+  --text-muted: #A0A0A8;
+  --table-header: #8A8A93;
+
+  --sidebar-icon-inactive: #9A9AA0;
+  --sidebar-icon-active: #FFFFFF;
+
+  /* --------------------------------------------------------------------------
+     3. Group Pastel Cards & Matching Inks
+     -------------------------------------------------------------------------- */
+  --pastel-tech: #FBE6C2;
+  --ink-tech: #8A5200;
+
+  --pastel-leads: #F7DDE0;
+  --ink-leads: #B3243B;
+
+  --pastel-operation: #E6E1FA;
+  --ink-operation: #4A3FC9;
+
+  --pastel-media: #EAE6E6;
+  --ink-media: #2A2A2E;
+
+  --pastel-marketing: #D9EEDC;
+  --ink-marketing: #1F6B45;
+
+  --pastel-content: #F3EBD9;
+  --ink-content: #3B3A4F;
+
+  --pastel-creative: #DDE3F0;
+  --ink-creative: #1B2A5E;
+
+  /* --------------------------------------------------------------------------
+     4. Chart & Promo Cards
+     -------------------------------------------------------------------------- */
+  --chart-tint: #DFEBFA;
+  --chart-line: #4C9AEE;
+  --chart-fill-start: rgba(76, 154, 238, 0.22);
+  --chart-fill-end: rgba(76, 154, 238, 0.0);
+
+  --promo-bg: #232325;
+  --promo-btn-bg: #CFE6FF;
+  --promo-btn-text: #0F1A26;
+
+  /* --------------------------------------------------------------------------
+     5. Status & Buttons
+     -------------------------------------------------------------------------- */
+  --status-up: #2E9A57;
+  --status-down: #D14343;
+  --status-neutral: #A0A0A8;
+
+  --btn-primary-bg: #121214;
+  --btn-primary-text: #FFFFFF;
+  --btn-pale-blue: #CFE6FF;
+  --btn-pale-blue-text: #0F1A26;
+
+  /* --------------------------------------------------------------------------
+     6. Borders & Shadows
+     -------------------------------------------------------------------------- */
+  --border: #ECECF0;
+  --border-strong: #E2E2E8;
+  --border-subtle: #F0F0F4;
+
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-frame: 0 20px 48px -12px rgba(18, 24, 40, 0.16);
+  --shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.08);
+
+  /* --------------------------------------------------------------------------
+     7. Radii & Spacing
+     -------------------------------------------------------------------------- */
+  --radius-frame: 36px;
+  --radius-panel: 28px;
+  --radius-card: 24px;
+  --radius-tile: 16px;
+  --radius-pill: 9999px;
+
+  /* --------------------------------------------------------------------------
+     8. Typography Family & Tokens
+     -------------------------------------------------------------------------- */
+  --font-display: "Archivo", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --display-wdth: 125;   /* wide, like Neutiva / Rumeno */
+  --label-wdth: 112;
+  --font-family: var(--font-body);
+  --font-mono: 'SF Mono', SFMono-Regular, ui-monospace, Menlo, Consolas, monospace;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --display-wdth: 112;
+  }
+}
+
+/* ==========================================================================
+   Base Styles & Reset
+   ========================================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--page-backdrop);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==========================================================================
+   Type Roles & Hierarchy
+   ========================================================================== */
+
+/* Display (page titles, hero numbers, big karma numbers, team names on cards, podium numbers) */
+.type-display,
+.display-title,
+.hero-num,
+.big-karma-number {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" var(--display-wdth);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Section titles and card titles */
+.type-section-title,
+.section-title,
+.card-title {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 115;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Labels (nav items, table headers, eyebrows, small captions) */
+.type-label,
+.label-caps,
+.table-header-label,
+.eyebrow {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" var(--label-wdth);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Body, names, table cells, buttons, chips, inputs */
+.type-body,
+input, textarea, select {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 14px;
+}
+
+/* Semantic Headings */
+h1 {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" var(--display-wdth);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+h2, h3, h4 {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 115;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Numbers: tabular-nums */
+.tabular-nums, .num, td, th {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Clean Button Reset */
+button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* Micro-motion: hover lift 2px, press scale 0.98, all under 200ms */
+.interactive-card {
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease;
+}
+
+.interactive-card:hover {
+  transform: translateY(-2px);
+}
+
+.interactive-card:active {
+  transform: scale(0.98);
+}
+
+.interactive-btn {
+  transition: transform 0.15s ease, opacity 0.15s ease, background-color 0.15s ease;
+}
+
+.interactive-btn:hover {
+  transform: translateY(-1px);
+}
+
+.interactive-btn:active {
+  transform: scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    transform: none !important;
+  }
+}
+
+/* Focus Ring */
+:focus-visible {
+  outline: 2px solid var(--chart-line);
+  outline-offset: 2px;
+}
+
+/* Table Utilities */
+.clean-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.clean-table th {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" var(--label-wdth);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--table-header);
+  text-align: left;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.clean-table td {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 14px;
+  padding: 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.clean-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #D8D8E0;
+  border-radius: 9999px;
+}
+
+/* Thin internal scrollbar for cards */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.16);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.28);
+}
+
+/* ==========================================================================
+   Fluid 12-Column Responsive Grid System
+   ========================================================================== */
+.page-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  width: 100%;
+  min-width: 0;
+}
+
+.page-col {
+  min-width: 0;
+}
+
+/* Default spans (12-column) */
+.col-1  { grid-column: span 1 / span 1; }
+.col-2  { grid-column: span 2 / span 2; }
+.col-3  { grid-column: span 3 / span 3; }
+.col-4  { grid-column: span 4 / span 4; }
+.col-5  { grid-column: span 5 / span 5; }
+.col-6  { grid-column: span 6 / span 6; }
+.col-7  { grid-column: span 7 / span 7; }
+.col-8  { grid-column: span 8 / span 8; }
+.col-9  { grid-column: span 9 / span 9; }
+.col-10 { grid-column: span 10 / span 10; }
+.col-11 { grid-column: span 11 / span 11; }
+.col-12 { grid-column: span 12 / span 12; }
+
+/* Desktop Breakpoints (>= 1200px) */
+@media (min-width: 1200px) {
+  .col-lg-1  { grid-column: span 1 / span 1 !important; }
+  .col-lg-2  { grid-column: span 2 / span 2 !important; }
+  .col-lg-3  { grid-column: span 3 / span 3 !important; }
+  .col-lg-4  { grid-column: span 4 / span 4 !important; }
+  .col-lg-5  { grid-column: span 5 / span 5 !important; }
+  .col-lg-6  { grid-column: span 6 / span 6 !important; }
+  .col-lg-7  { grid-column: span 7 / span 7 !important; }
+  .col-lg-8  { grid-column: span 8 / span 8 !important; }
+  .col-lg-9  { grid-column: span 9 / span 9 !important; }
+  .col-lg-10 { grid-column: span 10 / span 10 !important; }
+  .col-lg-11 { grid-column: span 11 / span 11 !important; }
+  .col-lg-12 { grid-column: span 12 / span 12 !important; }
+}
+
+/* Ultra-wide Breakpoints (>= 1600px) */
+@media (min-width: 1600px) {
+  .col-xl-1  { grid-column: span 1 / span 1 !important; }
+  .col-xl-2  { grid-column: span 2 / span 2 !important; }
+  .col-xl-3  { grid-column: span 3 / span 3 !important; }
+  .col-xl-4  { grid-column: span 4 / span 4 !important; }
+  .col-xl-5  { grid-column: span 5 / span 5 !important; }
+  .col-xl-6  { grid-column: span 6 / span 6 !important; }
+  .col-xl-7  { grid-column: span 7 / span 7 !important; }
+  .col-xl-8  { grid-column: span 8 / span 8 !important; }
+  .col-xl-9  { grid-column: span 9 / span 9 !important; }
+  .col-xl-10 { grid-column: span 10 / span 10 !important; }
+  .col-xl-11 { grid-column: span 11 / span 11 !important; }
+  .col-xl-12 { grid-column: span 12 / span 12 !important; }
+}
+
+/* Tablet Breakpoints (768px - 1199px): 2 columns */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .page-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .page-col {
+    grid-column: span 2 / span 2;
+  }
+  .col-md-1 { grid-column: span 1 / span 1 !important; }
+  .col-md-2 { grid-column: span 2 / span 2 !important; }
+}
+
+/* Mobile Breakpoints (< 768px): 1 column */
+@media (max-width: 767px) {
+  .page-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .page-col {
+    grid-column: span 1 / span 1 !important;
+  }
+  .col-sm-1 { grid-column: span 1 / span 1 !important; }
+}
+
+/* ==========================================================================
+   Group Card Design System (Solid Colors, Chamfered Corner, Hero Crest)
+   ========================================================================== */
+
+.groups-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+@media (min-width: 1500px) and (max-width: 2200px) {
+  .groups-cards-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (min-width: 2201px) {
+  .groups-cards-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  }
+}
+
+.interactive-group-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 6px;
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
+  text-decoration: none;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  transition: transform 150ms ease, box-shadow 150ms ease, outline 150ms ease;
+  user-select: none;
+}
+
+.interactive-group-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
+}
+
+.interactive-group-card:focus-visible {
+  outline: 2px solid #FFFFFF;
+  outline-offset: 2px;
+}
+
+.interactive-group-card.light-card:focus-visible {
+  outline: 2px solid #1F2A4D;
+  outline-offset: 2px;
+}
+
+.interactive-group-card .hero-crest-img {
+  height: 150px;
+  width: auto;
+  max-width: 150px;
+  object-fit: contain;
+  display: block;
+  flex-shrink: 0;
+  transition: transform 150ms ease;
+}
+
+@media (max-width: 1200px) {
+  .interactive-group-card .hero-crest-img {
+    height: 120px;
+    max-width: 120px;
+  }
+}
+
+@media (max-width: 768px) {
+  .interactive-group-card .hero-crest-img {
+    height: 96px;
+    max-width: 96px;
+  }
+}
+
+.interactive-group-card:hover .hero-crest-img {
+  transform: scale(1.04);
+}
+
+.interactive-group-card-compact {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 6px;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+  text-decoration: none;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  transition: transform 150ms ease, box-shadow 150ms ease;
+  padding: 10px 14px;
+}
+
+.interactive-group-card-compact:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
+}
+
+.interactive-group-card-compact .hero-crest-compact {
+  transition: transform 150ms ease;
+}
+
+.interactive-group-card-compact:hover .hero-crest-compact {
+  transform: scale(1.04);
+}
+

@@ -2,8 +2,8 @@
   Base Imports & Global Styles
   ==============================================
 */
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+
 
 * {
   box-sizing: border-box;
@@ -25,7 +25,7 @@
   gap: 1rem;
   background-color: #220f08;
   color: #fbf8f8;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-body);
 }
 
 @keyframes spin {
@@ -49,7 +49,7 @@
   border: none;
   border-radius: 0.5rem;
   cursor: pointer;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-body);
   font-size: 0.9rem;
   transition: background 0.2s;
 }
@@ -73,7 +73,7 @@
   border: 1px solid rgba(251, 248, 248, 0.25);
   border-radius: 2rem;
   cursor: pointer;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-body);
   font-size: 0.8rem;
   font-weight: 500;
   white-space: nowrap;
@@ -97,7 +97,7 @@
   border: 1px solid rgba(251,248,248,0.2);
   border-radius: 2rem;
   cursor: pointer;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-body);
   font-size: 0.8rem;
   font-weight: 500;
   white-space: nowrap;
@@ -124,7 +124,7 @@
 .sync-status {
   text-align: center;
   font-size: 0.95rem;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-body);
   font-weight: 500;
 }
 .sync-status.ok   { color: #6ee7b7; }
@@ -136,7 +136,7 @@
   border-radius: 0.5rem;
   padding: 1rem;
   width: 100%;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-body);
   font-size: 0.85rem;
   color: #fca5a5;
   text-align: left;
@@ -173,7 +173,7 @@
   font-size: 0.82rem;
   color: rgba(251,248,248,0.5);
   padding: 1rem 2rem;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-body);
 }
 .no-monthly code {
   background: rgba(255,255,255,0.08);
@@ -187,7 +187,7 @@ body {
   min-height: 100vh;
   background-color: #220f08;
   color: #fbf8f8;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-body);
   overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
@@ -248,7 +248,7 @@ body {
   font-size: 1.3rem;
   padding: 0.2rem 0;
   letter-spacing: 0.1em;
-  font-family: "Montserrat", sans-serif;
+  font-family: var(--font-display);
   text-align: right;
 }
 
@@ -339,7 +339,7 @@ body {
 }
 
 .monthly-heading {
-  font-family: "Montserrat", sans-serif;
+  font-family: var(--font-display);
   font-size: 1.6rem;
   font-weight: 700;
   margin-bottom: 0;
@@ -354,7 +354,7 @@ body {
   font-weight: 600;
   padding: 0.25rem 0.7rem;
   border-radius: 1rem;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-body);
   letter-spacing: 0.02em;
   white-space: nowrap;
 }
@@ -373,7 +373,7 @@ body {
   background: transparent;
   padding: 0.4rem 1rem;
   font-size: 0.82rem;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-body);
   font-weight: 500;
   color: #5a3316;
   border-radius: 1.5rem;
@@ -411,7 +411,7 @@ body {
   color: #fbf8f8;
   border: none;
   border-radius: 0.5rem;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-body);
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
@@ -454,7 +454,7 @@ body {
 }
 
 .m-name {
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-body);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -551,7 +551,7 @@ body {
 
 .t-rank {
   font-size: 1.6rem;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-body);
   font-weight: 400;
 }
 
@@ -563,13 +563,13 @@ body {
 
 .t-karma {
   font-size: 0.6rem;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-body);
   font-weight: 300;
 }
 
 .t-name {
   font-size: 0.9rem;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-body);
   font-weight: 400;
 }
 
@@ -589,7 +589,7 @@ body {
 }
 
 .t-title {
-  font-family: "Montserrat", sans-serif;
+  font-family: var(--font-display);
   font-size: 1.8rem;
   width: 100%;
   color: #fbf8f8;
@@ -631,7 +631,7 @@ body {
   flex-direction: column;
 }
 .t-message {
-  font-family: "Poppins", sans-serif;
+  font-family: var(--font-body);
   font-size: 1rem;
   font-weight: 400;
   color: #ffffff99;
@@ -659,7 +659,7 @@ body {
 
 .overall-rankings-heading {
   color: #220f08;
-  font-family: "Montserrat", sans-serif;
+  font-family: var(--font-display);
   font-weight: 600;
   text-align: center;
   font-size: 1.8rem;
@@ -744,7 +744,7 @@ body {
     font-size: 3rem;
     padding: 0 2rem;
     letter-spacing: 15%;
-    font-family: "Montserrat", sans-serif;
+    font-family: var(--font-display);
   }
 
   .detailbox {
@@ -774,7 +774,7 @@ body {
   }
 
   .m-name {
-    font-family: "Poppins", sans-serif;
+    font-family: var(--font-body);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
