@@ -50,8 +50,10 @@ export default function ActivityPage() {
     return allEvents.filter((ev) => {
       const matchTeam =
         selectedGroup === "all" ||
-        (ev.group_name && ev.group_name.toUpperCase() === selectedGroup) ||
-        (ev.group_id && ev.group_id.toUpperCase().includes(selectedGroup));
+        (ev.group_name && ev.group_name.toUpperCase() === selectedGroup.toUpperCase()) ||
+        (ev.group_id && ev.group_id.toUpperCase().includes(selectedGroup.toUpperCase())) ||
+        (ev.group_name && normalizeGroupSlug(ev.group_name) === normalizeGroupSlug(selectedGroup)) ||
+        (ev.group_id && normalizeGroupSlug(ev.group_id) === normalizeGroupSlug(selectedGroup));
 
       const q = searchTerm.trim().toLowerCase();
       const matchSearch =
@@ -119,8 +121,10 @@ export default function ActivityPage() {
     if (selectedGroup === "all") return null;
     const teamEvents = allEvents.filter(
       (ev) =>
-        (ev.group_name && ev.group_name.toUpperCase() === selectedGroup) ||
-        (ev.group_id && ev.group_id.toUpperCase().includes(selectedGroup))
+        (ev.group_name && ev.group_name.toUpperCase() === selectedGroup.toUpperCase()) ||
+        (ev.group_id && ev.group_id.toUpperCase().includes(selectedGroup.toUpperCase())) ||
+        (ev.group_name && normalizeGroupSlug(ev.group_name) === normalizeGroupSlug(selectedGroup)) ||
+        (ev.group_id && normalizeGroupSlug(ev.group_id) === normalizeGroupSlug(selectedGroup))
     );
     const karma = teamEvents.reduce(
       (sum, ev) => sum + (ev.delta || ev.karma_points || ev.points || 300),
@@ -154,7 +158,90 @@ export default function ActivityPage() {
       .toUpperCase();
   };
 
-  const teams = ["TECH", "LEADS", "OPERATION", "MEDIA", "MARKETING", "CONTENT", "CREATIVE"];
+  // Full campus roster: 7 official teams + custom crest groups first, then remaining community groups
+  const allGroupsList = useMemo(() => {
+    const storeGroups = karmaStore.groups || [];
+    const priorityOrder = [
+      "TECH",
+      "LEADS",
+      "OPERATION",
+      "MEDIA",
+      "MARKETING",
+      "CONTENT",
+      "CREATIVE",
+      "TECHASHI",
+      "OFFGRID",
+      "MUVERSE",
+    ];
+
+    if (storeGroups.length > 0) {
+      const priority = [];
+      const others = [];
+
+      priorityOrder.forEach((name) => {
+        const found = storeGroups.find(
+          (g) =>
+            (g.name || "").toUpperCase() === name ||
+            normalizeGroupSlug(g.name || g.id) === normalizeGroupSlug(name)
+        );
+        if (found) {
+          priority.push({
+            id: found.id || `grp-${name.toLowerCase()}`,
+            name: found.name,
+            key: found.name.toUpperCase(),
+          });
+        } else {
+          priority.push({
+            id: `grp-${name.toLowerCase()}`,
+            name,
+            key: name,
+          });
+        }
+      });
+
+      storeGroups.forEach((g) => {
+        const gName = (g.name || "").toUpperCase();
+        const isPriority = priorityOrder.some(
+          (p) => p === gName || normalizeGroupSlug(p) === normalizeGroupSlug(g.name || g.id)
+        );
+        if (!isPriority) {
+          others.push({
+            id: g.id,
+            name: g.name,
+            key: (g.name || g.id).toUpperCase(),
+          });
+        }
+      });
+
+      return [...priority, ...others];
+    }
+
+    // Fallback if store hasn't initialized yet
+    const fallbackAll = [
+      "TECH",
+      "LEADS",
+      "OPERATION",
+      "MEDIA",
+      "MARKETING",
+      "CONTENT",
+      "CREATIVE",
+      "TECHASHI",
+      "OFFGRID",
+      "MUVERSE",
+      "SFC",
+      "INFINITEA",
+      "NEXUS",
+      "KAIZEN",
+      "MUNIVERSE",
+      "LA DECIMA",
+    ];
+
+    return fallbackAll.map((name) => ({
+      id: `grp-${name.toLowerCase().replace(/\s+/g, "-")}`,
+      name,
+      key: name,
+    }));
+  }, [dataVersion]);
 
   return (
     <div
@@ -342,22 +429,25 @@ export default function ActivityPage() {
           );
         })()}
 
-        {/* 7 Team Crests */}
-        {teams.map((t) => {
-          const isSelected = selectedGroup === t;
-          const isHovered = hoveredGroup === t;
-          const token = getGroupToken(t);
-          const slug = normalizeGroupSlug(t);
+        {/* All Campus Teams & Community Groups */}
+        {allGroupsList.map((g) => {
+          const isSelected =
+            selectedGroup !== "all" &&
+            (selectedGroup.toUpperCase() === g.key ||
+              normalizeGroupSlug(selectedGroup) === normalizeGroupSlug(g.id || g.name));
+          const isHovered = hoveredGroup === g.key;
+          const token = getGroupToken(g.id || g.name);
+          const slug = normalizeGroupSlug(g.id || g.name);
           const crestFiles = CREST_REGISTRY[slug];
-          const opacity = isSelected ? 1 : isHovered ? 0.85 : 0.55;
+          const opacity = isSelected ? 1 : isHovered ? 0.88 : 0.55;
           const filter = isSelected ? "none" : "grayscale(25%)";
 
           return (
             <button
-              key={t}
+              key={g.id || g.name}
               type="button"
-              onClick={() => handleSelectGroup(isSelected ? "all" : t)}
-              onMouseEnter={() => setHoveredGroup(t)}
+              onClick={() => handleSelectGroup(isSelected ? "all" : g.key)}
+              onMouseEnter={() => setHoveredGroup(g.key)}
               onMouseLeave={() => setHoveredGroup(null)}
               aria-pressed={isSelected}
               aria-label={`Filter by ${token.name}`}
@@ -374,11 +464,11 @@ export default function ActivityPage() {
                     className="activity-filter-crest"
                   />
                 ) : (
-                  <Crest group={t} size="lg" alt="" />
+                  <Crest group={g.id || g.name} size="lg" alt="" />
                 )}
               </div>
 
-              {/* Team Name Label */}
+              {/* Group Name Label */}
               <span
                 style={{
                   fontFamily: "var(--font-display)",
@@ -1097,7 +1187,7 @@ export default function ActivityPage() {
               >
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <Users size={16} color="var(--text-secondary)" />
-                  <span>All 7 Campus Teams</span>
+                  <span>All {allGroupsList.length} Campus Teams & Groups</span>
                 </div>
                 <span style={{ color: "var(--text-secondary)" }}>Explore →</span>
               </Link>

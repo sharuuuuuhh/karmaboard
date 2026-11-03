@@ -13,8 +13,10 @@ describe("ActivityPage", () => {
 
     expect(screen.getByRole("heading", { name: /Campus Activity/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/Filter by All Teams/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Filter by TECH/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Filter by LEADS/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Filter by TECH$/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Filter by LEADS$/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Filter by TECHASHI$/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Filter by OFFGRID$/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/Search by name or task/i)).toBeInTheDocument();
   });
 
@@ -25,7 +27,7 @@ describe("ActivityPage", () => {
       </MemoryRouter>
     );
 
-    const techButton = screen.getByLabelText(/Filter by TECH/i);
+    const techButton = screen.getByLabelText(/^Filter by TECH$/i);
     fireEvent.click(techButton);
 
     // Spotlight card should now appear

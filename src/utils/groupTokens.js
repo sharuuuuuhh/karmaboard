@@ -461,11 +461,14 @@ export function getGroupToken(groupOrName) {
       ? groupOrName
       : groupOrName.name || groupOrName.id || "";
   const key = raw.toUpperCase().replace(/^GRP-/, "").trim();
+  const displayName = typeof groupOrName === "object" && groupOrName.name
+    ? groupOrName.name.replace(/^grp-/i, "").trim()
+    : raw.replace(/^grp-/i, "").trim();
 
   return (
     GROUP_TOKENS[key] || {
       id: key,
-      name: raw,
+      name: displayName || key,
       cardBg: "#3A3F4B",
       cardDeep: "#30343E",
       cardLine: "rgba(255, 255, 255, 0.12)",

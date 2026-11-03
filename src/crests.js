@@ -81,8 +81,14 @@ export function getGroupDisplayName(groupOrName) {
     techashi: "TECHASHI",
     offgrid: "OFFGRID",
     muverse: "MuVerse",
+    sfc: "SFC",
+    infinitea: "INFINITEA",
+    nexus: "NEXUS",
+    kaizen: "KAIZEN",
+    muniverse: "MUniverse",
+    "la-decima": "La Decima",
   };
-  return map[slug] || (typeof groupOrName === "string" ? groupOrName : "Team");
+  return map[slug] || (typeof groupOrName === "string" ? groupOrName.replace(/^grp-/i, "").trim() : "Team");
 }
 
 const SIZE_MAP = {
@@ -156,9 +162,12 @@ export function Crest({
 
   const crestFiles = CREST_REGISTRY[slug];
 
-  // Placeholder when crest is null (e.g. TECH): SVG shield outline in ink color with Code2 + TECH
+  // Placeholder when crest image is not registered: heraldic SVG shield in group ink/accent color
   const renderContent = () => {
     if (!crestFiles) {
+      const shieldColor = token.cardAccent || token.ink || "#5E5CE6";
+      const shortName = displayName.length > 7 ? displayName.slice(0, 6) : displayName;
+
       return (
         <svg
           width={pixelSize}
@@ -176,43 +185,41 @@ export function Crest({
             flexShrink: 0,
           }}
         >
-          {/* Shield outer outline in ink color */}
+          {/* Shield outer outline */}
           <path
             d="M50 8 L85 22 C85 62 50 90 50 90 C50 90 15 62 15 22 Z"
-            stroke={token.ink}
-            strokeWidth="5"
+            stroke={shieldColor}
+            strokeWidth="4"
             strokeLinejoin="round"
-            fill="rgba(138, 82, 0, 0.08)"
+            fill="rgba(255, 255, 255, 0.08)"
           />
           {/* Shield inner accent ring */}
           <path
             d="M50 15 L78 26 C78 58 50 82 50 82 C50 82 22 58 22 26 Z"
-            stroke={token.ink}
+            stroke={shieldColor}
             strokeWidth="1.5"
             strokeOpacity="0.4"
             strokeLinejoin="round"
             fill="none"
           />
-          {/* Code2 icon: code brackets </> centered */}
+          {/* Heraldic 4-point star crest emblem */}
           <path
-            d="M42 36 L34 44 L42 52 M58 36 L66 44 L58 52 M53 33 L47 55"
-            stroke={token.ink}
-            strokeWidth="3.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            d="M50 28 L53 40 L65 43 L53 46 L50 58 L47 46 L35 43 L47 40 Z"
+            fill={shieldColor}
+            opacity="0.9"
           />
-          {/* TECH text below icon */}
+          {/* Group text below emblem */}
           <text
             x="50"
-            y="73"
+            y="74"
             textAnchor="middle"
-            fill={token.ink}
-            fontSize="14"
+            fill={shieldColor}
+            fontSize={shortName.length > 5 ? "11" : "12.5"}
             fontWeight="800"
-            fontFamily="system-ui, -apple-system, sans-serif"
-            letterSpacing="0.08em"
+            fontFamily="var(--font-display, system-ui, -apple-system, sans-serif)"
+            letterSpacing="0.06em"
           >
-            TECH
+            {shortName}
           </text>
         </svg>
       );
