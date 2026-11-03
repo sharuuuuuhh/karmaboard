@@ -50,52 +50,47 @@ export default function DarkPromoCard({
         boxShadow: "var(--shadow-soft)",
       }}
     >
-      {/* Decorative Subtle Misty Mountain and Torii Gate Line Art (8-12% opacity) */}
-      <svg
-        width="220"
-        height="160"
-        viewBox="0 0 220 160"
-        fill="none"
+      {/* Background Japanese Sumi-e Art Layer */}
+      <div
         aria-hidden="true"
         style={{
           position: "absolute",
-          bottom: 0,
-          right: 0,
-          opacity: 0.10,
-          pointerEvents: "none",
+          inset: 0,
           zIndex: 0,
+          pointerEvents: "none",
+          overflow: "hidden",
+          borderRadius: "var(--radius-card)",
         }}
       >
-        {/* Soft mountain silhouette */}
-        <path
-          d="M 20 160 Q 70 95 130 115 Q 170 85 220 105 L 220 160 Z"
-          fill="#FFFFFF"
-          opacity="0.6"
+        <img
+          src="/assets/art/dark-card-art.webp"
+          alt=""
+          aria-hidden="true"
+          width={1200}
+          height={800}
+          loading="lazy"
+          style={{
+            position: "absolute",
+            right: 0,
+            bottom: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            objectPosition: "right bottom",
+            opacity: 0.85,
+            display: "block",
+          }}
         />
-        {/* Far ridge */}
-        <path
-          d="M 60 160 Q 110 70 170 90 L 220 75 L 220 160 Z"
-          fill="#FFFFFF"
-          opacity="0.4"
+        {/* Left-to-right dark gradient overlay so text/stats/button remain clearly readable */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "linear-gradient(to right, rgba(22, 22, 26, 0.95) 0%, rgba(22, 22, 26, 0.65) 55%, rgba(22, 22, 26, 0.2) 100%)",
+          }}
         />
-
-        {/* Torii Gate Outline in Silhouette */}
-        <g transform="translate(142, 38)" stroke="#FFFFFF" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" fill="none">
-          {/* Top curved roof (Kasagi) */}
-          <path d="M 0 14 Q 28 8 56 14" strokeWidth="2.8" />
-          {/* Second tie beam (Shimaki & Nuki) */}
-          <line x1="4" y1="22" x2="52" y2="22" strokeWidth="2" />
-          <line x1="8" y1="32" x2="48" y2="32" strokeWidth="1.8" />
-          {/* Central strut (Gakuzuka) */}
-          <line x1="28" y1="22" x2="28" y2="32" strokeWidth="2" />
-          {/* Main Pillars (Hashira) slightly inclined */}
-          <line x1="14" y1="18" x2="11" y2="72" strokeWidth="2.6" />
-          <line x1="42" y1="18" x2="45" y2="72" strokeWidth="2.6" />
-          {/* Pillar Base Stones (Daiishi) */}
-          <rect x="8" y="70" width="6" height="3" fill="#FFFFFF" />
-          <rect x="42" y="70" width="6" height="3" fill="#FFFFFF" />
-        </g>
-      </svg>
+      </div>
 
       {/* Top Header: Eyebrow + Headline & Leader Crest */}
       <div style={{ position: "relative", zIndex: 1 }}>

@@ -193,42 +193,37 @@ export default function LeaderboardTableCard({
               gap: 12,
             }}
           >
-            {/* Subtle Torii Gate and Misty Mountains in Muted Gray */}
-            <svg
-              width="140"
-              height="70"
-              viewBox="0 0 140 70"
-              fill="none"
+            {/* Sumi-e Torii Gate and Misty Mountains */}
+            <div
               aria-hidden="true"
-              style={{ opacity: 0.55 }}
+              style={{
+                width: "100%",
+                maxWidth: 420,
+                display: "flex",
+                justifyContent: "center",
+                pointerEvents: "none",
+                mixBlendMode: "multiply",
+                opacity: 0.9,
+                WebkitMaskImage: "radial-gradient(ellipse at center, rgba(0,0,0,1) 50%, transparent 95%)",
+                maskImage: "radial-gradient(ellipse at center, rgba(0,0,0,1) 50%, transparent 95%)",
+              }}
             >
-              {/* Mountain layers */}
-              <path
-                d="M 10 70 Q 40 38 70 48 Q 100 32 130 52 L 130 70 Z"
-                fill="#E8E4DC"
+              <img
+                src="/assets/art/empty-state.webp"
+                alt=""
+                aria-hidden="true"
+                width={1200}
+                height={600}
+                loading="lazy"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  maxHeight: 140,
+                  objectFit: "contain",
+                  display: "block",
+                }}
               />
-              <path
-                d="M 25 70 Q 55 24 85 36 L 120 70 Z"
-                fill="#DCD6C8"
-                opacity="0.6"
-              />
-
-              {/* Torii Gate Silhouette */}
-              <g transform="translate(48, 14)" stroke="#6B6B72" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none">
-                {/* Top beam */}
-                <path d="M 0 10 Q 22 5 44 10" strokeWidth="2.2" />
-                {/* Lower tie beam */}
-                <line x1="3" y1="16" x2="41" y2="16" strokeWidth="1.6" />
-                {/* Small middle strut */}
-                <line x1="22" y1="10" x2="22" y2="16" strokeWidth="1.6" />
-                {/* Pillars */}
-                <line x1="10" y1="12" x2="8" y2="48" strokeWidth="2" />
-                <line x1="34" y1="12" x2="36" y2="48" strokeWidth="2" />
-                {/* Base stones */}
-                <rect x="5" y="46" width="6" height="3" fill="#6B6B72" stroke="none" />
-                <rect x="33" y="46" width="6" height="3" fill="#6B6B72" stroke="none" />
-              </g>
-            </svg>
+            </div>
 
             <span
               style={{
