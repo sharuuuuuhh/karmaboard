@@ -17,7 +17,7 @@ import PageGrid, { PageCol } from "../components/common/PageGrid";
 import PeriodCalendarPopover from "../components/common/PeriodCalendarPopover";
 import { karmaStore } from "../data/karmaStore";
 import { getWeekBoundaries, getMonthBoundaries } from "../utils/dateUtils";
-import { getGroupToken } from "../utils/groupTokens";
+import { getGroupToken, isOfficialTeam } from "../utils/groupTokens";
 import { formatRankLabel } from "../utils/dashboardHelpers";
 import Crest from "../crests";
 
@@ -28,6 +28,27 @@ export default function LeaderboardPage() {
       ? "groups"
       : "individuals";
   const [view, setView] = useState(initialView);
+
+  const initialFilter = ["all", "teams", "groups"].includes(searchParams.get("filter"))
+    ? searchParams.get("filter")
+    : "all";
+  const [filter, setFilter] = useState(initialFilter);
+
+  const handleFilterSelect = (newFilter) => {
+    setFilter(newFilter);
+    setSearchParams(
+      (prev) => {
+        const p = new URLSearchParams(prev);
+        if (newFilter === "all") {
+          p.delete("filter");
+        } else {
+          p.set("filter", newFilter);
+        }
+        return p;
+      },
+      { replace: true }
+    );
+  };
 
   const handleViewSelect = (newView) => {
     setView(newView);
@@ -43,7 +64,7 @@ export default function LeaderboardPage() {
   const [period, setPeriod] = useState("week"); // 'week' | 'month' | 'all'
   const [offset, setOffset] = useState(0);
   const [search, setSearch] = useState("");
-  const [, setDataVersion] = useState(0);
+  const [dataVersion, setDataVersion] = useState(0);
 
   useEffect(() => {
     const unsub = karmaStore.subscribe(() => {
@@ -76,7 +97,7 @@ export default function LeaderboardPage() {
           monthOffset: period === "month" ? offset : 0,
         })
       : [];
-  }, [period, view, offset]);
+  }, [period, view, offset, dataVersion]);
 
   // Group standings for the right-hand sidebar
   const groupStandings = useMemo(() => {
@@ -88,18 +109,59 @@ export default function LeaderboardPage() {
           monthOffset: period === "month" ? offset : 0,
         })
       : [];
-  }, [period, offset]);
+  }, [period, offset, dataVersion]);
+
+  // Counts for All, Teams, and Groups filters
+  const filterCounts = useMemo(() => {
+    const isTeam = (item) =>
+      view === "individuals"
+        ? isOfficialTeam(item.group_name || item.group_id)
+        : isOfficialTeam(item);
+    const teamsCount = standings.filter(isTeam).length;
+    const groupsCount = standings.filter((item) => !isTeam(item)).length;
+    return {
+      all: standings.length,
+      teams: teamsCount,
+      groups: groupsCount,
+    };
+  }, [standings, view]);
+
+  // Filter standings by category: all | teams | groups
+  const categoryStandings = useMemo(() => {
+    if (filter === "teams") {
+      return standings.filter((item) =>
+        view === "individuals"
+          ? isOfficialTeam(item.group_name || item.group_id)
+          : isOfficialTeam(item)
+      );
+    }
+    if (filter === "groups") {
+      return standings.filter((item) =>
+        view === "individuals"
+          ? !isOfficialTeam(item.group_name || item.group_id)
+          : !isOfficialTeam(item)
+      );
+    }
+    return standings;
+  }, [standings, filter, view]);
 
   const filteredStandings = useMemo(() => {
-    if (!search.trim()) return standings;
+    if (!search.trim()) return categoryStandings;
     const q = search.toLowerCase().trim();
-    return standings.filter((item) => {
+    return categoryStandings.filter((item) => {
       const name = (item.name || "").toLowerCase();
       const muid = (item.muid || "").toLowerCase();
       const grp = (item.group_name || item.group_id || "").toLowerCase();
       return name.includes(q) || muid.includes(q) || grp.includes(q);
     });
-  }, [standings, search]);
+  }, [categoryStandings, search]);
+
+  // Group standings filtered for sidebar
+  const displayedGroupStandings = useMemo(() => {
+    if (filter === "teams") return groupStandings.filter((g) => isOfficialTeam(g));
+    if (filter === "groups") return groupStandings.filter((g) => !isOfficialTeam(g));
+    return groupStandings;
+  }, [groupStandings, filter]);
 
   // Top 3 for Podium
   const activeStandings = filteredStandings.filter((item) => (item.karma || 0) > 0);
@@ -198,62 +260,128 @@ export default function LeaderboardPage() {
                 background: "#FAFAFA",
               }}
             >
-              {/* View Switcher: Warriors vs Teams */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 4,
-                  background: "var(--surface-subtle)",
-                  padding: 3,
-                  borderRadius: "var(--radius-pill)",
-                }}
-              >
-                <button
-                  type="button"
-                  onClick={() => handleViewSelect("individuals")}
+              {/* Left Controls: 3 Sorts (All, Teams, Groups) + View Switcher (Warriors vs Teams) */}
+              <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                {/* 3 Sorts / Filters: All, Teams, Groups */}
+                <div
+                  role="tablist"
+                  aria-label="Filter leaderboard"
                   style={{
-                    padding: "6px 16px",
-                    borderRadius: "var(--radius-pill)",
-                    fontSize: 13,
-                    fontWeight: view === "individuals" ? 700 : 500,
-                    color: view === "individuals" ? "var(--text-primary)" : "var(--text-secondary)",
-                    background: view === "individuals" ? "#FFFFFF" : "transparent",
-                    boxShadow: view === "individuals" ? "0 1px 3px rgba(0, 0, 0, 0.08)" : "none",
-                    border: "none",
-                    cursor: "pointer",
-                    display: "flex",
+                    display: "inline-flex",
                     alignItems: "center",
-                    gap: 6,
-                    transition: "all 0.15s ease",
+                    background: "#FFFFFF",
+                    borderRadius: "var(--radius-pill)",
+                    padding: 3,
+                    border: "1px solid var(--border)",
+                    boxShadow: "var(--shadow-soft)",
+                    gap: 3,
                   }}
                 >
-                  <Trophy size={14} />
-                  <span>Warriors</span>
-                </button>
+                  {[
+                    { id: "all", label: "All", count: filterCounts.all },
+                    { id: "teams", label: "Teams", count: filterCounts.teams },
+                    { id: "groups", label: "Groups", count: filterCounts.groups },
+                  ].map((opt) => {
+                    const isActive = filter === opt.id;
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        role="tab"
+                        aria-selected={isActive}
+                        onClick={() => handleFilterSelect(opt.id)}
+                        style={{
+                          padding: "6px 14px",
+                          borderRadius: "var(--radius-pill)",
+                          fontSize: 13,
+                          fontWeight: isActive ? 700 : 500,
+                          color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
+                          background: isActive ? "var(--surface-subtle)" : "transparent",
+                          boxShadow: isActive ? "0 1px 3px rgba(0, 0, 0, 0.06)" : "none",
+                          border: isActive ? "1px solid var(--border-strong)" : "1px solid transparent",
+                          cursor: "pointer",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 7,
+                          transition: "all 0.18s cubic-bezier(0.16, 1, 0.3, 1)",
+                        }}
+                      >
+                        <span>{opt.label}</span>
+                        <span
+                          style={{
+                            fontSize: 11,
+                            fontWeight: 700,
+                            padding: "1px 6px",
+                            borderRadius: "var(--radius-pill)",
+                            background: isActive ? "#FFFFFF" : "rgba(0, 0, 0, 0.05)",
+                            color: isActive ? "var(--text-primary)" : "var(--text-muted)",
+                            boxShadow: isActive ? "0 1px 2px rgba(0, 0, 0, 0.06)" : "none",
+                          }}
+                        >
+                          {opt.count}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
 
-                <button
-                  type="button"
-                  onClick={() => handleViewSelect("groups")}
+                {/* View Switcher: Warriors vs Teams */}
+                <div
                   style={{
-                    padding: "6px 16px",
-                    borderRadius: "var(--radius-pill)",
-                    fontSize: 13,
-                    fontWeight: view === "groups" ? 700 : 500,
-                    color: view === "groups" ? "var(--text-primary)" : "var(--text-secondary)",
-                    background: view === "groups" ? "#FFFFFF" : "transparent",
-                    boxShadow: view === "groups" ? "0 1px 3px rgba(0, 0, 0, 0.08)" : "none",
-                    border: "none",
-                    cursor: "pointer",
-                    display: "flex",
+                    display: "inline-flex",
                     alignItems: "center",
-                    gap: 6,
-                    transition: "all 0.15s ease",
+                    gap: 3,
+                    background: "var(--surface-subtle)",
+                    padding: 3,
+                    borderRadius: "var(--radius-pill)",
                   }}
                 >
-                  <Users size={14} />
-                  <span>Teams</span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => handleViewSelect("individuals")}
+                    style={{
+                      padding: "6px 14px",
+                      borderRadius: "var(--radius-pill)",
+                      fontSize: 12.5,
+                      fontWeight: view === "individuals" ? 700 : 500,
+                      color: view === "individuals" ? "var(--text-primary)" : "var(--text-secondary)",
+                      background: view === "individuals" ? "#FFFFFF" : "transparent",
+                      boxShadow: view === "individuals" ? "0 1px 3px rgba(0, 0, 0, 0.08)" : "none",
+                      border: "none",
+                      cursor: "pointer",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 6,
+                      transition: "all 0.15s ease",
+                    }}
+                  >
+                    <Trophy size={13} />
+                    <span>Warriors</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleViewSelect("groups")}
+                    style={{
+                      padding: "6px 14px",
+                      borderRadius: "var(--radius-pill)",
+                      fontSize: 12.5,
+                      fontWeight: view === "groups" ? 700 : 500,
+                      color: view === "groups" ? "var(--text-primary)" : "var(--text-secondary)",
+                      background: view === "groups" ? "#FFFFFF" : "transparent",
+                      boxShadow: view === "groups" ? "0 1px 3px rgba(0, 0, 0, 0.08)" : "none",
+                      border: "none",
+                      cursor: "pointer",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 6,
+                      transition: "all 0.15s ease",
+                    }}
+                  >
+                    <Users size={13} />
+                    <span>Teams</span>
+                  </button>
+                </div>
               </div>
 
               {/* Search Filter */}
@@ -649,10 +777,10 @@ export default function LeaderboardPage() {
             >
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
                 <span style={{ fontSize: 12, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                  Team Standings
+                  {filter === "teams" ? "Team Standings" : filter === "groups" ? "Group Standings" : "Team Standings"}
                 </span>
                 <Link
-                  to="/groups"
+                  to={filter === "all" ? "/groups" : `/groups?filter=${filter}`}
                   style={{
                     fontSize: 11.5,
                     fontWeight: 700,
@@ -663,16 +791,16 @@ export default function LeaderboardPage() {
                     gap: 3,
                   }}
                 >
-                  <span>All Teams</span>
+                  <span>{filter === "teams" ? "All 7 Teams" : filter === "groups" ? "All 9 Groups" : "All Teams"}</span>
                   <ChevronRight size={13} />
                 </Link>
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {groupStandings.map((grp, idx) => {
+                {displayedGroupStandings.map((grp, idx) => {
                   const token = getGroupToken(grp);
-                  const nextGrp = idx > 0 ? groupStandings[idx - 1] : null;
-                  const prevGrp = idx < groupStandings.length - 1 ? groupStandings[idx + 1] : null;
+                  const nextGrp = idx > 0 ? displayedGroupStandings[idx - 1] : null;
+                  const prevGrp = idx < displayedGroupStandings.length - 1 ? displayedGroupStandings[idx + 1] : null;
 
                   let gapText = "";
                   if (idx === 0 && prevGrp) {

@@ -18,6 +18,36 @@ describe("LeaderboardPage", () => {
     // View switchers
     expect(screen.getByRole("button", { name: /Warriors/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Teams/i })).toBeInTheDocument();
+
+    // 3 Sorts / Filters
+    expect(screen.getByRole("tab", { name: /All/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /Teams/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /Groups/i })).toBeInTheDocument();
+  });
+
+  test("filters leaderboard standings by All, Teams, and Groups", () => {
+    render(
+      <MemoryRouter>
+        <LeaderboardPage />
+      </MemoryRouter>
+    );
+
+    const allTab = screen.getByRole("tab", { name: /All/i });
+    const teamsTab = screen.getByRole("tab", { name: /Teams/i });
+    const groupsTab = screen.getByRole("tab", { name: /Groups/i });
+
+    // Initially "all" tab is selected
+    expect(allTab).toHaveAttribute("aria-selected", "true");
+
+    // Click Teams filter
+    fireEvent.click(teamsTab);
+    expect(teamsTab).toHaveAttribute("aria-selected", "true");
+    expect(allTab).toHaveAttribute("aria-selected", "false");
+
+    // Click Groups filter
+    fireEvent.click(groupsTab);
+    expect(groupsTab).toHaveAttribute("aria-selected", "true");
+    expect(teamsTab).toHaveAttribute("aria-selected", "false");
   });
 
   test("switching to Teams view renders larger crests without description subtitles", () => {
