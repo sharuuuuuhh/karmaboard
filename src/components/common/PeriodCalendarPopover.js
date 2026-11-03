@@ -41,20 +41,11 @@ export default function PeriodCalendarPopover({
 
   const handleMonthChange = (newMonthDate) => {
     // When navigating months via < or > buttons, update the data without closing the popover
-    if (period === "month") {
-      const now = new Date();
-      const monthDiff =
-        (newMonthDate.getFullYear() - now.getFullYear()) * 12 +
-        (newMonthDate.getMonth() - now.getMonth());
-      onOffsetChange?.(Math.min(0, monthDiff));
-    } else if (period === "week") {
-      const now = new Date();
-      const msPerWeek = 7 * 24 * 60 * 60 * 1000;
-      const weekDiff = Math.round(
-        (newMonthDate.getTime() - now.getTime()) / msPerWeek
-      );
-      onOffsetChange?.(Math.min(0, weekDiff));
-    }
+    const now = new Date();
+    const monthDiff =
+      (newMonthDate.getFullYear() - now.getFullYear()) * 12 +
+      (newMonthDate.getMonth() - now.getMonth());
+    onOffsetChange?.(Math.min(0, monthDiff));
     onDateSelect?.(newMonthDate);
   };
 
@@ -62,10 +53,6 @@ export default function PeriodCalendarPopover({
   const currentSelectedDate = useMemo(() => {
     if (period === "month") {
       const b = getMonthBoundaries(offset);
-      return b.start || new Date();
-    }
-    if (period === "week") {
-      const b = getWeekBoundaries(offset);
       return b.start || new Date();
     }
     return new Date();

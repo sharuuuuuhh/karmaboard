@@ -163,7 +163,6 @@ export const GlassCalendar = React.forwardRef<HTMLDivElement, GlassCalendarProps
             }}
           >
             {[
-              { id: "week" as const, label: "Weekly" },
               { id: "month" as const, label: "Monthly" },
               { id: "all" as const, label: "All Time" },
             ].map((tab) => {
@@ -420,7 +419,12 @@ export const GlassCalendar = React.forwardRef<HTMLDivElement, GlassCalendarProps
         >
           <button
             type="button"
-            onClick={() => handleDateClick(new Date())}
+            onClick={() => {
+              const now = new Date();
+              handlePeriodTab("month");
+              handleDateClick(now);
+              onMonthChange?.(now);
+            }}
             style={{
               border: "none",
               background: "none",
@@ -434,7 +438,7 @@ export const GlassCalendar = React.forwardRef<HTMLDivElement, GlassCalendarProps
             }}
           >
             <RotateCcw size={12} />
-            <span>Current Week</span>
+            <span>Current Month</span>
           </button>
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
             <span

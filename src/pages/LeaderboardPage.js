@@ -61,7 +61,7 @@ export default function LeaderboardPage() {
       { replace: true }
     );
   };
-  const [period, setPeriod] = useState("week"); // 'week' | 'month' | 'all'
+  const [period, setPeriod] = useState("month"); // 'month' | 'all'
   const [offset, setOffset] = useState(0);
   const [search, setSearch] = useState("");
   const [dataVersion, setDataVersion] = useState(0);
@@ -215,18 +215,10 @@ export default function LeaderboardPage() {
             onOffsetChange={(newOffset) => setOffset(newOffset)}
             onDateSelect={(selectedDate) => {
               const now = new Date();
-              if (period === "month") {
-                const monthDiff =
-                  (selectedDate.getFullYear() - now.getFullYear()) * 12 +
-                  (selectedDate.getMonth() - now.getMonth());
-                setOffset(Math.min(0, monthDiff));
-              } else if (period === "week") {
-                const msPerWeek = 7 * 24 * 60 * 60 * 1000;
-                const weekDiff = Math.round(
-                  (selectedDate.getTime() - now.getTime()) / msPerWeek
-                );
-                setOffset(Math.min(0, weekDiff));
-              }
+              const monthDiff =
+                (selectedDate.getFullYear() - now.getFullYear()) * 12 +
+                (selectedDate.getMonth() - now.getMonth());
+              setOffset(Math.min(0, monthDiff));
             }}
           />
         }

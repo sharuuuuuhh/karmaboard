@@ -7,10 +7,11 @@ export default function DarkPromoCard({
   groups = [],
   countdown = "Resets soon",
   activeMemberCount = 0,
+  period = "month",
 }) {
   // Build headline from data:
-  // e.g. "LEADS leads TECH by 200", or "No karma this week yet" when everyone is 0, or "LEADS and TECH are tied"
-  let headline = "No karma this week yet";
+  // e.g. "LEADS leads TECH by 200", or "No karma this month yet" when everyone is 0, or "LEADS and TECH are tied"
+  let headline = period === "all" ? "No karma logged yet" : "No karma this month yet";
   const sortedGroups = [...groups].sort((a, b) => (b.karma || 0) - (a.karma || 0));
   const first = sortedGroups[0] || null;
   const second = sortedGroups[1] || null;
@@ -20,7 +21,7 @@ export default function DarkPromoCard({
     const secondKarma = second?.karma || 0;
 
     if (firstKarma === 0) {
-      headline = "No karma this week yet";
+      headline = period === "all" ? "No karma logged yet" : "No karma this month yet";
     } else if (second && firstKarma === secondKarma) {
       headline = `${first.name || first.id} and ${second.name || second.id} are tied`;
     } else if (second) {
@@ -99,7 +100,7 @@ export default function DarkPromoCard({
                 marginBottom: 8,
               }}
             >
-              THIS WEEK
+              {period === "all" ? "ALL TIME" : period === "week" ? "THIS WEEK" : "THIS MONTH"}
             </div>
 
             <h3

@@ -16,11 +16,11 @@ describe("GroupDetailPage", () => {
     expect(screen.getByRole("heading", { name: /LEADS/i })).toBeInTheDocument();
     expect(screen.getByTitle(/Click to open calendar/i)).toBeInTheDocument();
 
-    // Click calendar popover trigger to reveal Weekly / Monthly / All Time tabs
+    // Click calendar popover trigger to reveal Monthly / All Time tabs (Weekly is removed)
     fireEvent.click(screen.getByTitle(/Click to open calendar/i));
-    expect(screen.getByText(/Weekly/i)).toBeInTheDocument();
-    expect(screen.getByText(/Monthly/i)).toBeInTheDocument();
-    expect(screen.getByText(/All Time/i)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^Weekly$/i })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^Monthly$/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^All Time$/i })).toBeInTheDocument();
 
     expect(screen.getByText(/Campus Standing/i)).toBeInTheDocument();
     expect(screen.getByText(/Team Target Pace/i)).toBeInTheDocument();

@@ -1,12 +1,13 @@
 // Shared period state between pages (GroupsPage, GroupDetailPage, LeaderboardPage)
 
-let globalPeriod = "week";
+let globalPeriod = "month";
 let globalOffset = 0;
 
 try {
   const p = sessionStorage.getItem("karmayodha_period");
   const o = sessionStorage.getItem("karmayodha_offset");
-  if (p) globalPeriod = p;
+  if (p && p !== "week") globalPeriod = p;
+  else globalPeriod = "month";
   if (o !== null) globalOffset = parseInt(o, 10) || 0;
 } catch (e) {
   // Ignore storage errors in restricted contexts

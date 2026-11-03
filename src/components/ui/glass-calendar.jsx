@@ -12,14 +12,14 @@ export const GlassCalendar = React.forwardRef(
     selectedDate: propSelectedDate,
     onDateSelect,
     onMonthChange,
-    activePeriod = "week",
+    activePeriod = "month",
     onPeriodChange,
     selectedWeekOffset = 0,
     ...props
   }, ref) => {
     const [currentMonth, setCurrentMonth] = React.useState(propSelectedDate || new Date());
     const [selectedDate, setSelectedDate] = React.useState(propSelectedDate || new Date());
-    const [viewMode, setViewMode] = React.useState(activePeriod);
+    const [viewMode, setViewMode] = React.useState(activePeriod === "week" ? "month" : activePeriod);
     const [hoveredWeekStart, setHoveredWeekStart] = React.useState(null);
 
     React.useEffect(() => {
@@ -31,7 +31,7 @@ export const GlassCalendar = React.forwardRef(
 
     React.useEffect(() => {
       if (activePeriod) {
-        setViewMode(activePeriod);
+        setViewMode(activePeriod === "week" ? "month" : activePeriod);
       }
     }, [activePeriod]);
 
@@ -140,27 +140,11 @@ export const GlassCalendar = React.forwardRef(
           <div style={{ display: "flex", gap: "4px", background: "#f1f5f9", padding: "4px", borderRadius: "10px", fontSize: "12px", fontWeight: "600" }}>
             <button
               type="button"
-              onClick={() => handlePeriodTab("week")}
-              style={{
-                border: "none",
-                cursor: "pointer",
-                padding: "4px 8px",
-                borderRadius: "7px",
-                background: viewMode === "week" ? "#ffffff" : "transparent",
-                color: viewMode === "week" ? "#0f172a" : "#64748b",
-                boxShadow: viewMode === "week" ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
-                fontWeight: "600",
-              }}
-            >
-              Weekly
-            </button>
-            <button
-              type="button"
               onClick={() => handlePeriodTab("month")}
               style={{
                 border: "none",
                 cursor: "pointer",
-                padding: "4px 8px",
+                padding: "4px 12px",
                 borderRadius: "7px",
                 background: viewMode === "month" ? "#ffffff" : "transparent",
                 color: viewMode === "month" ? "#0f172a" : "#64748b",
@@ -176,7 +160,7 @@ export const GlassCalendar = React.forwardRef(
               style={{
                 border: "none",
                 cursor: "pointer",
-                padding: "4px 8px",
+                padding: "4px 12px",
                 borderRadius: "7px",
                 background: viewMode === "all" ? "#ffffff" : "transparent",
                 color: viewMode === "all" ? "#0f172a" : "#64748b",
@@ -189,7 +173,7 @@ export const GlassCalendar = React.forwardRef(
           </div>
 
           <span style={{ fontSize: "11px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em", color: "#94a3b8" }}>
-            {format(selectedDate, "dd MMM")}
+            {format(selectedDate, "MMM yyyy")}
           </span>
         </div>
 
@@ -200,7 +184,7 @@ export const GlassCalendar = React.forwardRef(
               {format(currentMonth, "MMMM yyyy")}
             </div>
             <div style={{ fontSize: "11px", color: "#94a3b8" }}>
-              {viewMode === "week" ? "Click any day in a week to select it" : "Pick date to inspect stats"}
+              Pick month to inspect stats
             </div>
           </div>
           <div style={{ display: "flex", gap: "4px" }}>
@@ -337,10 +321,17 @@ export const GlassCalendar = React.forwardRef(
         <div style={{ marginTop: "14px", paddingTop: "10px", borderTop: "1px solid #f1f5f9", display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "11px", color: "#64748b" }}>
           <button
             type="button"
-            onClick={() => handleDateClick(new Date())}
+            onClick={() => {
+              const now = new Date();
+              handlePeriodTab("month");
+              setCurrentMonth(now);
+              setSelectedDate(now);
+              onMonthChange?.(now);
+              onDateSelect?.(now);
+            }}
             style={{ border: "none", background: "none", color: "#4f46e5", fontWeight: "700", cursor: "pointer", padding: 0 }}
           >
-            Current Week
+            Current Month
           </button>
           <span>Asia/Kolkata</span>
         </div>

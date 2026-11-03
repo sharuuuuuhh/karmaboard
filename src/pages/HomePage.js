@@ -17,7 +17,7 @@ import {
 
 export default function HomePage() {
   const [dataVersion, setDataVersion] = useState(0);
-  const [period, setPeriod] = useState("week");
+  const [period, setPeriod] = useState("month");
   const [offset, setOffset] = useState(0);
   const [selectedGroupId, setSelectedGroupId] = useState("all");
 
@@ -163,24 +163,16 @@ export default function HomePage() {
             onOffsetChange={(newOffset) => setOffset(newOffset)}
             onDateSelect={(selectedDate) => {
               const now = new Date();
-              if (period === "month") {
-                const monthDiff =
-                  (selectedDate.getFullYear() - now.getFullYear()) * 12 +
-                  (selectedDate.getMonth() - now.getMonth());
-                setOffset(Math.min(0, monthDiff));
-              } else if (period === "week") {
-                const msPerWeek = 7 * 24 * 60 * 60 * 1000;
-                const weekDiff = Math.round(
-                  (selectedDate.getTime() - now.getTime()) / msPerWeek
-                );
-                setOffset(Math.min(0, weekDiff));
-              }
+              const monthDiff =
+                (selectedDate.getFullYear() - now.getFullYear()) * 12 +
+                (selectedDate.getMonth() - now.getMonth());
+              setOffset(Math.min(0, monthDiff));
             }}
           />
         }
       />
 
-      {/* Row 1: Karma Chart (span 6) | Top Groups Stack (span 3) | This Week Dark Card (span 3) */}
+      {/* Row 1: Karma Chart (span 6) | Top Groups Stack (span 3) | Promo Card (span 3) */}
       <PageGrid gap={20}>
         <PageCol span={6} spanLg={6} spanMd={2} spanSm={1}>
           <ChartCard
@@ -201,6 +193,7 @@ export default function HomePage() {
             groups={groupStandings}
             countdown={countdown}
             activeMemberCount={activeMembersCount}
+            period={period}
           />
         </PageCol>
       </PageGrid>

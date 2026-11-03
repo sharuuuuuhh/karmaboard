@@ -37,10 +37,15 @@ export default function GroupDetailPage() {
   const paramPeriod = searchParams.get("period");
   const paramOffset = searchParams.get("offset");
 
+  const initialPeriod =
+    paramPeriod && paramPeriod !== "week"
+      ? paramPeriod
+      : initialShared.period && initialShared.period !== "week"
+      ? initialShared.period
+      : "month";
+
   const [, setDataVersion] = useState(0);
-  const [period, setPeriod] = useState(
-    paramPeriod || initialShared.period || "week"
-  );
+  const [period, setPeriod] = useState(initialPeriod);
   const [offset, setOffset] = useState(
     paramOffset !== null ? parseInt(paramOffset, 10) || 0 : initialShared.offset || 0
   );
@@ -109,19 +114,10 @@ export default function GroupDetailPage() {
 
   const handleDateSelect = (selectedDate) => {
     const now = new Date();
-    let newOffset = 0;
-    if (period === "month") {
-      const monthDiff =
-        (selectedDate.getFullYear() - now.getFullYear()) * 12 +
-        (selectedDate.getMonth() - now.getMonth());
-      newOffset = Math.min(0, monthDiff);
-    } else if (period === "week") {
-      const msPerWeek = 7 * 24 * 60 * 60 * 1000;
-      const weekDiff = Math.round(
-        (selectedDate.getTime() - now.getTime()) / msPerWeek
-      );
-      newOffset = Math.min(0, weekDiff);
-    }
+    const monthDiff =
+      (selectedDate.getFullYear() - now.getFullYear()) * 12 +
+      (selectedDate.getMonth() - now.getMonth());
+    const newOffset = Math.min(0, monthDiff);
     setOffset(newOffset);
     setSharedPeriod(period, newOffset);
     setSearchParams({ period, offset: newOffset });
