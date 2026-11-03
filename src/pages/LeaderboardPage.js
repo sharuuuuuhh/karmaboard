@@ -337,67 +337,6 @@ export default function LeaderboardPage() {
                     );
                   })}
                 </div>
-
-                {/* View Switcher: Warriors vs Teams */}
-                <div
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 3,
-                    background: "#F4F1EA",
-                    padding: 3,
-                    borderRadius: "var(--radius-pill)",
-                    border: "1px solid var(--border)",
-                  }}
-                >
-                  <button
-                    type="button"
-                    onClick={() => handleViewSelect("individuals")}
-                    style={{
-                      padding: "5px 12px",
-                      borderRadius: "var(--radius-pill)",
-                      fontSize: 12,
-                      fontWeight: view === "individuals" ? 700 : 500,
-                      fontFamily: "var(--font-body)",
-                      color: view === "individuals" ? "var(--ink)" : "var(--muted)",
-                      background: view === "individuals" ? "#FFFFFF" : "transparent",
-                      boxShadow: view === "individuals" ? "0 1px 2px rgba(0, 0, 0, 0.08)" : "none",
-                      border: "none",
-                      cursor: "pointer",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 5,
-                      transition: "all 150ms ease",
-                    }}
-                  >
-                    <Trophy size={13} />
-                    <span>Warriors</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleViewSelect("groups")}
-                    style={{
-                      padding: "5px 12px",
-                      borderRadius: "var(--radius-pill)",
-                      fontSize: 12,
-                      fontWeight: view === "groups" ? 700 : 500,
-                      fontFamily: "var(--font-body)",
-                      color: view === "groups" ? "var(--ink)" : "var(--muted)",
-                      background: view === "groups" ? "#FFFFFF" : "transparent",
-                      boxShadow: view === "groups" ? "0 1px 2px rgba(0, 0, 0, 0.08)" : "none",
-                      border: "none",
-                      cursor: "pointer",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 5,
-                      transition: "all 150ms ease",
-                    }}
-                  >
-                    <Users size={13} />
-                    <span>Teams</span>
-                  </button>
-                </div>
               </div>
 
               {/* Search Filter */}

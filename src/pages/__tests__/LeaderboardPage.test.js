@@ -15,10 +15,6 @@ describe("LeaderboardPage", () => {
     // The calendar popover trigger is rendered at the top in PageHeader
     expect(screen.getByTitle(/Click to open calendar/i)).toBeInTheDocument();
 
-    // View switchers
-    expect(screen.getByRole("button", { name: /Warriors/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Teams/i })).toBeInTheDocument();
-
     // 3 Sorts / Filters
     expect(screen.getByRole("tab", { name: /All/i })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: /Teams/i })).toBeInTheDocument();
@@ -50,15 +46,12 @@ describe("LeaderboardPage", () => {
     expect(teamsTab).toHaveAttribute("aria-selected", "false");
   });
 
-  test("switching to Teams view renders larger crests without description subtitles", () => {
+  test("teams view renders larger crests without description subtitles", () => {
     render(
-      <MemoryRouter>
+      <MemoryRouter initialEntries={["/leaderboard?view=teams"]}>
         <LeaderboardPage />
       </MemoryRouter>
     );
-
-    const teamsButton = screen.getByRole("button", { name: /Teams/i });
-    fireEvent.click(teamsButton);
 
     // Should show team names
     expect(screen.getByRole("columnheader", { name: /Team/i })).toBeInTheDocument();
