@@ -72,6 +72,24 @@ export default function PageHeader({
           }
         }
 
+        .page-header-art-layer {
+          position: absolute;
+          top: -24px;
+          right: -24px;
+          height: 180px;
+          width: min(calc(100% + 48px), 1150px);
+          pointer-events: none;
+          z-index: 0;
+          overflow: hidden;
+        }
+        @media (min-width: 1600px) {
+          .page-header-art-layer {
+            top: -32px;
+            right: -32px;
+            width: min(calc(100% + 64px), 1300px);
+            height: 200px;
+          }
+        }
         /* Mobile (<= 768px): center actions, hide art banner */
         @media (max-width: 768px) {
           .page-header-root {
@@ -94,49 +112,27 @@ export default function PageHeader({
         }
       `}</style>
 
-      {/* Japanese Sumi-e Landscape Banner behind header */}
+      {/* Japanese Sumi-e Landscape Banner (Transparent RGBA, Full Bleed to Top/Right Edge) */}
       {isOverview && (
         <div
           className="page-header-art-layer"
           aria-hidden="true"
-          style={{
-            position: "absolute",
-            top: -12,
-            right: 0,
-            height: "calc(100% + 24px)",
-            width: "min(100%, 1050px)",
-            pointerEvents: "none",
-            zIndex: 0,
-            overflow: "hidden",
-            mixBlendMode: "multiply",
-            WebkitMaskImage: "linear-gradient(to right, transparent 0%, rgba(0,0,0,1) 45%)",
-            maskImage: "linear-gradient(to right, transparent 0%, rgba(0,0,0,1) 45%)",
-          }}
         >
-          <div
+          <img
+            src="/assets/art/header-banner.webp"
+            alt=""
+            aria-hidden="true"
+            width={2400}
+            height={466}
+            loading="eager"
             style={{
               width: "100%",
               height: "100%",
-              WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,1) 75%, transparent 100%)",
-              maskImage: "linear-gradient(to bottom, rgba(0,0,0,1) 75%, transparent 100%)",
+              objectFit: "contain",
+              objectPosition: "right top",
+              display: "block",
             }}
-          >
-            <img
-              src="/assets/art/header-banner.webp"
-              alt=""
-              aria-hidden="true"
-              width={2400}
-              height={400}
-              loading="eager"
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                objectPosition: "right center",
-                display: "block",
-              }}
-            />
-          </div>
+          />
         </div>
       )}
 
