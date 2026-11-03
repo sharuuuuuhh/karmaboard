@@ -115,7 +115,7 @@ export default function TopGroupsCards({ groups = [] }) {
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: 8,
+          gap: 10,
           flex: 1,
           justifyContent: "space-between",
         }}
@@ -138,11 +138,13 @@ export default function TopGroupsCards({ groups = [] }) {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                padding: "8px 12px 8px 10px",
-                borderRadius: 8,
+                padding: "10px 14px 10px 12px",
+                borderRadius: 10,
                 background: isRank1 ? "var(--gold-tint)" : "#FAF9F6",
-                borderLeft: `3px solid ${borderColor}`,
+                borderLeft: `4px solid ${borderColor}`,
                 textDecoration: "none",
+                flex: 1,
+                minHeight: 52,
                 transition: "background 150ms ease, transform 150ms ease",
               }}
               onMouseEnter={(e) => {
@@ -155,16 +157,16 @@ export default function TopGroupsCards({ groups = [] }) {
               }}
             >
               {/* Left Zone: Rank # + Original Crest + Name + Warriors */}
-              <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0, flex: 1 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0, flex: 1 }}>
                 {/* Rank */}
                 <span
                   className="tabular-nums"
                   style={{
-                    fontSize: 12,
-                    fontWeight: 700,
+                    fontSize: 14,
+                    fontWeight: 800,
                     fontFamily: "var(--font-numeric)",
                     color: isRank1 ? "var(--gold)" : rank === 4 ? "var(--crimson)" : "var(--muted)",
-                    width: 22,
+                    width: 26,
                     flexShrink: 0,
                   }}
                 >
@@ -172,8 +174,8 @@ export default function TopGroupsCards({ groups = [] }) {
                 </span>
 
                 {/* Original Crest */}
-                <div style={{ width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <Crest group={grp} size="xs" />
+                <div style={{ width: 38, height: 38, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <Crest group={grp} size="sm" />
                 </div>
 
                 {/* Team Name */}
@@ -181,9 +183,9 @@ export default function TopGroupsCards({ groups = [] }) {
                   style={{
                     fontFamily: "var(--font-display)",
                     fontWeight: 800,
-                    fontSize: 12.5,
+                    fontSize: 15,
                     color: "var(--ink)",
-                    letterSpacing: "-0.01em",
+                    letterSpacing: "-0.015em",
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
@@ -196,14 +198,14 @@ export default function TopGroupsCards({ groups = [] }) {
                 <span
                   style={{
                     fontFamily: "var(--font-body)",
-                    fontSize: 10.5,
+                    fontSize: 11,
                     fontWeight: 600,
                     color: "var(--muted)",
                     letterSpacing: "0.06em",
                     textTransform: "uppercase",
                     whiteSpace: "nowrap",
                     flexShrink: 0,
-                    marginLeft: 2,
+                    marginLeft: 4,
                   }}
                 >
                   {warriorCount} WARRIORS
@@ -216,12 +218,12 @@ export default function TopGroupsCards({ groups = [] }) {
                 style={{
                   fontFamily: "var(--font-numeric)",
                   fontVariantNumeric: "tabular-nums",
-                  fontSize: 13,
+                  fontSize: 15,
                   fontWeight: 700,
                   color: "var(--gold)",
                   textAlign: "right",
                   flexShrink: 0,
-                  marginLeft: 8,
+                  marginLeft: 10,
                 }}
               >
                 {points} PTS
