@@ -193,19 +193,16 @@ export default function LeaderboardTableCard({
               gap: 12,
             }}
           >
-            {/* Sumi-e Torii Gate and Misty Mountains */}
+            {/* Sumi-e Torii Gate and Misty Mountains (Transparent, Scaled Up) */}
             <div
               aria-hidden="true"
               style={{
                 width: "100%",
-                maxWidth: 420,
+                maxWidth: 560,
                 display: "flex",
                 justifyContent: "center",
                 pointerEvents: "none",
-                mixBlendMode: "multiply",
-                opacity: 0.9,
-                WebkitMaskImage: "radial-gradient(ellipse at center, rgba(0,0,0,1) 50%, transparent 95%)",
-                maskImage: "radial-gradient(ellipse at center, rgba(0,0,0,1) 50%, transparent 95%)",
+                margin: "12px 0 8px",
               }}
             >
               <img
@@ -213,12 +210,12 @@ export default function LeaderboardTableCard({
                 alt=""
                 aria-hidden="true"
                 width={1200}
-                height={600}
+                height={275}
                 loading="lazy"
                 style={{
                   width: "100%",
                   height: "auto",
-                  maxHeight: 140,
+                  maxHeight: 195,
                   objectFit: "contain",
                   display: "block",
                 }}
