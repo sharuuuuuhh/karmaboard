@@ -25,6 +25,10 @@ export const GROUP_COLOR_MAP = {
   MARKETING: "#3DDC84",
   CONTENT: "#FF7A3D",
   CREATIVE: "#C77DFF",
+  TECHASHI: "#8C1D30",
+  TECHASCHI: "#8C1D30",
+  OFFGRID: "#00BCD4",
+  MUVERSE: "#2563EB",
 };
 
 export const DEPARTMENTS = ["CSE", "ECE", "ME", "CE", "EEE", "IT"];

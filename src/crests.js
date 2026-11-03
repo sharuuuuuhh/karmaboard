@@ -13,6 +13,12 @@ import crestLeads128 from "./assets/crests/crest-leads-128.webp";
 import crestLeads384 from "./assets/crests/crest-leads-384.webp";
 import crestTech128 from "./assets/crests/crest-tech-128.webp";
 import crestTech384 from "./assets/crests/crest-tech-384.webp";
+import crestTechashi128 from "./assets/crests/crest-techashi-128.webp";
+import crestTechashi384 from "./assets/crests/crest-techashi-384.webp";
+import crestOffgrid128 from "./assets/crests/crest-offgrid-128.webp";
+import crestOffgrid384 from "./assets/crests/crest-offgrid-384.webp";
+import crestMuverse128 from "./assets/crests/crest-muverse-128.webp";
+import crestMuverse384 from "./assets/crests/crest-muverse-384.webp";
 import { getGroupToken } from "./utils/groupTokens";
 
 /**
@@ -22,19 +28,6 @@ import { getGroupToken } from "./utils/groupTokens";
  */
 export const showCrestNames = false;
 
-/**
- * HOW TO ADD / ACTIVATE THE TECH CREST:
- * 1. The high-res WebP assets are already prepared in src/assets/crests/:
- *    - src/assets/crests/crest-tech-128.webp
- *    - src/assets/crests/crest-tech-384.webp
- * 2. Uncomment the two imports below:
- *    // import crestTech128 from "./assets/crests/crest-tech-128.webp";
- *    // import crestTech384 from "./assets/crests/crest-tech-384.webp";
- * 3. In the CREST_REGISTRY object below, replace:
- *    tech: null,
- *    with:
- *    tech: { "128": crestTech128, "384": crestTech384 },
- */
 export const CREST_REGISTRY = {
   leads: { "128": crestLeads128, "384": crestLeads384 },
   creative: { "128": crestCreative128, "384": crestCreative384 },
@@ -43,11 +36,14 @@ export const CREST_REGISTRY = {
   media: { "128": crestMedia128, "384": crestMedia384 },
   content: { "128": crestContent128, "384": crestContent384 },
   tech: { "128": crestTech128, "384": crestTech384 },
+  techashi: { "128": crestTechashi128, "384": crestTechashi384 },
+  offgrid: { "128": crestOffgrid128, "384": crestOffgrid384 },
+  muverse: { "128": crestMuverse128, "384": crestMuverse384 },
 };
 
 /**
  * Normalizes any group identifier, slug, or object into canonical slug:
- * 'leads' | 'creative' | 'operation' | 'marketing' | 'media' | 'content' | 'tech'
+ * 'leads' | 'creative' | 'operation' | 'marketing' | 'media' | 'content' | 'tech' | 'techashi' | 'offgrid' | 'muverse'
  */
 export function normalizeGroupSlug(groupOrName) {
   if (!groupOrName) return "tech";
@@ -55,7 +51,7 @@ export function normalizeGroupSlug(groupOrName) {
     typeof groupOrName === "object"
       ? groupOrName.slug || groupOrName.id || groupOrName.name || ""
       : String(groupOrName);
-  const clean = str.toLowerCase().replace(/^grp-/, "").trim();
+  const clean = str.toLowerCase().replace(/^grp-/, "").trim().replace(/\s+/g, "-");
   if (clean === "operations" || clean === "operation") return "operation";
   if (clean === "creative") return "creative";
   if (clean === "marketing") return "marketing";
@@ -63,6 +59,9 @@ export function normalizeGroupSlug(groupOrName) {
   if (clean === "content") return "content";
   if (clean === "leads") return "leads";
   if (clean === "tech") return "tech";
+  if (clean === "techashi" || clean === "techaschi") return "techashi";
+  if (clean === "offgrid" || clean === "off-grid") return "offgrid";
+  if (clean === "muverse" || clean === "uverse") return "muverse";
   return clean || "tech";
 }
 
@@ -79,6 +78,9 @@ export function getGroupDisplayName(groupOrName) {
     media: "MEDIA",
     content: "CONTENT",
     tech: "TECH",
+    techashi: "TECHASHI",
+    offgrid: "OFFGRID",
+    muverse: "MuVerse",
   };
   return map[slug] || (typeof groupOrName === "string" ? groupOrName : "Team");
 }

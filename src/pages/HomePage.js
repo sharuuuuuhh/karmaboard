@@ -16,7 +16,7 @@ import {
 } from "../utils/dateUtils";
 
 export default function HomePage() {
-  const [, setDataVersion] = useState(0);
+  const [dataVersion, setDataVersion] = useState(0);
   const [period, setPeriod] = useState("week");
   const [offset, setOffset] = useState(0);
   const [selectedGroupId, setSelectedGroupId] = useState("all");
@@ -82,7 +82,7 @@ export default function HomePage() {
           monthOffset: period === "month" ? offset : 0,
         })
       : [];
-  }, [period, offset]);
+  }, [period, offset, dataVersion]);
 
   const rawIndividualStandings = useMemo(() => {
     return karmaStore.getLeaderboard
@@ -93,9 +93,9 @@ export default function HomePage() {
           monthOffset: period === "month" ? offset : 0,
         })
       : [];
-  }, [period, offset]);
+  }, [period, offset, dataVersion]);
 
-  const allEvents = useMemo(() => karmaStore.karmaEvents || [], []);
+  const allEvents = useMemo(() => karmaStore.karmaEvents || [], [dataVersion]);
 
   // Filter individuals by group if a chip is selected
   const displayedIndividuals = useMemo(() => {
@@ -137,10 +137,16 @@ export default function HomePage() {
   }, [period, offset, weekInfo, countdown, dateRangeInfo]);
 
   const chartBaseDate = useMemo(() => {
-    return period === "week"
-      ? new Date(Date.now() + offset * 7 * 24 * 60 * 60 * 1000)
-      : new Date();
-  }, [period, offset]);
+    if (period === "week") {
+      // For past weeks (offset < 0), use the end of that week so all 7 days are treated as completed
+      return offset < 0 ? weekInfo.end : new Date();
+    }
+    if (period === "month") {
+      const mb = getMonthBoundaries(offset);
+      return offset < 0 ? mb.end : new Date();
+    }
+    return new Date();
+  }, [period, offset, weekInfo]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>

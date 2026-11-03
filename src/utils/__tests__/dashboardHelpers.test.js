@@ -31,6 +31,32 @@ describe("dashboardHelpers", () => {
       expect(series[2].isFuture).toBe(true);  // Wed
       expect(series[6].isFuture).toBe(true);  // Sun
     });
+
+    it("generates month series with weekly buckets in month mode", () => {
+      const baseDate = new Date("2026-10-15T12:00:00Z");
+      const mockEvents = [
+        { timestamp: "2026-10-03T10:00:00Z", delta: 400 },
+        { timestamp: "2026-10-25T14:00:00Z", delta: 600 },
+      ];
+      const series = getDailyKarmaSeries(mockEvents, "month", baseDate);
+      expect(series).toHaveLength(5); // W1-W5 for October (31 days)
+      expect(series[0].name).toBe("W1");
+      expect(series[0].karma).toBe(400);
+      expect(series[3].name).toBe("W4");
+      expect(series[3].karma).toBe(600);
+    });
+
+    it("generates 6 month series in all mode", () => {
+      const baseDate = new Date("2026-11-01T12:00:00Z");
+      const mockEvents = [
+        { timestamp: "2026-10-20T10:00:00Z", delta: 1200 },
+      ];
+      const series = getDailyKarmaSeries(mockEvents, "all", baseDate);
+      expect(series).toHaveLength(6);
+      const oct = series.find((s) => s.name === "Oct");
+      expect(oct).toBeDefined();
+      expect(oct.karma).toBe(1200);
+    });
   });
 
   describe("generateHeadlineSentence", () => {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Sparkles,
@@ -18,12 +19,26 @@ import {
   getMonthBoundaries,
   getISTDate,
 } from "../utils/dateUtils";
+import {
+  getSharedPeriod,
+  setSharedPeriod,
+  subscribeSharedPeriod,
+} from "../utils/periodState";
 import Crest from "../crests";
 
 export default function GroupsPage() {
   const [, setDataVersion] = useState(0);
-  const [period, setPeriod] = useState("week");
-  const [offset, setOffset] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialShared = getSharedPeriod();
+  const paramPeriod = searchParams.get("period");
+  const paramOffset = searchParams.get("offset");
+
+  const [period, setPeriod] = useState(
+    paramPeriod || initialShared.period || "week"
+  );
+  const [offset, setOffset] = useState(
+    paramOffset !== null ? parseInt(paramOffset, 10) || 0 : initialShared.offset || 0
+  );
   const [filter, setFilter] = useState("all"); // 'all' | 'teams' | 'groups'
   const [sortBy, setSortBy] = useState("rank"); // 'rank' | 'name' | 'members'
 
@@ -34,9 +49,69 @@ export default function GroupsPage() {
     return unsub;
   }, []);
 
+  // Listen to shared period changes from other components (e.g. GroupDetailPage)
+  useEffect(() => {
+    const unsub = subscribeSharedPeriod(({ period: p, offset: o }) => {
+      setPeriod(p);
+      setOffset(o);
+      setSearchParams({ period: p, offset: o });
+    });
+    return unsub;
+  }, [setSearchParams]);
+
+  // Keep search params in sync on mount if not already present
+  useEffect(() => {
+    if (!paramPeriod && !paramOffset) {
+      setSearchParams({ period, offset }, { replace: true });
+    }
+  }, [paramPeriod, paramOffset, period, offset, setSearchParams]);
+
+  // Update state if searchParams change externally (e.g. back/forward navigation)
+  useEffect(() => {
+    if (paramPeriod && paramPeriod !== period) {
+      setPeriod(paramPeriod);
+      setSharedPeriod(paramPeriod, undefined);
+    }
+    if (paramOffset !== null) {
+      const parsed = parseInt(paramOffset, 10);
+      if (!isNaN(parsed) && parsed !== offset) {
+        setOffset(parsed);
+        setSharedPeriod(undefined, parsed);
+      }
+    }
+  }, [paramPeriod, paramOffset, period, offset]);
+
   const handlePeriodChange = (newPeriod) => {
     setPeriod(newPeriod);
     setOffset(0);
+    setSharedPeriod(newPeriod, 0);
+    setSearchParams({ period: newPeriod, offset: 0 });
+  };
+
+  const handleOffsetChange = (newOffset) => {
+    setOffset(newOffset);
+    setSharedPeriod(period, newOffset);
+    setSearchParams({ period, offset: newOffset });
+  };
+
+  const handleDateSelect = (selectedDate) => {
+    const now = new Date();
+    let newOffset = 0;
+    if (period === "month") {
+      const monthDiff =
+        (selectedDate.getFullYear() - now.getFullYear()) * 12 +
+        (selectedDate.getMonth() - now.getMonth());
+      newOffset = Math.min(0, monthDiff);
+    } else if (period === "week") {
+      const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+      const weekDiff = Math.round(
+        (selectedDate.getTime() - now.getTime()) / msPerWeek
+      );
+      newOffset = Math.min(0, weekDiff);
+    }
+    setOffset(newOffset);
+    setSharedPeriod(period, newOffset);
+    setSearchParams({ period, offset: newOffset });
   };
 
   // Date and month display formatting
@@ -206,18 +281,8 @@ export default function GroupsPage() {
               offset={offset}
               dateLabel={dateRangeInfo.label}
               onPeriodChange={handlePeriodChange}
-              onOffsetChange={(newOffset) => setOffset(newOffset)}
-              onDateSelect={(selectedDate) => {
-                const now = new Date();
-                if (period === "month") {
-                  const monthDiff = (selectedDate.getFullYear() - now.getFullYear()) * 12 + (selectedDate.getMonth() - now.getMonth());
-                  setOffset(Math.min(0, monthDiff));
-                } else if (period === "week") {
-                  const msPerWeek = 7 * 24 * 60 * 60 * 1000;
-                  const weekDiff = Math.round((selectedDate.getTime() - now.getTime()) / msPerWeek);
-                  setOffset(Math.min(0, weekDiff));
-                }
-              }}
+              onOffsetChange={handleOffsetChange}
+              onDateSelect={handleDateSelect}
             />
           </div>
         }
@@ -331,14 +396,7 @@ export default function GroupsPage() {
       <PageGrid gap={20}>
         {/* Left Column (Span 9): 7 Group Cards in 2 Rows (4 + 3) */}
         <PageCol col={12} colLg={9}>
-          <div
-            className="groups-cards-grid"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(min(340px, 100%), 1fr))",
-              gap: 16,
-            }}
-          >
+          <div className="groups-cards-grid">
             {displayedGroups.length === 0 ? (
               <div
                 style={{
@@ -384,6 +442,8 @@ export default function GroupsPage() {
                       memberCount={memberCount}
                       target={target}
                       variant="full"
+                      period={period}
+                      offset={offset}
                       style={{ height: "100%" }}
                     />
                   </motion.div>

@@ -13,6 +13,8 @@ export default function GroupCard({
   variant = "full",
   className = "",
   style = {},
+  period,
+  offset,
 }) {
   const token = getGroupToken(group);
   const slug = normalizeGroupSlug(group);
@@ -37,13 +39,19 @@ export default function GroupCard({
   const isLight = token.cardText === "#1F2A4D";
   const uniqueId = `${slug}-${rank}`;
 
+  const queryParams =
+    period !== undefined && offset !== undefined
+      ? `?period=${encodeURIComponent(period)}&offset=${encodeURIComponent(offset)}`
+      : "";
+  const cardLink = `/groups/${group.id || group.name || slug}${queryParams}`;
+
   // ==========================================
   // COMPACT VARIANT (Used on Home "Top Groups")
   // ==========================================
   if (variant === "compact") {
     return (
       <Link
-        to={`/groups/${group.id || group.name || slug}`}
+        to={cardLink}
         className={`interactive-group-card-compact ${isLight ? "light-card" : ""} ${className}`}
         style={{
           background: token.cardBg,
@@ -331,18 +339,17 @@ export default function GroupCard({
   // ==========================================
   return (
     <Link
-      to={`/groups/${group.id || group.name || slug}`}
+      to={cardLink}
       className={`interactive-group-card ${isLight ? "light-card" : ""} ${className}`}
       style={{
         background: token.cardBg,
         color: token.cardText,
-        minHeight: 290,
-        padding: "20px 22px",
         ...style,
       }}
     >
       {/* 1px Inner Border */}
       <div
+        className="group-card-inner-border"
         style={{
           position: "absolute",
           inset: 0,
@@ -355,6 +362,7 @@ export default function GroupCard({
 
       {/* Diagonal Chamfer 1px Line */}
       <div
+        className="group-card-chamfer-line"
         style={{
           position: "absolute",
           top: 0,
@@ -375,6 +383,7 @@ export default function GroupCard({
           src={crestFiles["384"] || crestFiles["128"]}
           alt=""
           aria-hidden="true"
+          className="group-card-watermark"
           style={{
             position: "absolute",
             right: -30,
@@ -392,6 +401,7 @@ export default function GroupCard({
       ) : (
         <svg
           viewBox="0 0 100 100"
+          className="group-card-watermark"
           style={{
             position: "absolute",
             right: -30,
@@ -483,6 +493,7 @@ export default function GroupCard({
           TOP ZONE: Hero Crest + Rank & Large Karma
           ======================================= */}
       <div
+        className="group-card-top-zone"
         style={{
           display: "flex",
           alignItems: "flex-start",
@@ -490,15 +501,25 @@ export default function GroupCard({
           position: "relative",
           zIndex: 1,
           width: "100%",
+          gap: 6,
         }}
       >
-        {/* Left: Hero Crest (150px desktop, 120px tablet, 96px mobile) */}
-        <div style={{ flexShrink: 0 }}>
+        {/* Left: Hero Crest */}
+        <div
+          className="group-card-crest-wrapper"
+          style={{
+            flex: "1 1 auto",
+            minWidth: 0,
+            maxWidth: "calc(100% - 105px)",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
           {crestFiles ? (
             <img
               src={crestFiles["384"] || crestFiles["128"]}
               srcSet={`${crestFiles["128"]} 128w, ${crestFiles["384"]} 384w`}
-              sizes="(max-width: 768px) 96px, (max-width: 1200px) 120px, 150px"
+              sizes="(max-width: 768px) 48px, (max-width: 1200px) 100px, 125px"
               alt={`${displayName} crest`}
               className="hero-crest-img"
               style={{
@@ -550,27 +571,33 @@ export default function GroupCard({
           )}
         </div>
 
-        {/* Right: Outlined Rank Tag + Giant Vertically-Centered Karma */}
+        {/* Right: Outlined Rank Tag + Vertically-Centered Karma */}
         <div
+          className="group-card-stat-zone"
           style={{
             display: "flex",
             flexDirection: "column",
             alignItems: "flex-end",
             textAlign: "right",
-            flex: 1,
-            paddingLeft: 16,
+            flexShrink: 0,
+            minWidth: 95,
+            maxWidth: 115,
+            paddingLeft: 4,
+            position: "relative",
+            zIndex: 2,
           }}
         >
           {/* Top-Right Outlined Rank Tag */}
           <span
+            className="group-card-rank-tag"
             style={{
               fontFamily: "var(--font-display)",
               fontVariationSettings: "'wdth' 112",
-              fontSize: 12,
+              fontSize: 11.5,
               fontWeight: 700,
               color: token.cardText,
               border: `1px solid ${token.tagBorder || "rgba(255, 255, 255, 0.6)"}`,
-              padding: "2px 8px",
+              padding: "1.5px 7px",
               borderRadius: 4,
               lineHeight: 1.2,
               display: "inline-block",
@@ -580,14 +607,14 @@ export default function GroupCard({
           </span>
 
           {/* Vertically centered with crest: Karma Number */}
-          <div style={{ marginTop: 12, marginBottom: 4 }}>
+          <div className="group-card-karma-box" style={{ marginTop: 8, marginBottom: 2 }}>
             <div
-              className="tabular-nums"
+              className="tabular-nums group-card-karma-val"
               style={{
                 fontFamily: "var(--font-display)",
                 fontVariationSettings: "'wdth' 125",
                 fontWeight: 800,
-                fontSize: "clamp(44px, 4.2vw, 58px)",
+                fontSize: "clamp(26px, 2.3vw, 40px)",
                 lineHeight: 0.95,
                 color: token.cardText,
                 letterSpacing: "-0.02em",
@@ -596,19 +623,25 @@ export default function GroupCard({
               {karma.toLocaleString()}
             </div>
             <div
+              className="group-card-karma-lbl"
               style={{
                 fontFamily: "var(--font-display)",
                 fontVariationSettings: "'wdth' 112",
                 fontWeight: 600,
-                fontSize: 10.5,
-                letterSpacing: "0.15em",
+                fontSize: 9.5,
+                letterSpacing: "0.06em",
                 textTransform: "uppercase",
                 color: token.cardText,
                 opacity: 0.8,
-                marginTop: 4,
+                marginTop: 3,
+                whiteSpace: "nowrap",
               }}
             >
-              KARMA THIS WEEK
+              {period === "month"
+                ? "KARMA THIS MONTH"
+                : period === "all"
+                ? "TOTAL KARMA"
+                : "KARMA THIS WEEK"}
             </div>
           </div>
         </div>
@@ -618,28 +651,34 @@ export default function GroupCard({
           MIDDLE ZONE: Team Name & Subtitle
           ======================================= */}
       <div
+        className="group-card-mid-zone"
         style={{
           position: "relative",
           zIndex: 1,
-          marginTop: 12,
-          marginBottom: 12,
+          marginTop: 10,
+          marginBottom: 10,
         }}
       >
         <div
+          className="group-card-name"
           style={{
             fontFamily: "var(--font-display)",
             fontVariationSettings: "'wdth' 125",
             fontWeight: 800,
-            fontSize: 28,
+            fontSize: "clamp(20px, 1.8vw, 26px)",
             lineHeight: 1.05,
             textTransform: "uppercase",
             letterSpacing: "-0.01em",
             color: token.cardText,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
           }}
         >
           {displayName}
         </div>
         <div
+          className="group-card-subtitle"
           style={{
             display: "flex",
             alignItems: "center",
@@ -647,17 +686,20 @@ export default function GroupCard({
             gap: 6,
             fontFamily: "var(--font-display)",
             fontVariationSettings: "'wdth' 112",
-            fontSize: 11,
+            fontSize: 10.5,
             fontWeight: 600,
-            letterSpacing: "0.15em",
+            letterSpacing: "0.12em",
             textTransform: "uppercase",
             color: token.cardText,
             opacity: 0.85,
-            marginTop: 5,
+            marginTop: 4,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
           }}
         >
-          <span>{token.roleBadge || token.name}</span>
-          <span>•</span>
+          <span className="group-card-role-badge">{token.roleBadge || token.name}</span>
+          <span className="group-card-dot">•</span>
           <span>{memberCount} WARRIORS</span>
         </div>
       </div>
@@ -665,16 +707,17 @@ export default function GroupCard({
       {/* =======================================
           BOTTOM ZONE: Progress Bar & Footer Row
           ======================================= */}
-      <div style={{ position: "relative", zIndex: 1, width: "100%" }}>
+      <div className="group-card-bottom-zone" style={{ position: "relative", zIndex: 1, width: "100%" }}>
         {/* Target and Percent */}
         <div
+          className="group-card-target-row"
           style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
             fontFamily: "var(--font-display)",
             fontVariationSettings: "'wdth' 112",
-            fontSize: 11,
+            fontSize: 10.5,
             fontWeight: 600,
             letterSpacing: "0.1em",
             textTransform: "uppercase",
@@ -689,6 +732,7 @@ export default function GroupCard({
 
         {/* 4px Progress Track */}
         <div
+          className="group-card-progress-track"
           style={{
             width: "100%",
             height: 4,
@@ -710,21 +754,27 @@ export default function GroupCard({
 
         {/* Footer Row */}
         <div
+          className="group-card-footer-row"
           style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            marginTop: 14,
-            paddingTop: 10,
+            gap: 6,
+            marginTop: 12,
+            paddingTop: 8,
             borderTop: `1px solid ${token.cardBorder}`,
           }}
         >
           <span
+            className="group-card-status-text"
             style={{
-              fontSize: 12,
+              fontSize: 11.5,
               fontWeight: 600,
               color: token.cardText,
               opacity: 0.85,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
             }}
           >
             {karma === 0
@@ -735,10 +785,11 @@ export default function GroupCard({
           </span>
 
           <span
+            className="group-card-view-btn"
             style={{
               fontFamily: "var(--font-display)",
               fontVariationSettings: "'wdth' 112",
-              fontSize: 11.5,
+              fontSize: 11,
               fontWeight: 700,
               letterSpacing: "0.12em",
               textTransform: "uppercase",
@@ -746,10 +797,12 @@ export default function GroupCard({
               display: "inline-flex",
               alignItems: "center",
               gap: 4,
+              flexShrink: 0,
+              whiteSpace: "nowrap",
             }}
           >
             <span>VIEW TEAM</span>
-            <ArrowRight size={13} />
+            <ArrowRight size={12} />
           </span>
         </div>
       </div>

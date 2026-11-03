@@ -11,12 +11,20 @@ describe("Crest Component & Registry", () => {
     expect(normalizeGroupSlug("grp-operation")).toBe("operation");
     expect(normalizeGroupSlug("TECH")).toBe("tech");
     expect(normalizeGroupSlug("creative")).toBe("creative");
+    expect(normalizeGroupSlug("TECHASHI")).toBe("techashi");
+    expect(normalizeGroupSlug("techaschi")).toBe("techashi");
+    expect(normalizeGroupSlug("OFFGRID")).toBe("offgrid");
+    expect(normalizeGroupSlug("grp-offgrid")).toBe("offgrid");
+    expect(normalizeGroupSlug("MuVerse")).toBe("muverse");
   });
 
   test("returns canonical display names", () => {
     expect(getGroupDisplayName("leads")).toBe("LEADS");
     expect(getGroupDisplayName("operation")).toBe("OPERATION");
     expect(getGroupDisplayName("tech")).toBe("TECH");
+    expect(getGroupDisplayName("techashi")).toBe("TECHASHI");
+    expect(getGroupDisplayName("offgrid")).toBe("OFFGRID");
+    expect(getGroupDisplayName("muverse")).toBe("MuVerse");
   });
 
   test("renders WebP image for groups with crests (e.g. LEADS)", () => {
@@ -42,6 +50,27 @@ describe("Crest Component & Registry", () => {
     expect(img.getAttribute("srcSet")).toContain("crest-tech-128.webp");
     expect(img.getAttribute("srcSet")).toContain("crest-tech-384.webp");
     expect(screen.getAllByText("TECH").length).toBeGreaterThanOrEqual(1);
+  });
+
+  test("renders official crests for TECHASHI, OFFGRID, and MuVerse", () => {
+    expect(CREST_REGISTRY.techashi).toBeDefined();
+    expect(CREST_REGISTRY.offgrid).toBeDefined();
+    expect(CREST_REGISTRY.muverse).toBeDefined();
+
+    const { container: c1 } = render(<Crest group="TECHASHI" size="md" />);
+    const img1 = c1.querySelector("img");
+    expect(img1).toBeInTheDocument();
+    expect(img1.getAttribute("srcSet")).toContain("crest-techashi-128.webp");
+
+    const { container: c2 } = render(<Crest group="OFFGRID" size="md" />);
+    const img2 = c2.querySelector("img");
+    expect(img2).toBeInTheDocument();
+    expect(img2.getAttribute("srcSet")).toContain("crest-offgrid-128.webp");
+
+    const { container: c3 } = render(<Crest group="MuVerse" size="md" />);
+    const img3 = c3.querySelector("img");
+    expect(img3).toBeInTheDocument();
+    expect(img3.getAttribute("srcSet")).toContain("crest-muverse-128.webp");
   });
 
   test("renders small colored dot when size is under 28px", () => {

@@ -18,10 +18,6 @@ export default function ChartCard({
     return getDailyKarmaSeries(events, range, baseDate);
   }, [events, range, baseDate]);
 
-  // Points that are past or today (not future)
-  const activeDays = dailyData.filter((d) => !d.isFuture);
-  const maxKarma = Math.max(100, ...dailyData.map((d) => d.karma));
-
   // SVG Chart Geometry
   const width = 460;
   const height = 150;
@@ -30,37 +26,69 @@ export default function ChartCard({
   const paddingBottom = 26;
   const chartH = height - paddingTop - paddingBottom;
   const chartW = width - paddingX * 2;
+  const baselineY = paddingTop + chartH;
 
-  // Calculate coordinates
-  const points = useMemo(() => {
-    if (activeDays.length === 0) return [];
-    return activeDays.map((d, idx) => {
+  const maxKarma = useMemo(() => {
+    return Math.max(100, ...dailyData.map((d) => d.karma));
+  }, [dailyData]);
+
+  // Calculate coordinates for all days in the series
+  const allPoints = useMemo(() => {
+    if (dailyData.length === 0) return [];
+    return dailyData.map((d, idx) => {
       const x = paddingX + (idx / Math.max(1, dailyData.length - 1)) * chartW;
       const y = paddingTop + chartH - (d.karma / maxKarma) * chartH;
       return { ...d, x, y };
     });
-  }, [activeDays, dailyData.length, chartW, chartH, maxKarma]);
+  }, [dailyData, chartW, chartH, maxKarma]);
 
-  // Generate SVG path strings
+  // Points that are past or today (not future)
+  const activePoints = useMemo(() => {
+    const active = allPoints.filter((p) => !p.isFuture);
+    // If no points are marked non-future (e.g. edge case), fallback to all points
+    return active.length > 0 ? active : allPoints;
+  }, [allPoints]);
+
+  // Generate SVG path string for active points
   const pathD = useMemo(() => {
-    if (points.length === 0) return "";
-    if (points.length === 1) return `M ${points[0].x} ${points[0].y}`;
-    return points.reduce((acc, p, i) => {
+    if (activePoints.length === 0) return "";
+    if (activePoints.length === 1) {
+      const p = activePoints[0];
+      return `M ${paddingX} ${baselineY} Q ${(paddingX + p.x) / 2} ${p.y}, ${p.x} ${p.y}`;
+    }
+    return activePoints.reduce((acc, p, i) => {
       if (i === 0) return `M ${p.x} ${p.y}`;
       // Smooth cubic bezier curve
-      const prev = points[i - 1];
+      const prev = activePoints[i - 1];
       const cx = (prev.x + p.x) / 2;
       return `${acc} C ${cx} ${prev.y}, ${cx} ${p.y}, ${p.x} ${p.y}`;
     }, "");
-  }, [points]);
+  }, [activePoints, baselineY, paddingX]);
 
+  // Dashed projection path for future days
+  const futurePathD = useMemo(() => {
+    if (activePoints.length === 0 || activePoints.length === allPoints.length) return "";
+    const lastActive = activePoints[activePoints.length - 1];
+    const futurePts = allPoints.slice(activePoints.length);
+    if (futurePts.length === 0) return "";
+
+    return futurePts.reduce((acc, p, i) => {
+      const prev = i === 0 ? lastActive : futurePts[i - 1];
+      const cx = (prev.x + p.x) / 2;
+      return `${acc} C ${cx} ${prev.y}, ${cx} ${p.y}, ${p.x} ${p.y}`;
+    }, `M ${lastActive.x} ${lastActive.y}`);
+  }, [activePoints, allPoints]);
+
+  // Filled area under active curve
   const areaD = useMemo(() => {
-    if (points.length === 0) return "";
-    const first = points[0];
-    const last = points[points.length - 1];
-    const baselineY = paddingTop + chartH;
+    if (!pathD || activePoints.length === 0) return "";
+    const first = activePoints[0];
+    const last = activePoints[activePoints.length - 1];
+    if (activePoints.length === 1) {
+      return `${pathD} L ${last.x} ${baselineY} L ${paddingX} ${baselineY} Z`;
+    }
     return `${pathD} L ${last.x} ${baselineY} L ${first.x} ${baselineY} Z`;
-  }, [pathD, points, chartH]);
+  }, [pathD, activePoints, baselineY, paddingX]);
 
   const ranges = [
     { id: "week", label: "Week" },
@@ -144,15 +172,40 @@ export default function ChartCard({
         >
           <defs>
             <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#4C9AEE" stopOpacity="0.25" />
+              <stop offset="0%" stopColor="#4C9AEE" stopOpacity="0.32" />
               <stop offset="100%" stopColor="#4C9AEE" stopOpacity="0.0" />
             </linearGradient>
           </defs>
 
-          {/* Area Fill */}
+          {/* Baseline guide line */}
+          <line
+            x1={paddingX}
+            y1={baselineY}
+            x2={paddingX + chartW}
+            y2={baselineY}
+            stroke="currentColor"
+            strokeOpacity="0.08"
+            strokeWidth="1"
+          />
+
+          {/* Area Fill for active days */}
           {areaD && <path d={areaD} fill="url(#areaGradient)" />}
 
-          {/* Line Stroke */}
+          {/* Future dashed projection line */}
+          {futurePathD && (
+            <path
+              d={futurePathD}
+              fill="none"
+              stroke="var(--chart-line)"
+              strokeWidth="2"
+              strokeDasharray="4 4"
+              strokeOpacity="0.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          )}
+
+          {/* Line Stroke for active days */}
           {pathD && (
             <path
               d={pathD}
@@ -164,42 +217,61 @@ export default function ChartCard({
             />
           )}
 
-          {/* Interactive Data Points */}
-          {points.map((p, idx) => (
-            <g key={idx}>
-              <circle
-                cx={p.x}
-                cy={p.y}
-                r={hoveredPoint === idx ? 5 : 3.5}
-                fill="#FFFFFF"
-                stroke="var(--chart-line)"
-                strokeWidth={hoveredPoint === idx ? 2.5 : 2}
-                style={{ cursor: "pointer", transition: "r 0.15s ease" }}
-                onMouseEnter={() => setHoveredPoint(idx)}
-                onMouseLeave={() => setHoveredPoint(null)}
-              />
-              {/* Day label below baseline */}
-              <text
-                x={p.x}
-                y={height - 4}
-                textAnchor="middle"
-                fontSize="11"
-                fontWeight="500"
-                fill={p.isFuture ? "var(--text-muted)" : "var(--text-secondary)"}
-              >
-                {p.name}
-              </text>
-            </g>
-          ))}
+          {/* Interactive Data Points & Labels */}
+          {allPoints.map((p, idx) => {
+            const isHovered = hoveredPoint === idx;
+            return (
+              <g key={idx}>
+                {p.isFuture ? (
+                  <circle
+                    cx={p.x}
+                    cy={p.y}
+                    r={2.5}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeOpacity="0.25"
+                    strokeWidth="1.5"
+                    style={{ cursor: "pointer" }}
+                    onMouseEnter={() => setHoveredPoint(idx)}
+                    onMouseLeave={() => setHoveredPoint(null)}
+                  />
+                ) : (
+                  <circle
+                    cx={p.x}
+                    cy={p.y}
+                    r={isHovered ? 5.5 : 3.5}
+                    fill="#FFFFFF"
+                    stroke="var(--chart-line)"
+                    strokeWidth={isHovered ? 2.5 : 2}
+                    style={{ cursor: "pointer", transition: "r 0.15s ease, stroke-width 0.15s ease" }}
+                    onMouseEnter={() => setHoveredPoint(idx)}
+                    onMouseLeave={() => setHoveredPoint(null)}
+                  />
+                )}
+
+                {/* Day label below baseline */}
+                <text
+                  x={p.x}
+                  y={height - 4}
+                  textAnchor="middle"
+                  fontSize="11"
+                  fontWeight={isHovered ? "700" : "600"}
+                  fill={p.isFuture ? "var(--text-muted)" : "var(--text-secondary)"}
+                >
+                  {p.name}
+                </text>
+              </g>
+            );
+          })}
         </svg>
 
         {/* Hover Tooltip Pill */}
-        {hoveredPoint !== null && points[hoveredPoint] && (
+        {hoveredPoint !== null && allPoints[hoveredPoint] && (
           <div
             style={{
               position: "absolute",
-              top: Math.max(0, points[hoveredPoint].y - 36),
-              left: `${(points[hoveredPoint].x / width) * 100}%`,
+              top: Math.max(0, allPoints[hoveredPoint].y - 36),
+              left: `${(allPoints[hoveredPoint].x / width) * 100}%`,
               transform: "translateX(-50%)",
               background: "#121214",
               color: "#FFFFFF",
@@ -213,7 +285,8 @@ export default function ChartCard({
               zIndex: 10,
             }}
           >
-            {points[hoveredPoint].karma.toLocaleString()} karma • {points[hoveredPoint].name}
+            {allPoints[hoveredPoint].karma.toLocaleString()} karma • {allPoints[hoveredPoint].name}
+            {allPoints[hoveredPoint].label ? ` (${allPoints[hoveredPoint].label})` : ""}
           </div>
         )}
       </div>

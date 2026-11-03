@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft,
   Search,
@@ -16,8 +16,15 @@ import { getGroupToken, isOfficialTeam } from "../utils/groupTokens";
 import { computeDefaultGroupTarget } from "../utils/goalUtils";
 import {
   getWeekBoundaries,
+  getMonthBoundaries,
+  getISTDate,
   getWeekCountdown,
 } from "../utils/dateUtils";
+import {
+  getSharedPeriod,
+  setSharedPeriod,
+  subscribeSharedPeriod,
+} from "../utils/periodState";
 import { CREST_REGISTRY, normalizeGroupSlug, getGroupDisplayName } from "../crests";
 import Crest from "../crests";
 import PeriodCalendarPopover from "../components/common/PeriodCalendarPopover";
@@ -25,9 +32,18 @@ import { getChasingOrTargetTeam, getSleepingGiants } from "../utils/teamPageHelp
 
 export default function GroupDetailPage() {
   const { id } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialShared = getSharedPeriod();
+  const paramPeriod = searchParams.get("period");
+  const paramOffset = searchParams.get("offset");
+
   const [, setDataVersion] = useState(0);
-  const [period, setPeriod] = useState("week"); // 'week' | 'month' | 'all'
-  const [offset, setOffset] = useState(0);
+  const [period, setPeriod] = useState(
+    paramPeriod || initialShared.period || "week"
+  );
+  const [offset, setOffset] = useState(
+    paramOffset !== null ? parseInt(paramOffset, 10) || 0 : initialShared.offset || 0
+  );
   const [memberSearch, setMemberSearch] = useState("");
   const [copiedKey, setCopiedKey] = useState(null);
 
@@ -37,6 +53,38 @@ export default function GroupDetailPage() {
     });
     return unsub;
   }, []);
+
+  // Listen to shared period changes from other components (e.g. GroupsPage)
+  useEffect(() => {
+    const unsub = subscribeSharedPeriod(({ period: p, offset: o }) => {
+      setPeriod(p);
+      setOffset(o);
+      setSearchParams({ period: p, offset: o });
+    });
+    return unsub;
+  }, [setSearchParams]);
+
+  // Keep search params in sync on mount if not already present
+  useEffect(() => {
+    if (!paramPeriod && !paramOffset) {
+      setSearchParams({ period, offset }, { replace: true });
+    }
+  }, [paramPeriod, paramOffset, period, offset, setSearchParams]);
+
+  // Update state if searchParams change externally (e.g. back/forward navigation)
+  useEffect(() => {
+    if (paramPeriod && paramPeriod !== period) {
+      setPeriod(paramPeriod);
+      setSharedPeriod(paramPeriod, undefined);
+    }
+    if (paramOffset !== null) {
+      const parsed = parseInt(paramOffset, 10);
+      if (!isNaN(parsed) && parsed !== offset) {
+        setOffset(parsed);
+        setSharedPeriod(undefined, parsed);
+      }
+    }
+  }, [paramPeriod, paramOffset, period, offset]);
 
   const handleCopy = (text, key) => {
     if (navigator?.clipboard?.writeText) {
@@ -49,6 +97,34 @@ export default function GroupDetailPage() {
   const handlePeriodChange = (newPeriod) => {
     setPeriod(newPeriod);
     setOffset(0);
+    setSharedPeriod(newPeriod, 0);
+    setSearchParams({ period: newPeriod, offset: 0 });
+  };
+
+  const handleOffsetChange = (newOffset) => {
+    setOffset(newOffset);
+    setSharedPeriod(period, newOffset);
+    setSearchParams({ period, offset: newOffset });
+  };
+
+  const handleDateSelect = (selectedDate) => {
+    const now = new Date();
+    let newOffset = 0;
+    if (period === "month") {
+      const monthDiff =
+        (selectedDate.getFullYear() - now.getFullYear()) * 12 +
+        (selectedDate.getMonth() - now.getMonth());
+      newOffset = Math.min(0, monthDiff);
+    } else if (period === "week") {
+      const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+      const weekDiff = Math.round(
+        (selectedDate.getTime() - now.getTime()) / msPerWeek
+      );
+      newOffset = Math.min(0, weekDiff);
+    }
+    setOffset(newOffset);
+    setSharedPeriod(period, newOffset);
+    setSearchParams({ period, offset: newOffset });
   };
 
   const group = karmaStore.getGroupById ? karmaStore.getGroupById(id) : null;
@@ -134,6 +210,41 @@ export default function GroupDetailPage() {
   const weekBoundaries = useMemo(() => getWeekBoundaries(period === "week" ? offset : 0), [period, offset]);
   const countdownText = useMemo(() => getWeekCountdown(weekBoundaries.end), [weekBoundaries]);
 
+  // Date and month display formatting
+  const dateRangeInfo = useMemo(() => {
+    if (period === "all") {
+      return {
+        label: "All Time",
+        sublabel: "Overall campus score",
+        cardLabel: "all time",
+      };
+    }
+    if (period === "week") {
+      const b = getWeekBoundaries(offset);
+      const startIST = getISTDate(b.start);
+      const year = startIST.getUTCFullYear();
+      return {
+        label: `${b.label} ${year}`,
+        sublabel: b.label,
+        cardLabel: `this week (${b.label})`,
+      };
+    }
+    // Month
+    const b = getMonthBoundaries(offset);
+    const months = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+    const startIST = getISTDate(b.start);
+    const endIST = getISTDate(b.end);
+    const dateRangeStr = `${startIST.getUTCDate()} ${months[startIST.getUTCMonth()]} - ${endIST.getUTCDate()} ${months[endIST.getUTCMonth()]}`;
+    return {
+      label: `${b.label} • ${dateRangeStr}`,
+      sublabel: `${dateRangeStr} (${b.label})`,
+      cardLabel: `in ${b.label}`,
+    };
+  }, [period, offset]);
+
   // Chasing You / Next Target data
   const chasingData = useMemo(() => {
     return getChasingOrTargetTeam({
@@ -167,7 +278,7 @@ export default function GroupDetailPage() {
           The requested team does not exist.
         </p>
         <Link
-          to="/groups"
+          to={`/groups?period=${encodeURIComponent(period)}&offset=${encodeURIComponent(offset)}`}
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -276,7 +387,7 @@ export default function GroupDetailPage() {
         }}
       >
         <Link
-          to="/groups"
+          to={`/groups?period=${encodeURIComponent(period)}&offset=${encodeURIComponent(offset)}`}
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -300,13 +411,11 @@ export default function GroupDetailPage() {
 
         <PeriodCalendarPopover
           period={period}
-          onPeriodChange={handlePeriodChange}
           offset={offset}
-          onOffsetChange={setOffset}
-          onMonthChange={(mOffset) => {
-            setPeriod("month");
-            setOffset(mOffset);
-          }}
+          dateLabel={dateRangeInfo.label}
+          onPeriodChange={handlePeriodChange}
+          onOffsetChange={handleOffsetChange}
+          onDateSelect={handleDateSelect}
         />
       </div>
 
@@ -515,7 +624,11 @@ export default function GroupDetailPage() {
                 marginTop: 6,
               }}
             >
-              KARMA THIS WEEK
+              {period === "month"
+                ? "KARMA THIS MONTH"
+                : period === "all"
+                ? "TOTAL KARMA"
+                : "KARMA THIS WEEK"}
             </div>
             <div
               style={{
@@ -1279,7 +1392,7 @@ export default function GroupDetailPage() {
                 <>
                   {/* Rival Crest & Name Link */}
                   <Link
-                    to={`/groups/${chasingData.rival.id || chasingData.rival.name}`}
+                    to={`/groups/${chasingData.rival.id || chasingData.rival.name}?period=${encodeURIComponent(period)}&offset=${encodeURIComponent(offset)}`}
                     style={{
                       display: "flex",
                       alignItems: "center",

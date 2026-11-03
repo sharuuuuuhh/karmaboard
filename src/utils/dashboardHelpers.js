@@ -6,6 +6,103 @@ import { getISTDate, getStartOfWeekIST } from "./dateUtils";
  */
 export function getDailyKarmaSeries(events = [], range = "week", baseDate = new Date()) {
   const istNow = getISTDate(baseDate);
+
+  if (range === "month") {
+    const year = istNow.getUTCFullYear();
+    const month = istNow.getUTCMonth();
+    const lastDay = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+
+    const buckets = [
+      { name: "W1", label: "1-7", startDay: 1, endDay: 7 },
+      { name: "W2", label: "8-14", startDay: 8, endDay: 14 },
+      { name: "W3", label: "15-21", startDay: 15, endDay: 21 },
+      { name: "W4", label: "22-28", startDay: 22, endDay: 28 },
+    ];
+    if (lastDay > 28) {
+      buckets.push({
+        name: "W5",
+        label: `29-${lastDay}`,
+        startDay: 29,
+        endDay: lastDay,
+      });
+    }
+
+    const currentIST = getISTDate(new Date());
+    const isCurrentMonth =
+      currentIST.getUTCFullYear() === year && currentIST.getUTCMonth() === month;
+    const currentDayOfMonth = currentIST.getUTCDate();
+
+    const monthSeries = buckets.map((b, idx) => {
+      const isFuture = isCurrentMonth && b.startDay > currentDayOfMonth;
+      return {
+        name: b.name,
+        idx,
+        label: b.label,
+        date: `${year}-${String(month + 1).padStart(2, "0")}-${String(b.startDay).padStart(2, "0")}`,
+        karma: 0,
+        isFuture,
+        startDay: b.startDay,
+        endDay: b.endDay,
+      };
+    });
+
+    if (!events || events.length === 0) return monthSeries;
+
+    events.forEach((ev) => {
+      const ts = ev.timestamp || ev.created_at;
+      if (!ts) return;
+      const evIST = getISTDate(new Date(ts));
+      if (evIST.getUTCFullYear() === year && evIST.getUTCMonth() === month) {
+        const d = evIST.getUTCDate();
+        const b = monthSeries.find((s) => d >= s.startDay && d <= s.endDay);
+        if (b) {
+          b.karma += Number(ev.delta || ev.karma_points || ev.points || 0);
+        }
+      }
+    });
+
+    return monthSeries;
+  }
+
+  if (range === "all") {
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const allSeries = [];
+    const baseYear = istNow.getUTCFullYear();
+    const baseMonth = istNow.getUTCMonth();
+
+    for (let i = 5; i >= 0; i--) {
+      const targetDate = new Date(Date.UTC(baseYear, baseMonth - i, 1));
+      const y = targetDate.getUTCFullYear();
+      const m = targetDate.getUTCMonth();
+      allSeries.push({
+        name: monthNames[m],
+        idx: 5 - i,
+        year: y,
+        month: m,
+        date: `${y}-${String(m + 1).padStart(2, "0")}-01`,
+        karma: 0,
+        isFuture: false,
+      });
+    }
+
+    if (!events || events.length === 0) return allSeries;
+
+    events.forEach((ev) => {
+      const ts = ev.timestamp || ev.created_at;
+      if (!ts) return;
+      const evIST = getISTDate(new Date(ts));
+      const y = evIST.getUTCFullYear();
+      const m = evIST.getUTCMonth();
+      const match = allSeries.find((s) => s.year === y && s.month === m);
+      if (match) {
+        match.karma += Number(ev.delta || ev.karma_points || ev.points || 0);
+      }
+    });
+
+    return allSeries;
+  }
+
+  // Week mode (default)
   const startOfWeek = getStartOfWeekIST(baseDate);
   const istStart = getISTDate(startOfWeek);
 
@@ -38,7 +135,7 @@ export function getDailyKarmaSeries(events = [], range = "week", baseDate = new 
     const pts = Number(ev.delta || ev.karma_points || ev.points || 0);
 
     const matchingDay = days.find((d) => d.date === evDateStr);
-    if (matchingDay && !matchingDay.isFuture) {
+    if (matchingDay) {
       matchingDay.karma += pts;
     }
   });
