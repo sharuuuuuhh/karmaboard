@@ -129,7 +129,9 @@ export default function HomePage() {
       return "All Time • Overall campus standings";
     }
     if (period === "month") {
-      return `${dateRangeInfo.label} • Monthly campus race`;
+      return offset === 0
+        ? `${dateRangeInfo.label} • ${countdown}`
+        : `${dateRangeInfo.label} • Past month`;
     }
     return offset === 0
       ? `${weekInfo.label} • ${countdown}`
@@ -172,9 +174,9 @@ export default function HomePage() {
         }
       />
 
-      {/* Row 1: Karma Chart (span 6) | Top Groups Stack (span 3) | Promo Card (span 3) */}
+      {/* Row 1: Karma Chart (span 5) | Top Groups Stack (span 4) | Promo Card (span 3) */}
       <PageGrid gap={20}>
-        <PageCol span={6} spanLg={6} spanMd={2} spanSm={1}>
+        <PageCol span={5} spanLg={5} spanMd={2} spanSm={1}>
           <ChartCard
             events={allEvents}
             totalKarma={totalWeeklyKarma}
@@ -184,7 +186,7 @@ export default function HomePage() {
           />
         </PageCol>
 
-        <PageCol span={3} spanLg={3} spanMd={1} spanSm={1}>
+        <PageCol span={4} spanLg={4} spanMd={1} spanSm={1}>
           <TopGroupsCards groups={groupStandings} />
         </PageCol>
 

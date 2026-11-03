@@ -53,135 +53,195 @@ export default function LeaderboardTableCard({
   return (
     <div
       style={{
-        background: "#FFFFFF",
+        background: "var(--card)",
         border: "1px solid var(--border)",
         borderRadius: "var(--radius-card)",
         padding: "24px",
         boxShadow: "var(--shadow-soft)",
         minWidth: 0,
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
       }}
     >
-      {/* Top Header: Headline Sentence + Period Pills */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: 12,
-          marginBottom: 16,
-        }}
-      >
-        <h3
-          style={{
-            margin: 0,
-            fontSize: 18,
-            fontWeight: 700,
-            color: "var(--text-primary)",
-            letterSpacing: "-0.02em",
-            fontFamily: "var(--font-display)",
-          }}
-        >
-          {headline}
-        </h3>
-
-        {/* Period Pills (hidden when controlled globally) */}
-        {showPeriodSelector && (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
-              background: "var(--surface-subtle)",
-              padding: 3,
-              borderRadius: "var(--radius-pill)",
-            }}
-          >
-            {periods.map((p) => {
-              const isActive = period === p.id;
-              return (
-                <button
-                  key={p.id}
-                  type="button"
-                  onClick={() => onPeriodChange && onPeriodChange(p.id)}
-                  style={{
-                    padding: "4px 12px",
-                    borderRadius: "var(--radius-pill)",
-                    fontSize: 12,
-                    fontWeight: isActive ? 700 : 500,
-                    color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
-                    background: isActive ? "#FFFFFF" : "transparent",
-                    boxShadow: isActive ? "0 1px 3px rgba(0, 0, 0, 0.08)" : "none",
-                    transition: "all 0.15s ease",
-                  }}
-                >
-                  {p.label}
-                </button>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* Group Filter Chips Row */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-          overflowX: "auto",
-          paddingBottom: 14,
-          marginBottom: 8,
-          scrollbarWidth: "none",
-        }}
-      >
-        {groupChips.map((chip) => {
-          const isSelected = selectedGroupId === chip.id;
-          const token = chip.id !== "all" ? getGroupToken(chip.id) : null;
-          return (
-            <button
-              key={chip.id}
-              type="button"
-              onClick={() => onSelectGroup && onSelectGroup(isSelected && chip.id !== "all" ? "all" : chip.id)}
-              style={{
-                padding: "4px 12px",
-                borderRadius: "var(--radius-pill)",
-                fontSize: 11,
-                fontWeight: 600,
-                letterSpacing: "0.06em",
-                fontFamily: "var(--font-body)",
-                textTransform: "uppercase",
-                color: isSelected
-                  ? chip.id === "all" ? "#FFFFFF" : token.ink
-                  : "var(--text-secondary)",
-                background: isSelected
-                  ? chip.id === "all" ? "var(--text-primary)" : token.pastel
-                  : "var(--surface-subtle)",
-                border: isSelected && token ? `1px solid ${token.ink}44` : "1px solid transparent",
-                cursor: "pointer",
-                whiteSpace: "nowrap",
-                transition: "all 0.15s ease",
-              }}
-            >
-              {chip.label}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Table Content */}
-      {rows.length === 0 ? (
+      <div>
+        {/* Top Header: Headline Sentence + Period Pills */}
         <div
           style={{
-            padding: "48px 16px",
-            textAlign: "center",
-            color: "var(--text-muted)",
-            fontSize: 13,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: 12,
+            marginBottom: 16,
           }}
         >
-          No karma this week yet.
+          <h3
+            style={{
+              margin: 0,
+              fontSize: 18,
+              fontWeight: 700,
+              color: "var(--ink)",
+              letterSpacing: "-0.02em",
+              fontFamily: "var(--font-display)",
+            }}
+          >
+            {headline}
+          </h3>
+
+          {/* Period Pills (hidden when controlled globally) */}
+          {showPeriodSelector && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                background: "var(--surface-subtle)",
+                padding: 3,
+                borderRadius: "var(--radius-pill)",
+              }}
+            >
+              {periods.map((p) => {
+                const isActive = period === p.id;
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => onPeriodChange && onPeriodChange(p.id)}
+                    style={{
+                      padding: "4px 12px",
+                      borderRadius: "var(--radius-pill)",
+                      fontSize: 12,
+                      fontWeight: isActive ? 700 : 500,
+                      color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
+                      background: isActive ? "#FFFFFF" : "transparent",
+                      boxShadow: isActive ? "0 1px 3px rgba(0, 0, 0, 0.08)" : "none",
+                      transition: "all 0.15s ease",
+                    }}
+                  >
+                    {p.label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
-      ) : (
+
+        {/* Group Filter Chips Row */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            overflowX: "auto",
+            paddingBottom: 14,
+            marginBottom: 8,
+            scrollbarWidth: "none",
+          }}
+        >
+          {groupChips.map((chip) => {
+            const isSelected = selectedGroupId === chip.id;
+            return (
+              <button
+                key={chip.id}
+                type="button"
+                onClick={() => onSelectGroup && onSelectGroup(isSelected && chip.id !== "all" ? "all" : chip.id)}
+                style={{
+                  padding: "5px 14px",
+                  borderRadius: "var(--radius-pill)",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  fontFamily: "var(--font-body)",
+                  color: isSelected ? "#FFFFFF" : "var(--muted)",
+                  background: isSelected ? "var(--ink)" : "#FFFFFF",
+                  border: isSelected ? "1px solid var(--ink)" : "1px solid var(--border)",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                  transition: "all 150ms ease",
+                  boxShadow: isSelected ? "0 1px 3px rgba(0, 0, 0, 0.1)" : "none",
+                }}
+                onMouseEnter={(e) => {
+                  if (!isSelected) {
+                    e.currentTarget.style.borderColor = "#CCC6BA";
+                    e.currentTarget.style.color = "var(--ink)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isSelected) {
+                    e.currentTarget.style.borderColor = "var(--border)";
+                    e.currentTarget.style.color = "var(--muted)";
+                  }
+                }}
+              >
+                {chip.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Table Content */}
+        {rows.length === 0 ? (
+          <div
+            style={{
+              padding: "44px 16px",
+              textAlign: "center",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 12,
+            }}
+          >
+            {/* Subtle Torii Gate and Misty Mountains in Muted Gray */}
+            <svg
+              width="140"
+              height="70"
+              viewBox="0 0 140 70"
+              fill="none"
+              aria-hidden="true"
+              style={{ opacity: 0.55 }}
+            >
+              {/* Mountain layers */}
+              <path
+                d="M 10 70 Q 40 38 70 48 Q 100 32 130 52 L 130 70 Z"
+                fill="#E8E4DC"
+              />
+              <path
+                d="M 25 70 Q 55 24 85 36 L 120 70 Z"
+                fill="#DCD6C8"
+                opacity="0.6"
+              />
+
+              {/* Torii Gate Silhouette */}
+              <g transform="translate(48, 14)" stroke="#6B6B72" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none">
+                {/* Top beam */}
+                <path d="M 0 10 Q 22 5 44 10" strokeWidth="2.2" />
+                {/* Lower tie beam */}
+                <line x1="3" y1="16" x2="41" y2="16" strokeWidth="1.6" />
+                {/* Small middle strut */}
+                <line x1="22" y1="10" x2="22" y2="16" strokeWidth="1.6" />
+                {/* Pillars */}
+                <line x1="10" y1="12" x2="8" y2="48" strokeWidth="2" />
+                <line x1="34" y1="12" x2="36" y2="48" strokeWidth="2" />
+                {/* Base stones */}
+                <rect x="5" y="46" width="6" height="3" fill="#6B6B72" stroke="none" />
+                <rect x="33" y="46" width="6" height="3" fill="#6B6B72" stroke="none" />
+              </g>
+            </svg>
+
+            <span
+              style={{
+                fontSize: 13,
+                fontWeight: 500,
+                fontFamily: "var(--font-body)",
+                color: "var(--muted)",
+              }}
+            >
+              {period === "all" ? "No karma logged yet." : "No karma this week yet."}
+            </span>
+          </div>
+        ) : (
         <div style={{ overflowX: "auto" }}>
           <table className="clean-table">
             <thead>
@@ -367,7 +427,7 @@ export default function LeaderboardTableCard({
             fontSize: 13,
             fontWeight: 600,
             fontFamily: "var(--font-body)",
-            color: "var(--text-primary)",
+            color: "var(--ink)",
             textDecoration: "none",
             display: "inline-flex",
             alignItems: "center",
@@ -377,6 +437,7 @@ export default function LeaderboardTableCard({
           <span>View full leaderboard</span>
           <span>→</span>
         </Link>
+      </div>
       </div>
     </div>
   );

@@ -7,28 +7,36 @@
 
 :root {
   /* --------------------------------------------------------------------------
-     1. Surfaces & Frames
+     1. Surfaces & Frames (Warm Minimal Off-White & Crisp White Cards)
      -------------------------------------------------------------------------- */
-  --page-backdrop: #E8F1FB;
-  --app-frame: #1B1B1D;
+  --bg: #F6F4F0;
+  --page-backdrop: #F6F4F0;
+  --card: #FFFFFF;
+  --app-frame: #18181B;
   --content-panel: #FFFFFF;
   --sidebar-w: 72px;
   --logo-tile: #F7F0D8;
 
   /* Global alias mappings */
-  --bg: var(--page-backdrop);
-  --canvas: var(--page-backdrop);
+  --canvas: var(--bg);
   --surface: #FFFFFF;
-  --surface-subtle: #F6F7F9;
+  --surface-subtle: #F6F4F0;
   --surface-solid: #FFFFFF;
 
   /* --------------------------------------------------------------------------
-     2. Text Hierarchy
+     2. Text Hierarchy & Japanese Redesign Tokens
      -------------------------------------------------------------------------- */
-  --text-primary: #121214;
-  --text-secondary: #6B6B73;
-  --text-muted: #A0A0A8;
-  --table-header: #8A8A93;
+  --ink: #16161A;
+  --text-primary: #16161A;
+  --muted: #6B6B72;
+  --text-secondary: #6B6B72;
+  --text-muted: #8E8E96;
+  --table-header: #6B6B72;
+
+  --crimson: #B3202A;
+  --gold: #C9A227;
+  --green: #2E9E5B;
+  --gold-tint: #FBF1D9;
 
   --sidebar-icon-inactive: #9A9AA0;
   --sidebar-icon-active: #FFFFFF;
@@ -60,23 +68,23 @@
   /* --------------------------------------------------------------------------
      4. Chart & Promo Cards
      -------------------------------------------------------------------------- */
-  --chart-tint: #DFEBFA;
-  --chart-line: #4C9AEE;
-  --chart-fill-start: rgba(76, 154, 238, 0.22);
-  --chart-fill-end: rgba(76, 154, 238, 0.0);
+  --chart-tint: #FFFFFF;
+  --chart-line: #B3202A;
+  --chart-fill-start: rgba(179, 32, 42, 0.12);
+  --chart-fill-end: rgba(179, 32, 42, 0.0);
 
-  --promo-bg: #232325;
-  --promo-btn-bg: #CFE6FF;
-  --promo-btn-text: #0F1A26;
+  --promo-bg: #16161A;
+  --promo-btn-bg: #B3202A;
+  --promo-btn-text: #FFFFFF;
 
   /* --------------------------------------------------------------------------
      5. Status & Buttons
      -------------------------------------------------------------------------- */
-  --status-up: #2E9A57;
-  --status-down: #D14343;
-  --status-neutral: #A0A0A8;
+  --status-up: #2E9E5B;
+  --status-down: #B3202A;
+  --status-neutral: #6B6B72;
 
-  --btn-primary-bg: #121214;
+  --btn-primary-bg: #16161A;
   --btn-primary-text: #FFFFFF;
   --btn-pale-blue: #CFE6FF;
   --btn-pale-blue-text: #0F1A26;
@@ -84,11 +92,12 @@
   /* --------------------------------------------------------------------------
      6. Borders & Shadows
      -------------------------------------------------------------------------- */
-  --border: #ECECF0;
-  --border-strong: #E2E2E8;
-  --border-subtle: #F0F0F4;
+  --border: #E8E4DC;
+  --border-strong: #DDD8CD;
+  --border-subtle: #F0EDE6;
 
-  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.04);
   --shadow-frame: 0 20px 48px -12px rgba(18, 24, 40, 0.16);
   --shadow-dropdown: 0 4px 16px rgba(0, 0, 0, 0.08);
 
@@ -97,7 +106,7 @@
      -------------------------------------------------------------------------- */
   --radius-frame: 36px;
   --radius-panel: 28px;
-  --radius-card: 24px;
+  --radius-card: 20px;
   --radius-tile: 16px;
   --radius-pill: 9999px;
 

@@ -55,14 +55,18 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
   return (
     <div
       style={{
-        background: "#FFFFFF",
+        background: "var(--card)",
         border: "1px solid var(--border)",
         borderRadius: "var(--radius-card)",
         padding: "24px",
         boxShadow: "var(--shadow-soft)",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
       }}
     >
-      {/* Header: Title + Live/Recent status + See all */}
+      {/* Header: Title + See all */}
       <div
         style={{
           display: "flex",
@@ -77,41 +81,13 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
               margin: 0,
               fontSize: 18,
               fontWeight: 700,
-              color: "var(--text-primary)",
+              color: "var(--ink)",
               letterSpacing: "-0.02em",
               fontFamily: "var(--font-display)",
             }}
           >
             Recent activity
           </h3>
-
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 5,
-              padding: "2px 8px",
-              borderRadius: "var(--radius-pill)",
-              background: isAnyLive ? "rgba(46, 154, 87, 0.1)" : "var(--surface-subtle)",
-              color: isAnyLive ? "var(--status-up)" : "var(--text-secondary)",
-              fontSize: 11,
-              fontWeight: 600,
-              letterSpacing: "0.06em",
-              fontFamily: "var(--font-body)",
-            }}
-          >
-            {isAnyLive && (
-              <span
-                style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: "50%",
-                  background: "var(--status-up)",
-                }}
-              />
-            )}
-            <span>{isAnyLive ? "Live" : "Recent"}</span>
-          </div>
         </div>
 
         <Link
@@ -120,15 +96,15 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
             fontSize: 12,
             fontWeight: 600,
             fontFamily: "var(--font-body)",
-            color: "var(--text-secondary)",
+            color: "var(--muted)",
             textDecoration: "none",
             display: "inline-flex",
             alignItems: "center",
             gap: 3,
-            transition: "color 0.15s ease",
+            transition: "color 150ms ease",
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text-primary)")}
-          onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-secondary)")}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--ink)")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "var(--muted)")}
         >
           <span>See all</span>
           <ChevronRight size={14} />
@@ -141,7 +117,7 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
           style={{
             padding: "36px 16px",
             textAlign: "center",
-            color: "var(--text-muted)",
+            color: "var(--muted)",
             fontSize: 13,
           }}
         >
@@ -160,7 +136,6 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
         >
           {rows.map((act, idx) => {
             const memberName = getMemberName(act);
-            const token = getGroupToken(act.group_name || act.group_id);
             const points = act.delta || act.karma_points || act.points || 300;
             const timeStr = formatActivityTime(act.timestamp || act.created_at);
 
@@ -171,42 +146,28 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
-                  padding: "12px 4px",
+                  padding: "12px 6px",
                   borderBottom:
                     idx < rows.length - 1 ? "1px solid var(--border)" : "none",
                   gap: 12,
+                  borderRadius: 6,
+                  transition: "background 150ms ease",
                 }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "#FAF8F4")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
               >
-                {/* Left: Initials Avatar + Name + Fixed-width Crest + Points */}
-                <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0, flex: 1, flexWrap: "wrap" }}>
-                  <div
-                    style={{
-                      width: 32,
-                      height: 32,
-                      borderRadius: "50%",
-                      background: token.pastel,
-                      color: token.ink,
-                      fontSize: 11,
-                      fontWeight: 700,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                    }}
-                  >
-                    {getInitials(memberName)}
-                  </div>
-
+                {/* Left: Name | Original Crest | "earned +X karma" */}
+                <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0, flex: 1 }}>
                   {/* Name */}
-                  <div style={{ minWidth: 120, maxWidth: 170 }}>
+                  <div style={{ width: 120, flexShrink: 0 }}>
                     {act.muid ? (
                       <Link
                         to={`/u/${encodeURIComponent(act.muid)}`}
                         style={{
                           fontWeight: 600,
-                          fontSize: 13,
+                          fontSize: 13.5,
                           fontFamily: "var(--font-body)",
-                          color: "var(--text-primary)",
+                          color: "var(--ink)",
                           textDecoration: "none",
                           whiteSpace: "nowrap",
                           overflow: "hidden",
@@ -220,9 +181,9 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
                       <span
                         style={{
                           fontWeight: 600,
-                          fontSize: 13,
+                          fontSize: 13.5,
                           fontFamily: "var(--font-body)",
-                          color: "var(--text-primary)",
+                          color: "var(--ink)",
                           whiteSpace: "nowrap",
                           overflow: "hidden",
                           textOverflow: "ellipsis",
@@ -234,10 +195,11 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
                     )}
                   </div>
 
-                  {/* Fixed-width Crest */}
+                  {/* Original Team Crest */}
                   <div
                     style={{
-                      width: 32,
+                      width: 22,
+                      height: 22,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -248,13 +210,13 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
                   </div>
 
                   {/* Points Earned */}
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontFamily: "var(--font-body)" }}>
-                    <span style={{ color: "var(--text-secondary)" }}>earned</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 13, fontFamily: "var(--font-body)" }}>
+                    <span style={{ color: "var(--muted)" }}>earned</span>
                     <span
                       className="tabular-nums"
                       style={{
                         fontWeight: 700,
-                        color: "var(--status-up)",
+                        color: "var(--green)",
                         fontFamily: "var(--font-numeric)",
                         fontVariantNumeric: "tabular-nums",
                       }}
@@ -268,7 +230,7 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
                 <span
                   style={{
                     fontSize: 12,
-                    color: "var(--text-muted)",
+                    color: "var(--muted)",
                     whiteSpace: "nowrap",
                     flexShrink: 0,
                     fontFamily: "var(--font-body)",

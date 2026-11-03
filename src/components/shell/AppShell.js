@@ -29,7 +29,7 @@ export default function AppShell({ children }) {
         width: "100%",
         height: "100%",
         overflow: "hidden",
-        backgroundColor: "#FFFFFF",
+        backgroundColor: "var(--bg)",
         color: "var(--text-primary)",
         position: "relative",
       }}
@@ -65,7 +65,7 @@ export default function AppShell({ children }) {
           overflowY: "auto",
           overflowX: "hidden",
           padding: "24px",
-          backgroundColor: "#FFFFFF",
+          backgroundColor: "var(--bg)",
           minWidth: 0,
         }}
         className="app-main-panel"

@@ -35,9 +35,10 @@ export default function DarkPromoCard({
   return (
     <div
       style={{
-        background: "var(--promo-bg)",
+        background: "var(--ink)",
         borderRadius: "var(--radius-card)",
-        padding: "26px",
+        border: "1px solid rgba(255, 255, 255, 0.08)",
+        padding: "24px",
         color: "#FFFFFF",
         position: "relative",
         overflow: "hidden",
@@ -45,56 +46,66 @@ export default function DarkPromoCard({
         flexDirection: "column",
         justifyContent: "space-between",
         minHeight: 280,
-        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.16)",
+        height: "100%",
+        boxShadow: "var(--shadow-soft)",
       }}
     >
-      {/* Subtle geometric line-art card outlines in the bottom-right corner */}
+      {/* Decorative Subtle Misty Mountain and Torii Gate Line Art (8-12% opacity) */}
       <svg
-        width="160"
+        width="220"
         height="160"
-        viewBox="0 0 160 160"
+        viewBox="0 0 220 160"
         fill="none"
+        aria-hidden="true"
         style={{
           position: "absolute",
-          bottom: -20,
-          right: -20,
-          opacity: 0.16,
+          bottom: 0,
+          right: 0,
+          opacity: 0.10,
           pointerEvents: "none",
+          zIndex: 0,
         }}
       >
-        <rect
-          x="20"
-          y="30"
-          width="120"
-          height="80"
-          rx="14"
-          stroke="#FFFFFF"
-          strokeWidth="1.8"
-          transform="rotate(-12 80 70)"
+        {/* Soft mountain silhouette */}
+        <path
+          d="M 20 160 Q 70 95 130 115 Q 170 85 220 105 L 220 160 Z"
+          fill="#FFFFFF"
+          opacity="0.6"
         />
-        <rect
-          x="30"
-          y="45"
-          width="120"
-          height="80"
-          rx="14"
-          stroke="#FFFFFF"
-          strokeWidth="1.8"
-          transform="rotate(6 90 85)"
+        {/* Far ridge */}
+        <path
+          d="M 60 160 Q 110 70 170 90 L 220 75 L 220 160 Z"
+          fill="#FFFFFF"
+          opacity="0.4"
         />
-        <circle cx="110" cy="70" r="14" stroke="#FFFFFF" strokeWidth="1.5" />
-        <circle cx="124" cy="70" r="14" stroke="#FFFFFF" strokeWidth="1.5" />
+
+        {/* Torii Gate Outline in Silhouette */}
+        <g transform="translate(142, 38)" stroke="#FFFFFF" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" fill="none">
+          {/* Top curved roof (Kasagi) */}
+          <path d="M 0 14 Q 28 8 56 14" strokeWidth="2.8" />
+          {/* Second tie beam (Shimaki & Nuki) */}
+          <line x1="4" y1="22" x2="52" y2="22" strokeWidth="2" />
+          <line x1="8" y1="32" x2="48" y2="32" strokeWidth="1.8" />
+          {/* Central strut (Gakuzuka) */}
+          <line x1="28" y1="22" x2="28" y2="32" strokeWidth="2" />
+          {/* Main Pillars (Hashira) slightly inclined */}
+          <line x1="14" y1="18" x2="11" y2="72" strokeWidth="2.6" />
+          <line x1="42" y1="18" x2="45" y2="72" strokeWidth="2.6" />
+          {/* Pillar Base Stones (Daiishi) */}
+          <rect x="8" y="70" width="6" height="3" fill="#FFFFFF" />
+          <rect x="42" y="70" width="6" height="3" fill="#FFFFFF" />
+        </g>
       </svg>
 
       {/* Top Header: Eyebrow + Headline & Leader Crest */}
-      <div>
+      <div style={{ position: "relative", zIndex: 1 }}>
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
           <div>
             <div
               style={{
                 fontSize: 11,
                 fontWeight: 600,
-                color: "#A0A0A8",
+                color: "rgba(255, 255, 255, 0.6)",
                 textTransform: "uppercase",
                 letterSpacing: "0.06em",
                 marginBottom: 8,
@@ -138,7 +149,7 @@ export default function DarkPromoCard({
         >
           <div
             style={{
-              background: "rgba(255, 255, 255, 0.06)",
+              background: "rgba(255, 255, 255, 0.05)",
               border: "1px solid rgba(255, 255, 255, 0.08)",
               borderRadius: "14px",
               padding: "10px 12px",
@@ -147,9 +158,9 @@ export default function DarkPromoCard({
               gap: 8,
             }}
           >
-            <Clock size={16} color="#93C5FD" style={{ flexShrink: 0 }} />
+            <Clock size={16} color="rgba(255, 255, 255, 0.7)" style={{ flexShrink: 0 }} />
             <div style={{ overflow: "hidden" }}>
-              <div style={{ fontSize: 11, color: "#9CA3AF", textTransform: "uppercase", fontWeight: 600, letterSpacing: "0.06em", fontFamily: "var(--font-body)" }}>Countdown</div>
+              <div style={{ fontSize: 11, color: "rgba(255, 255, 255, 0.6)", textTransform: "uppercase", fontWeight: 600, letterSpacing: "0.06em", fontFamily: "var(--font-body)" }}>Countdown</div>
               <div style={{ fontSize: 13, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap", fontFamily: "var(--font-numeric)", fontVariantNumeric: "tabular-nums" }}>
                 {countdown}
               </div>
@@ -158,7 +169,7 @@ export default function DarkPromoCard({
 
           <div
             style={{
-              background: "rgba(255, 255, 255, 0.06)",
+              background: "rgba(255, 255, 255, 0.05)",
               border: "1px solid rgba(255, 255, 255, 0.08)",
               borderRadius: "14px",
               padding: "10px 12px",
@@ -167,9 +178,9 @@ export default function DarkPromoCard({
               gap: 8,
             }}
           >
-            <Users size={16} color="#93C5FD" style={{ flexShrink: 0 }} />
+            <Users size={16} color="rgba(255, 255, 255, 0.7)" style={{ flexShrink: 0 }} />
             <div style={{ overflow: "hidden" }}>
-              <div style={{ fontSize: 11, color: "#9CA3AF", textTransform: "uppercase", fontWeight: 600, letterSpacing: "0.06em", fontFamily: "var(--font-body)" }}>Active Members</div>
+              <div style={{ fontSize: 11, color: "rgba(255, 255, 255, 0.6)", textTransform: "uppercase", fontWeight: 600, letterSpacing: "0.06em", fontFamily: "var(--font-body)" }}>Active Members</div>
               <div style={{ fontSize: 13, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap", fontFamily: "var(--font-numeric)", fontVariantNumeric: "tabular-nums" }}>
                 {activeMemberCount}
               </div>
@@ -178,8 +189,8 @@ export default function DarkPromoCard({
         </div>
       </div>
 
-      {/* Bottom Button: Pale-blue pill linking to /leaderboard */}
-      <div style={{ marginTop: 22 }}>
+      {/* Bottom Button: Crimson button with 12px radius */}
+      <div style={{ marginTop: 22, position: "relative", zIndex: 1 }}>
         <Link
           to="/leaderboard"
           style={{
@@ -187,19 +198,20 @@ export default function DarkPromoCard({
             alignItems: "center",
             justifyContent: "center",
             gap: 8,
-            padding: "10px 20px",
-            borderRadius: "var(--radius-pill)",
-            background: "#DBEAFE",
-            color: "#1E3A8A",
+            padding: "11px 20px",
+            borderRadius: 12,
+            background: "var(--crimson)",
+            color: "#FFFFFF",
             fontSize: 13,
             fontWeight: 600,
             fontFamily: "var(--font-body)",
             textDecoration: "none",
-            transition: "all 0.15s ease",
+            transition: "background 150ms ease, opacity 150ms ease",
             width: "100%",
-            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+            boxShadow: "0 2px 8px rgba(179, 32, 42, 0.25)",
           }}
-          className="hover:opacity-95"
+          onMouseEnter={(e) => (e.currentTarget.style.background = "#981720")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "var(--crimson)")}
         >
           <span>View leaderboard</span>
           <ArrowUpRight size={15} />

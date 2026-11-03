@@ -99,13 +99,16 @@ export default function ChartCard({
   return (
     <div
       style={{
-        background: "var(--chart-tint)",
+        background: "var(--card)",
+        border: "1px solid var(--border)",
         borderRadius: "var(--radius-card)",
+        boxShadow: "var(--shadow-soft)",
         padding: "24px",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
         minHeight: 280,
+        height: "100%",
         position: "relative",
       }}
     >
@@ -113,11 +116,12 @@ export default function ChartCard({
       <div>
         <div
           style={{
-            fontSize: 13,
-            fontWeight: 600,
-            fontFamily: "var(--font-body)",
-            color: "var(--text-secondary)",
-            marginBottom: 6,
+            fontSize: 16,
+            fontWeight: 700,
+            fontFamily: "var(--font-display)",
+            color: "var(--ink)",
+            letterSpacing: "-0.02em",
+            marginBottom: 10,
           }}
         >
           {title ||
@@ -127,16 +131,16 @@ export default function ChartCard({
               ? "Karma all time"
               : "Karma this week")}
         </div>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <span
             className="tabular-nums type-display"
             style={{
-              fontSize: 40,
+              fontSize: 48,
               fontWeight: 800,
               fontFamily: "var(--font-display)",
-              color: "var(--text-primary)",
+              color: "var(--ink)",
               letterSpacing: "-0.03em",
-              lineHeight: 1.05,
+              lineHeight: 1,
               fontVariantNumeric: "tabular-nums",
             }}
           >
@@ -147,12 +151,15 @@ export default function ChartCard({
             style={{
               display: "inline-flex",
               alignItems: "center",
-              gap: 3,
+              gap: 4,
+              padding: "4px 10px",
+              borderRadius: "var(--radius-pill)",
+              background: "rgba(46, 158, 91, 0.12)",
+              color: "var(--green)",
               fontSize: 12.5,
               fontWeight: 700,
               fontFamily: "var(--font-numeric)",
               fontVariantNumeric: "tabular-nums",
-              color: "var(--status-up)",
             }}
           >
             <TrendingUp size={14} />
@@ -166,7 +173,7 @@ export default function ChartCard({
         style={{
           position: "relative",
           width: "100%",
-          margin: "8px 0 0",
+          margin: "12px 0 0",
         }}
       >
         <svg
@@ -175,8 +182,8 @@ export default function ChartCard({
         >
           <defs>
             <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#4C9AEE" stopOpacity="0.32" />
-              <stop offset="100%" stopColor="#4C9AEE" stopOpacity="0.0" />
+              <stop offset="0%" stopColor="#B3202A" stopOpacity="0.14" />
+              <stop offset="100%" stopColor="#B3202A" stopOpacity="0.0" />
             </linearGradient>
           </defs>
 
@@ -186,9 +193,9 @@ export default function ChartCard({
             y1={baselineY}
             x2={paddingX + chartW}
             y2={baselineY}
-            stroke="currentColor"
-            strokeOpacity="0.08"
-            strokeWidth="1"
+            stroke="#E8E4DC"
+            strokeWidth="2"
+            strokeLinecap="round"
           />
 
           {/* Area Fill for active days */}
@@ -199,10 +206,10 @@ export default function ChartCard({
             <path
               d={futurePathD}
               fill="none"
-              stroke="var(--chart-line)"
+              stroke="#DCD7CC"
               strokeWidth="2"
               strokeDasharray="4 4"
-              strokeOpacity="0.4"
+              strokeOpacity="0.8"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
@@ -213,8 +220,8 @@ export default function ChartCard({
             <path
               d={pathD}
               fill="none"
-              stroke="var(--chart-line)"
-              strokeWidth="2.8"
+              stroke="var(--crimson)"
+              strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
@@ -229,11 +236,10 @@ export default function ChartCard({
                   <circle
                     cx={p.x}
                     cy={p.y}
-                    r={2.5}
-                    fill="none"
-                    stroke="currentColor"
-                    strokeOpacity="0.25"
-                    strokeWidth="1.5"
+                    r={3.5}
+                    fill="#FFFFFF"
+                    stroke="#DCD7CC"
+                    strokeWidth="2"
                     style={{ cursor: "pointer" }}
                     onMouseEnter={() => setHoveredPoint(idx)}
                     onMouseLeave={() => setHoveredPoint(null)}
@@ -242,9 +248,9 @@ export default function ChartCard({
                   <circle
                     cx={p.x}
                     cy={p.y}
-                    r={isHovered ? 5.5 : 3.5}
+                    r={isHovered ? 5.5 : 4}
                     fill="#FFFFFF"
-                    stroke="var(--chart-line)"
+                    stroke="var(--crimson)"
                     strokeWidth={isHovered ? 2.5 : 2}
                     style={{ cursor: "pointer", transition: "r 0.15s ease, stroke-width 0.15s ease" }}
                     onMouseEnter={() => setHoveredPoint(idx)}
@@ -255,12 +261,12 @@ export default function ChartCard({
                 {/* Day label below baseline */}
                 <text
                   x={p.x}
-                  y={height - 4}
+                  y={height - 2}
                   textAnchor="middle"
                   fontSize="11"
                   fontWeight={isHovered ? "700" : "600"}
-                  fontFamily="var(--font-numeric)"
-                  fill={p.isFuture ? "var(--text-muted)" : "var(--text-secondary)"}
+                  fontFamily="var(--font-body)"
+                  fill={p.isFuture ? "#A0A0A8" : isHovered ? "var(--crimson)" : "var(--muted)"}
                 >
                   {p.name}
                 </text>
