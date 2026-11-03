@@ -63,7 +63,7 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "space-between",
+        justifyContent: "flex-start",
       }}
     >
       {/* Header: Title + See all */}
@@ -72,7 +72,7 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          marginBottom: 16,
+          marginBottom: 12,
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -132,6 +132,7 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
             maxHeight: 380,
             overflowY: "auto",
             paddingRight: 4,
+            flex: 1,
           }}
         >
           {rows.map((act, idx) => {
