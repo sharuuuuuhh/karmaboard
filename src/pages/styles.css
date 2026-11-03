@@ -440,7 +440,7 @@ body {
   justify-content: center;
   padding: 1rem;
   border-radius: 1rem;
-  font-family: "Inter", sans-serif;
+  font-family: var(--font-body);
 }
 
 .rank1 {
@@ -770,7 +770,7 @@ body {
     justify-content: space-between;
     padding: 0.5rem 2rem;
     border-radius: 1rem;
-    font-family: "Inter", sans-serif;
+    font-family: var(--font-body);
   }
 
   .m-name {

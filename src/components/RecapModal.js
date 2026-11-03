@@ -36,11 +36,11 @@ export function RecapModal({ personalRecap, groupRecap, onClose }) {
 
     // Top Brand Watermark
     ctx.fillStyle = "#1C1917";
-    ctx.font = "bold 38px Inter, system-ui, sans-serif";
+    ctx.font = "bold 38px 'Plus Jakarta Sans', system-ui, sans-serif";
     ctx.fillText("Karmayodha", 120, 160);
 
     ctx.fillStyle = "#A8A29E";
-    ctx.font = "500 24px Inter, system-ui, sans-serif";
+    ctx.font = "500 24px 'Plus Jakarta Sans', system-ui, sans-serif";
     ctx.fillText("MuLearn TLY Season Recap", 120, 200);
 
     if (subject === "personal" && personalRecap) {
@@ -52,16 +52,16 @@ export function RecapModal({ personalRecap, groupRecap, onClose }) {
       ctx.roundRect(120, 240, 360, 48, 24);
       ctx.fill();
       ctx.fillStyle = "#4F46E5";
-      ctx.font = "bold 22px Inter, sans-serif";
+      ctx.font = "bold 22px 'Plus Jakarta Sans', sans-serif";
       ctx.fillText(periodLabel.toUpperCase(), 144, 272);
 
       // Member Name
       ctx.fillStyle = "#1C1917";
-      ctx.font = "bold 64px Inter, sans-serif";
+      ctx.font = "bold 64px 'Plus Jakarta Sans', sans-serif";
       ctx.fillText(member.name, 120, 370);
 
       ctx.fillStyle = "#57534E";
-      ctx.font = "500 30px Inter, sans-serif";
+      ctx.font = "500 30px 'Plus Jakarta Sans', sans-serif";
       ctx.fillText(`${member.muid} • ${groupName}`, 120, 420);
 
       // Primary Stats Box
@@ -72,25 +72,25 @@ export function RecapModal({ personalRecap, groupRecap, onClose }) {
 
       // Karma Stat
       ctx.fillStyle = "#A8A29E";
-      ctx.font = "bold 24px Inter, sans-serif";
+      ctx.font = "bold 24px 'Plus Jakarta Sans', sans-serif";
       ctx.fillText("KARMA EARNED", 170, 540);
 
       ctx.fillStyle = "#1C1917";
-      ctx.font = "bold 88px Inter, sans-serif";
+      ctx.font = "bold 88px 'Plus Jakarta Sans', sans-serif";
       ctx.fillText(karma.toLocaleString("en-IN"), 170, 650);
 
       // Rank Stat
       ctx.fillStyle = "#A8A29E";
-      ctx.font = "bold 24px Inter, sans-serif";
+      ctx.font = "bold 24px 'Plus Jakarta Sans', sans-serif";
       ctx.fillText("CAMPUS RANK", 620, 540);
 
       ctx.fillStyle = "#4F46E5";
-      ctx.font = "bold 88px Inter, sans-serif";
+      ctx.font = "bold 88px 'Plus Jakarta Sans', sans-serif";
       ctx.fillText(`#${rank}`, 620, 650);
 
       // Movement & Streak row
       ctx.fillStyle = "#1C1917";
-      ctx.font = "bold 32px Inter, sans-serif";
+      ctx.font = "bold 32px 'Plus Jakarta Sans', sans-serif";
       ctx.fillText("Season Performance", 120, 810);
 
       // Metric 1: Movement
@@ -103,10 +103,10 @@ export function RecapModal({ personalRecap, groupRecap, onClose }) {
       ctx.stroke();
 
       ctx.fillStyle = "#A8A29E";
-      ctx.font = "bold 20px Inter, sans-serif";
+      ctx.font = "bold 20px 'Plus Jakarta Sans', sans-serif";
       ctx.fillText("RANK MOVEMENT", 150, 885);
       ctx.fillStyle = movement.type === "up" ? "#16A34A" : movement.type === "down" ? "#DC2626" : "#57534E";
-      ctx.font = "bold 44px Inter, sans-serif";
+      ctx.font = "bold 44px 'Plus Jakarta Sans', sans-serif";
       ctx.fillText(movement.type === "up" ? `+${movement.places} places` : movement.type === "down" ? `-${movement.places} places` : "Steady rank", 150, 945);
 
       // Metric 2: Daily Streak
@@ -117,10 +117,10 @@ export function RecapModal({ personalRecap, groupRecap, onClose }) {
       ctx.stroke();
 
       ctx.fillStyle = "#A8A29E";
-      ctx.font = "bold 20px Inter, sans-serif";
+      ctx.font = "bold 20px 'Plus Jakarta Sans', sans-serif";
       ctx.fillText("ACTIVE STREAK", 590, 885);
       ctx.fillStyle = "#EA580C";
-      ctx.font = "bold 44px Inter, sans-serif";
+      ctx.font = "bold 44px 'Plus Jakarta Sans', sans-serif";
       ctx.fillText(`${streak.currentStreak} Days`, 590, 945);
 
       // Awards row
@@ -133,7 +133,7 @@ export function RecapModal({ personalRecap, groupRecap, onClose }) {
         ctx.fill();
         ctx.stroke();
         ctx.fillStyle = "#CA8A04";
-        ctx.font = "bold 24px Inter, sans-serif";
+        ctx.font = "bold 24px 'Plus Jakarta Sans', sans-serif";
         ctx.fillText("★ GROUP MVP OF THE WEEK", 150, awardY + 40);
       }
       if (isUnderdog) {
@@ -144,7 +144,7 @@ export function RecapModal({ personalRecap, groupRecap, onClose }) {
         ctx.fill();
         ctx.stroke();
         ctx.fillStyle = "#B45309";
-        ctx.font = "bold 24px Inter, sans-serif";
+        ctx.font = "bold 24px 'Plus Jakarta Sans', sans-serif";
         ctx.fillText("⚡ MOST IMPROVED UNDERDOG", 570, awardY + 40);
       }
 
@@ -157,16 +157,16 @@ export function RecapModal({ personalRecap, groupRecap, onClose }) {
       ctx.roundRect(120, 240, 360, 48, 24);
       ctx.fill();
       ctx.fillStyle = "#4F46E5";
-      ctx.font = "bold 22px Inter, sans-serif";
+      ctx.font = "bold 22px 'Plus Jakarta Sans', sans-serif";
       ctx.fillText(periodLabel.toUpperCase(), 144, 272);
 
       // Group Name
       ctx.fillStyle = "#1C1917";
-      ctx.font = "bold 64px Inter, sans-serif";
+      ctx.font = "bold 64px 'Plus Jakarta Sans', sans-serif";
       ctx.fillText(group.name, 120, 370);
 
       ctx.fillStyle = "#57534E";
-      ctx.font = "500 30px Inter, sans-serif";
+      ctx.font = "500 30px 'Plus Jakarta Sans', sans-serif";
       ctx.fillText(`Rank #${rank} Group • ${goal.paceText}`, 120, 420);
 
       // Stats Box
@@ -176,22 +176,22 @@ export function RecapModal({ personalRecap, groupRecap, onClose }) {
       ctx.fill();
 
       ctx.fillStyle = "#A8A29E";
-      ctx.font = "bold 24px Inter, sans-serif";
+      ctx.font = "bold 24px 'Plus Jakarta Sans', sans-serif";
       ctx.fillText("TOTAL GROUP KARMA", 170, 540);
       ctx.fillStyle = "#1C1917";
-      ctx.font = "bold 88px Inter, sans-serif";
+      ctx.font = "bold 88px 'Plus Jakarta Sans', sans-serif";
       ctx.fillText(karma.toLocaleString("en-IN"), 170, 650);
 
       ctx.fillStyle = "#A8A29E";
-      ctx.font = "bold 24px Inter, sans-serif";
+      ctx.font = "bold 24px 'Plus Jakarta Sans', sans-serif";
       ctx.fillText("GOAL PROGRESS", 620, 540);
       ctx.fillStyle = goal.isReached ? "#16A34A" : "#4F46E5";
-      ctx.font = "bold 88px Inter, sans-serif";
+      ctx.font = "bold 88px 'Plus Jakarta Sans', sans-serif";
       ctx.fillText(`${goal.percent}%`, 620, 650);
 
       // Top contributors
       ctx.fillStyle = "#1C1917";
-      ctx.font = "bold 32px Inter, sans-serif";
+      ctx.font = "bold 32px 'Plus Jakarta Sans', sans-serif";
       ctx.fillText("Top Group Contributors", 120, 810);
 
       topContributors.forEach((c, i) => {
@@ -204,11 +204,11 @@ export function RecapModal({ personalRecap, groupRecap, onClose }) {
         ctx.stroke();
 
         ctx.fillStyle = "#1C1917";
-        ctx.font = "bold 24px Inter, sans-serif";
+        ctx.font = "bold 24px 'Plus Jakarta Sans', sans-serif";
         ctx.fillText(`${i + 1}. ${c.name}`, 150, rowY + 42);
 
         ctx.fillStyle = "#57534E";
-        ctx.font = "bold 24px Inter, sans-serif";
+        ctx.font = "bold 24px 'Plus Jakarta Sans', sans-serif";
         ctx.fillText(`${c.karma.toLocaleString("en-IN")} karma`, 740, rowY + 42);
       });
 
@@ -220,14 +220,14 @@ export function RecapModal({ personalRecap, groupRecap, onClose }) {
         ctx.fill();
         ctx.stroke();
         ctx.fillStyle = "#CA8A04";
-        ctx.font = "bold 24px Inter, sans-serif";
+        ctx.font = "bold 24px 'Plus Jakarta Sans', sans-serif";
         ctx.fillText(`★ GROUP MVP: ${mvp.name} (${mvp.karma.toLocaleString("en-IN")} karma)`, 150, 1150);
       }
     }
 
     // Footer Watermark
     ctx.fillStyle = "#A8A29E";
-    ctx.font = "500 20px Inter, sans-serif";
+    ctx.font = "500 20px 'Plus Jakarta Sans', sans-serif";
     ctx.fillText("Powered by MuLearn Platform • Read-Only Analytics", 120, 1220);
   }, [subject, personalRecap, groupRecap]);
 

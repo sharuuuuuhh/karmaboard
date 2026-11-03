@@ -3,7 +3,7 @@
    Calm, Light, Friendly, Premium Fintech Dashboard.
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Plus+Jakarta+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap');
 
 :root {
   /* --------------------------------------------------------------------------
@@ -104,18 +104,11 @@
   /* --------------------------------------------------------------------------
      8. Typography Family & Tokens
      -------------------------------------------------------------------------- */
-  --font-display: "Archivo", "Inter", system-ui, sans-serif;
-  --font-body: "Inter", system-ui, sans-serif;
-  --display-wdth: 125;   /* wide, like Neutiva / Rumeno */
-  --label-wdth: 112;
+  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-numeric: 'Space Grotesk', system-ui, sans-serif;
   --font-family: var(--font-body);
-  --font-mono: 'SF Mono', SFMono-Regular, ui-monospace, Menlo, Consolas, monospace;
-}
-
-@media (max-width: 768px) {
-  :root {
-    --display-wdth: 112;
-  }
+  --font-mono: 'Space Grotesk', 'SF Mono', SFMono-Regular, ui-monospace, Menlo, Consolas, monospace;
 }
 
 /* ==========================================================================
@@ -137,6 +130,11 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Utility classes for fonts */
+.font-display { font-family: var(--font-display) !important; }
+.font-body { font-family: var(--font-body) !important; }
+.font-numeric { font-family: var(--font-numeric) !important; font-variant-numeric: tabular-nums !important; }
+
 /* ==========================================================================
    Type Roles & Hierarchy
    ========================================================================== */
@@ -147,11 +145,9 @@ html, body {
 .hero-num,
 .big-karma-number {
   font-family: var(--font-display);
-  font-variation-settings: "wdth" var(--display-wdth);
   font-weight: 800;
-  line-height: 1.02;
-  letter-spacing: -0.01em;
-  font-variant-numeric: tabular-nums;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
 }
 
 /* Section titles and card titles */
@@ -159,9 +155,8 @@ html, body {
 .section-title,
 .card-title {
   font-family: var(--font-display);
-  font-variation-settings: "wdth" 115;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 /* Labels (nav items, table headers, eyebrows, small captions) */
@@ -169,11 +164,10 @@ html, body {
 .label-caps,
 .table-header-label,
 .eyebrow {
-  font-family: var(--font-display);
-  font-variation-settings: "wdth" var(--label-wdth);
+  font-family: var(--font-body);
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.06em;
   font-size: 11px;
   color: var(--text-muted);
 }
@@ -189,22 +183,20 @@ input, textarea, select {
 /* Semantic Headings */
 h1 {
   font-family: var(--font-display);
-  font-variation-settings: "wdth" var(--display-wdth);
   font-weight: 800;
-  line-height: 1.02;
-  letter-spacing: -0.01em;
-  font-variant-numeric: tabular-nums;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
 }
 
 h2, h3, h4 {
   font-family: var(--font-display);
-  font-variation-settings: "wdth" 115;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 /* Numbers: tabular-nums */
-.tabular-nums, .num, td, th {
+.tabular-nums, .num, .stat-number, .pts {
+  font-family: var(--font-numeric);
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum" 1;
 }
@@ -265,12 +257,11 @@ button {
 }
 
 .clean-table th {
-  font-family: var(--font-display);
-  font-variation-settings: "wdth" var(--label-wdth);
+  font-family: var(--font-body);
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.06em;
   color: var(--table-header);
   text-align: left;
   padding: 12px 14px;

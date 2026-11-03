@@ -93,11 +93,12 @@ export default function DarkPromoCard({
             <div
               style={{
                 fontSize: 11,
-                fontWeight: 700,
+                fontWeight: 600,
                 color: "#A0A0A8",
                 textTransform: "uppercase",
-                letterSpacing: "0.08em",
+                letterSpacing: "0.06em",
                 marginBottom: 8,
+                fontFamily: "var(--font-body)",
               }}
             >
               {period === "all" ? "ALL TIME" : period === "week" ? "THIS WEEK" : "THIS MONTH"}
@@ -112,6 +113,7 @@ export default function DarkPromoCard({
                 letterSpacing: "-0.02em",
                 lineHeight: 1.25,
                 maxWidth: 230,
+                fontFamily: "var(--font-display)",
               }}
             >
               {headline}
@@ -147,8 +149,8 @@ export default function DarkPromoCard({
           >
             <Clock size={16} color="#93C5FD" style={{ flexShrink: 0 }} />
             <div style={{ overflow: "hidden" }}>
-              <div style={{ fontSize: 10, color: "#9CA3AF", textTransform: "uppercase", fontWeight: 600 }}>Countdown</div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>
+              <div style={{ fontSize: 11, color: "#9CA3AF", textTransform: "uppercase", fontWeight: 600, letterSpacing: "0.06em", fontFamily: "var(--font-body)" }}>Countdown</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap", fontFamily: "var(--font-numeric)", fontVariantNumeric: "tabular-nums" }}>
                 {countdown}
               </div>
             </div>
@@ -167,8 +169,8 @@ export default function DarkPromoCard({
           >
             <Users size={16} color="#93C5FD" style={{ flexShrink: 0 }} />
             <div style={{ overflow: "hidden" }}>
-              <div style={{ fontSize: 10, color: "#9CA3AF", textTransform: "uppercase", fontWeight: 600 }}>Active Members</div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap" }}>
+              <div style={{ fontSize: 11, color: "#9CA3AF", textTransform: "uppercase", fontWeight: 600, letterSpacing: "0.06em", fontFamily: "var(--font-body)" }}>Active Members</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#FFFFFF", whiteSpace: "nowrap", fontFamily: "var(--font-numeric)", fontVariantNumeric: "tabular-nums" }}>
                 {activeMemberCount}
               </div>
             </div>
@@ -190,7 +192,8 @@ export default function DarkPromoCard({
             background: "#DBEAFE",
             color: "#1E3A8A",
             fontSize: 13,
-            fontWeight: 700,
+            fontWeight: 600,
+            fontFamily: "var(--font-body)",
             textDecoration: "none",
             transition: "all 0.15s ease",
             width: "100%",

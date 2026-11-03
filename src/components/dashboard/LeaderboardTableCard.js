@@ -78,7 +78,8 @@ export default function LeaderboardTableCard({
             fontSize: 18,
             fontWeight: 700,
             color: "var(--text-primary)",
-            letterSpacing: "-0.01em",
+            letterSpacing: "-0.02em",
+            fontFamily: "var(--font-display)",
           }}
         >
           {headline}
@@ -147,6 +148,9 @@ export default function LeaderboardTableCard({
                 borderRadius: "var(--radius-pill)",
                 fontSize: 11,
                 fontWeight: 600,
+                letterSpacing: "0.06em",
+                fontFamily: "var(--font-body)",
+                textTransform: "uppercase",
                 color: isSelected
                   ? chip.id === "all" ? "#FFFFFF" : token.ink
                   : "var(--text-secondary)",
@@ -206,6 +210,8 @@ export default function LeaderboardTableCard({
                       style={{
                         fontSize: 13,
                         fontWeight: 700,
+                        fontFamily: "var(--font-numeric)",
+                        fontVariantNumeric: "tabular-nums",
                         color: rankNum === 1 ? "var(--chart-line)" : "var(--text-secondary)",
                       }}
                     >
@@ -255,6 +261,7 @@ export default function LeaderboardTableCard({
                                 fontWeight: 600,
                                 color: "var(--text-primary)",
                                 whiteSpace: "nowrap",
+                                fontFamily: "var(--font-body)",
                               }}
                             >
                               {mem.name}
@@ -277,6 +284,7 @@ export default function LeaderboardTableCard({
                             style={{
                               fontSize: 11,
                               color: "var(--text-muted)",
+                              fontFamily: "var(--font-body)",
                             }}
                           >
                             {mem.muid}
@@ -297,6 +305,8 @@ export default function LeaderboardTableCard({
                         textAlign: "right",
                         fontSize: 14,
                         fontWeight: 700,
+                        fontFamily: "var(--font-numeric)",
+                        fontVariantNumeric: "tabular-nums",
                         color: "var(--text-primary)",
                       }}
                     >
@@ -307,12 +317,15 @@ export default function LeaderboardTableCard({
                     <td style={{ textAlign: "center" }}>
                       {changeVal > 0 ? (
                         <span
+                          className="tabular-nums"
                           style={{
                             color: "var(--status-up)",
                             display: "inline-flex",
                             alignItems: "center",
                             fontSize: 12,
                             fontWeight: 700,
+                            fontFamily: "var(--font-numeric)",
+                            fontVariantNumeric: "tabular-nums",
                           }}
                         >
                           <ArrowUpRight size={14} />
@@ -320,12 +333,15 @@ export default function LeaderboardTableCard({
                         </span>
                       ) : changeVal < 0 ? (
                         <span
+                          className="tabular-nums"
                           style={{
                             color: "var(--status-down)",
                             display: "inline-flex",
                             alignItems: "center",
                             fontSize: 12,
                             fontWeight: 700,
+                            fontFamily: "var(--font-numeric)",
+                            fontVariantNumeric: "tabular-nums",
                           }}
                         >
                           <ArrowDownRight size={14} />
@@ -349,7 +365,8 @@ export default function LeaderboardTableCard({
           to="/leaderboard"
           style={{
             fontSize: 13,
-            fontWeight: 700,
+            fontWeight: 600,
+            fontFamily: "var(--font-body)",
             color: "var(--text-primary)",
             textDecoration: "none",
             display: "inline-flex",

@@ -78,7 +78,8 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
               fontSize: 18,
               fontWeight: 700,
               color: "var(--text-primary)",
-              letterSpacing: "-0.01em",
+              letterSpacing: "-0.02em",
+              fontFamily: "var(--font-display)",
             }}
           >
             Recent activity
@@ -94,7 +95,9 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
               background: isAnyLive ? "rgba(46, 154, 87, 0.1)" : "var(--surface-subtle)",
               color: isAnyLive ? "var(--status-up)" : "var(--text-secondary)",
               fontSize: 11,
-              fontWeight: 700,
+              fontWeight: 600,
+              letterSpacing: "0.06em",
+              fontFamily: "var(--font-body)",
             }}
           >
             {isAnyLive && (
@@ -116,6 +119,7 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
           style={{
             fontSize: 12,
             fontWeight: 600,
+            fontFamily: "var(--font-body)",
             color: "var(--text-secondary)",
             textDecoration: "none",
             display: "inline-flex",
@@ -201,6 +205,7 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
                         style={{
                           fontWeight: 600,
                           fontSize: 13,
+                          fontFamily: "var(--font-body)",
                           color: "var(--text-primary)",
                           textDecoration: "none",
                           whiteSpace: "nowrap",
@@ -216,6 +221,7 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
                         style={{
                           fontWeight: 600,
                           fontSize: 13,
+                          fontFamily: "var(--font-body)",
                           color: "var(--text-primary)",
                           whiteSpace: "nowrap",
                           overflow: "hidden",
@@ -242,13 +248,15 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
                   </div>
 
                   {/* Points Earned */}
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontFamily: "var(--font-body)" }}>
                     <span style={{ color: "var(--text-secondary)" }}>earned</span>
                     <span
                       className="tabular-nums"
                       style={{
                         fontWeight: 700,
                         color: "var(--status-up)",
+                        fontFamily: "var(--font-numeric)",
+                        fontVariantNumeric: "tabular-nums",
                       }}
                     >
                       +{points} karma
@@ -263,6 +271,7 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
                     color: "var(--text-muted)",
                     whiteSpace: "nowrap",
                     flexShrink: 0,
+                    fontFamily: "var(--font-body)",
                   }}
                 >
                   {timeStr}

@@ -33,10 +33,11 @@ export default function TopGroupsCards({ groups = [] }) {
       >
         <span
           style={{
-            fontSize: 15,
-            fontWeight: 800,
+            fontSize: 16,
+            fontWeight: 700,
+            fontFamily: "var(--font-display)",
             color: "var(--text-primary)",
-            letterSpacing: "-0.01em",
+            letterSpacing: "-0.02em",
           }}
         >
           Top Teams
@@ -47,6 +48,7 @@ export default function TopGroupsCards({ groups = [] }) {
           style={{
             fontSize: 12,
             fontWeight: 600,
+            fontFamily: "var(--font-body)",
             color: "var(--text-secondary)",
             textDecoration: "none",
             display: "inline-flex",

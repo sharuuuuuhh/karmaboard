@@ -201,9 +201,10 @@ export default function GroupCard({
         >
           {/* Outlined Rank Tag */}
           <span
+            className="tabular-nums"
             style={{
-              fontFamily: "var(--font-display)",
-              fontVariationSettings: "'wdth' 112",
+              fontFamily: "var(--font-numeric)",
+              fontVariantNumeric: "tabular-nums",
               fontSize: 11,
               fontWeight: 700,
               color: token.cardText,
@@ -268,13 +269,12 @@ export default function GroupCard({
             <div
               style={{
                 fontFamily: "var(--font-display)",
-                fontVariationSettings: "'wdth' 125",
                 fontWeight: 800,
                 fontSize: 15,
                 lineHeight: 1.1,
                 color: token.cardText,
                 textTransform: "uppercase",
-                letterSpacing: "-0.01em",
+                letterSpacing: "-0.02em",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
@@ -284,13 +284,12 @@ export default function GroupCard({
             </div>
             <div
               style={{
-                fontFamily: "var(--font-display)",
-                fontVariationSettings: "'wdth' 112",
-                fontSize: 10,
+                fontFamily: "var(--font-body)",
+                fontSize: 11,
                 fontWeight: 600,
                 color: token.cardText,
                 opacity: 0.8,
-                letterSpacing: "0.12em",
+                letterSpacing: "0.06em",
                 textTransform: "uppercase",
                 marginTop: 2,
               }}
@@ -305,10 +304,10 @@ export default function GroupCard({
           <div
             className="tabular-nums"
             style={{
-              fontFamily: "var(--font-display)",
-              fontVariationSettings: "'wdth' 125",
+              fontFamily: "var(--font-numeric)",
+              fontVariantNumeric: "tabular-nums",
               fontSize: 20,
-              fontWeight: 800,
+              fontWeight: 700,
               color: token.cardText,
               lineHeight: 1,
             }}
@@ -316,13 +315,14 @@ export default function GroupCard({
             {karma.toLocaleString()}
           </div>
           <div
+            className="tabular-nums"
             style={{
-              fontFamily: "var(--font-display)",
-              fontVariationSettings: "'wdth' 112",
-              fontSize: 10,
+              fontFamily: "var(--font-numeric)",
+              fontVariantNumeric: "tabular-nums",
+              fontSize: 11,
               fontWeight: 700,
-              color: token.cardAccent,
-              letterSpacing: "0.08em",
+              color: token.cardAccent || token.cardText,
+              letterSpacing: "0.04em",
               textTransform: "uppercase",
               marginTop: 2,
             }}

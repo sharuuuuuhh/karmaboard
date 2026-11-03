@@ -75,10 +75,9 @@ export default function PageHeader({
             fontSize: 32,
             fontWeight: 800,
             fontFamily: "var(--font-display)",
-            fontVariationSettings: '"wdth" var(--display-wdth)',
-            letterSpacing: "-0.01em",
+            letterSpacing: "-0.03em",
             color: "var(--text-primary)",
-            lineHeight: 1.02,
+            lineHeight: 1.05,
           }}
         >
           {title}
@@ -89,6 +88,7 @@ export default function PageHeader({
               margin: "6px 0 0",
               fontSize: 13,
               fontWeight: 500,
+              fontFamily: "var(--font-body)",
               color: "var(--text-secondary)",
             }}
           >

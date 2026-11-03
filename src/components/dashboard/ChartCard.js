@@ -115,6 +115,7 @@ export default function ChartCard({
           style={{
             fontSize: 13,
             fontWeight: 600,
+            fontFamily: "var(--font-body)",
             color: "var(--text-secondary)",
             marginBottom: 6,
           }}
@@ -130,25 +131,27 @@ export default function ChartCard({
           <span
             className="tabular-nums type-display"
             style={{
-              fontSize: 34,
+              fontSize: 40,
               fontWeight: 800,
               fontFamily: "var(--font-display)",
-              fontVariationSettings: '"wdth" var(--display-wdth)',
               color: "var(--text-primary)",
-              letterSpacing: "-0.01em",
-              lineHeight: 1.02,
+              letterSpacing: "-0.03em",
+              lineHeight: 1.05,
               fontVariantNumeric: "tabular-nums",
             }}
           >
             {totalKarma.toLocaleString()}
           </span>
           <span
+            className="tabular-nums"
             style={{
               display: "inline-flex",
               alignItems: "center",
               gap: 3,
-              fontSize: 12,
+              fontSize: 12.5,
               fontWeight: 700,
+              fontFamily: "var(--font-numeric)",
+              fontVariantNumeric: "tabular-nums",
               color: "var(--status-up)",
             }}
           >
@@ -256,6 +259,7 @@ export default function ChartCard({
                   textAnchor="middle"
                   fontSize="11"
                   fontWeight={isHovered ? "700" : "600"}
+                  fontFamily="var(--font-numeric)"
                   fill={p.isFuture ? "var(--text-muted)" : "var(--text-secondary)"}
                 >
                   {p.name}
@@ -268,6 +272,7 @@ export default function ChartCard({
         {/* Hover Tooltip Pill */}
         {hoveredPoint !== null && allPoints[hoveredPoint] && (
           <div
+            className="tabular-nums"
             style={{
               position: "absolute",
               top: Math.max(0, allPoints[hoveredPoint].y - 36),
@@ -279,6 +284,8 @@ export default function ChartCard({
               borderRadius: "var(--radius-pill)",
               fontSize: 11,
               fontWeight: 700,
+              fontFamily: "var(--font-numeric)",
+              fontVariantNumeric: "tabular-nums",
               boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
               pointerEvents: "none",
               whiteSpace: "nowrap",
