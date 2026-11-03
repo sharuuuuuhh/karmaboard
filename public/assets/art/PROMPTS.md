@@ -19,3 +19,4 @@ Japanese ink-wash sumi-e painting on near-black background (#16161A). Very dark 
 ### 3. empty-state.webp (1200x600)
 **Prompt**:
 Japanese ink-wash sumi-e vignette painting on off-white background (#FBFAF7). Centered: a dark ink torii gate in front of soft pale grey mountains with a faint large mountain behind it, a little grass at the base, fog fading to white at the edges. Everything fades smoothly to the background colour at all edges, minimalist, tranquil, no text, no watermark, 1200x600.
+
