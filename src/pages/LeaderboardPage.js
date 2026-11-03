@@ -980,28 +980,27 @@ export default function LeaderboardPage() {
               })}
             </div>
 
-            {/* Subtle Sumi-e Misty Mountain Silhouette in bottom-right */}
+            {/* Subtle Sumi-e Samurai Warrior Silhouette in bottom-right */}
             <div
               aria-hidden="true"
               style={{
                 position: "absolute",
-                right: -30,
-                bottom: -20,
-                width: 240,
-                height: 140,
+                right: -15,
+                bottom: -10,
+                width: 190,
+                height: 250,
                 opacity: 0.12,
                 pointerEvents: "none",
                 zIndex: 0,
                 overflow: "hidden",
-                mixBlendMode: "multiply",
               }}
             >
               <img
-                src="/assets/art/empty-state.webp"
+                src="/assets/art/warrior-samurai.webp"
                 alt=""
                 aria-hidden="true"
-                width={1200}
-                height={600}
+                width={896}
+                height={1200}
                 loading="lazy"
                 style={{
                   width: "100%",

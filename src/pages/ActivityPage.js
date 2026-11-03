@@ -1046,22 +1046,56 @@ export default function ActivityPage() {
                 border: "1px solid var(--border)",
                 boxShadow: "var(--shadow-soft)",
                 padding: "20px 22px",
+                position: "relative",
+                overflow: "hidden",
               }}
             >
+              {/* Subtle Japanese Scenery & Bow/Arrow Watermark */}
               <div
+                aria-hidden="true"
                 style={{
-                  fontSize: 11,
-                  fontFamily: "var(--font-display)",
-                  fontVariationSettings: "'wdth' 112",
-                  fontWeight: 700,
-                  color: "var(--text-secondary)",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.12em",
-                  marginBottom: 14,
+                  position: "absolute",
+                  right: -15,
+                  bottom: -10,
+                  width: 170,
+                  height: 95,
+                  opacity: 0.08,
+                  pointerEvents: "none",
+                  zIndex: 0,
                 }}
               >
-                Summary
+                <img
+                  src="/assets/art/japanese-scenery-weapons.webp"
+                  alt=""
+                  aria-hidden="true"
+                  width={1376}
+                  height={768}
+                  loading="lazy"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                    objectPosition: "right bottom",
+                    display: "block",
+                  }}
+                />
               </div>
+
+              <div style={{ position: "relative", zIndex: 1 }}>
+                <div
+                  style={{
+                    fontSize: 11,
+                    fontFamily: "var(--font-display)",
+                    fontVariationSettings: "'wdth' 112",
+                    fontWeight: 700,
+                    color: "var(--text-secondary)",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.12em",
+                    marginBottom: 14,
+                  }}
+                >
+                  Summary
+                </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 <div
@@ -1157,6 +1191,7 @@ export default function ActivityPage() {
                 >
                   {selectedTeamToken ? selectedTeamToken.name : "All Teams"}
                 </span>
+              </div>
               </div>
             </div>
 

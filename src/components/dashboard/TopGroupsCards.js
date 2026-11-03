@@ -32,8 +32,40 @@ export default function TopGroupsCards({ groups = [] }) {
         height: "100%",
         minHeight: 280,
         boxShadow: "var(--shadow-soft)",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
+      {/* Background Japanese Samurai Kabuto Helmet Art */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          right: 12,
+          bottom: 12,
+          width: 130,
+          height: 130,
+          opacity: 0.06,
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      >
+        <img
+          src="/assets/art/samurai-kabuto.webp"
+          alt=""
+          aria-hidden="true"
+          width={1024}
+          height={1024}
+          loading="lazy"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+            display: "block",
+          }}
+        />
+      </div>
+
       {/* Header: Title + See all groups */}
       <div
         style={{
@@ -41,6 +73,8 @@ export default function TopGroupsCards({ groups = [] }) {
           alignItems: "center",
           justifyContent: "space-between",
           marginBottom: 12,
+          position: "relative",
+          zIndex: 1,
         }}
       >
         <span

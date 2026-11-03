@@ -110,10 +110,41 @@ export default function ChartCard({
         minHeight: 280,
         height: "100%",
         position: "relative",
+        overflow: "hidden",
       }}
     >
+      {/* Background Japanese Crossed Katanas Sumi-e Art */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          right: 28,
+          top: 18,
+          width: 170,
+          height: 170,
+          opacity: 0.08,
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      >
+        <img
+          src="/assets/art/crossed-katanas.webp"
+          alt=""
+          aria-hidden="true"
+          width={1024}
+          height={1024}
+          loading="lazy"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+            display: "block",
+          }}
+        />
+      </div>
+
       {/* Top Row: Title & Total Karma Metric */}
-      <div>
+      <div style={{ position: "relative", zIndex: 1 }}>
         <div
           style={{
             fontSize: 16,

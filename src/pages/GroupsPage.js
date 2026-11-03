@@ -471,27 +471,62 @@ export default function GroupsPage() {
                 borderRadius: "var(--radius-card)",
                 padding: "18px 20px",
                 boxShadow: "var(--shadow-soft)",
+                position: "relative",
+                overflow: "hidden",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 12 }}>
-                <Sparkles size={16} color="var(--chart-line)" />
-                <span style={{ fontSize: 12, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                  Campus Overview
-                </span>
+              {/* Subtle Japanese Scenery & Bow/Arrow Watermark */}
+              <div
+                aria-hidden="true"
+                style={{
+                  position: "absolute",
+                  right: -15,
+                  bottom: -10,
+                  width: 175,
+                  height: 100,
+                  opacity: 0.10,
+                  pointerEvents: "none",
+                  zIndex: 0,
+                }}
+              >
+                <img
+                  src="/assets/art/japanese-scenery-weapons.webp"
+                  alt=""
+                  aria-hidden="true"
+                  width={1376}
+                  height={768}
+                  loading="lazy"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                    objectPosition: "right bottom",
+                    display: "block",
+                  }}
+                />
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                <div style={{ background: "var(--surface-subtle)", padding: "12px", borderRadius: 10 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)" }}>CAMPUS KARMA</div>
-                  <div className="tabular-nums" style={{ fontSize: 20, fontWeight: 800, color: "var(--text-primary)", marginTop: 2 }}>
-                    {totalCampusKarma.toLocaleString()}
-                  </div>
+              <div style={{ position: "relative", zIndex: 1 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 12 }}>
+                  <Sparkles size={16} color="var(--chart-line)" />
+                  <span style={{ fontSize: 12, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    Campus Overview
+                  </span>
                 </div>
 
-                <div style={{ background: "var(--surface-subtle)", padding: "12px", borderRadius: 10 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)" }}>WARRIORS</div>
-                  <div className="tabular-nums" style={{ fontSize: 20, fontWeight: 800, color: "var(--text-primary)", marginTop: 2 }}>
-                    {totalWarriors}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                  <div style={{ background: "var(--surface-subtle)", padding: "12px", borderRadius: 10 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)" }}>CAMPUS KARMA</div>
+                    <div className="tabular-nums" style={{ fontSize: 20, fontWeight: 800, color: "var(--text-primary)", marginTop: 2 }}>
+                      {totalCampusKarma.toLocaleString()}
+                    </div>
+                  </div>
+
+                  <div style={{ background: "var(--surface-subtle)", padding: "12px", borderRadius: 10 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)" }}>WARRIORS</div>
+                    <div className="tabular-nums" style={{ fontSize: 20, fontWeight: 800, color: "var(--text-primary)", marginTop: 2 }}>
+                      {totalWarriors}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -506,57 +541,92 @@ export default function GroupsPage() {
                   borderRadius: "var(--radius-card)",
                   padding: "18px 20px",
                   boxShadow: "var(--shadow-soft)",
+                  position: "relative",
+                  overflow: "hidden",
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 12 }}>
-                  <Swords size={16} color="#DC2626" />
-                  <span style={{ fontSize: 12, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                    Closest Race
-                  </span>
-                </div>
-
+                {/* Subtle Crossed Katanas Duel Watermark */}
                 <div
+                  aria-hidden="true"
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    padding: "12px 14px",
-                    borderRadius: 12,
-                    background: "var(--surface-subtle)",
-                    border: "1px solid var(--border)",
+                    position: "absolute",
+                    right: -10,
+                    bottom: -15,
+                    width: 130,
+                    height: 130,
+                    opacity: 0.09,
+                    pointerEvents: "none",
+                    zIndex: 0,
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <Crest group={closestRace.teamA} size="sm" />
-                    <div>
-                      <div style={{ fontSize: 12.5, fontWeight: 800 }}>{closestRace.tokenA.name}</div>
-                      <div className="tabular-nums" style={{ fontSize: 11, color: "var(--text-secondary)", fontWeight: 600 }}>
-                        {(closestRace.teamA.karma || 0).toLocaleString()} pts
-                      </div>
-                    </div>
-                  </div>
+                  <img
+                    src="/assets/art/crossed-katanas.webp"
+                    alt=""
+                    aria-hidden="true"
+                    width={1024}
+                    height={1024}
+                    loading="lazy"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                      objectPosition: "right bottom",
+                      display: "block",
+                    }}
+                  />
+                </div>
 
-                  <div style={{ textAlign: "center", padding: "0 6px" }}>
-                    <span
-                      style={{
-                        fontSize: 10.5,
-                        fontWeight: 800,
-                        color: "#DC2626",
-                        background: "#FEE2E2",
-                        padding: "2px 6px",
-                        borderRadius: 6,
-                      }}
-                    >
-                      {closestRace.gap === 0 ? "TIED" : `Δ ${closestRace.gap}`}
+                <div style={{ position: "relative", zIndex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 12 }}>
+                    <Swords size={16} color="#DC2626" />
+                    <span style={{ fontSize: 12, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                      Closest Race
                     </span>
                   </div>
 
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexDirection: "row-reverse", textAlign: "right" }}>
-                    <Crest group={closestRace.teamB} size="sm" />
-                    <div>
-                      <div style={{ fontSize: 12.5, fontWeight: 800 }}>{closestRace.tokenB.name}</div>
-                      <div className="tabular-nums" style={{ fontSize: 11, color: "var(--text-secondary)", fontWeight: 600 }}>
-                        {(closestRace.teamB.karma || 0).toLocaleString()} pts
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "12px 14px",
+                      borderRadius: 12,
+                      background: "var(--surface-subtle)",
+                      border: "1px solid var(--border)",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <Crest group={closestRace.teamA} size="sm" />
+                      <div>
+                        <div style={{ fontSize: 12.5, fontWeight: 800 }}>{closestRace.tokenA.name}</div>
+                        <div className="tabular-nums" style={{ fontSize: 11, color: "var(--text-secondary)", fontWeight: 600 }}>
+                          {(closestRace.teamA.karma || 0).toLocaleString()} pts
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ textAlign: "center", padding: "0 6px" }}>
+                      <span
+                        style={{
+                          fontSize: 10.5,
+                          fontWeight: 800,
+                          color: "#DC2626",
+                          background: "#FEE2E2",
+                          padding: "2px 6px",
+                          borderRadius: 6,
+                        }}
+                      >
+                        {closestRace.gap === 0 ? "TIED" : `Δ ${closestRace.gap}`}
+                      </span>
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, flexDirection: "row-reverse", textAlign: "right" }}>
+                      <Crest group={closestRace.teamB} size="sm" />
+                      <div>
+                        <div style={{ fontSize: 12.5, fontWeight: 800 }}>{closestRace.tokenB.name}</div>
+                        <div className="tabular-nums" style={{ fontSize: 11, color: "var(--text-secondary)", fontWeight: 600 }}>
+                          {(closestRace.teamB.karma || 0).toLocaleString()} pts
+                        </div>
                       </div>
                     </div>
                   </div>

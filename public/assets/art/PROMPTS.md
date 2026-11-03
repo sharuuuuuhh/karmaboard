@@ -20,3 +20,28 @@ Japanese ink-wash sumi-e painting on near-black background (#16161A). Very dark 
 **Prompt**:
 Japanese ink-wash sumi-e vignette painting on off-white background (#FBFAF7). Centered: a dark ink torii gate in front of soft pale grey mountains with a faint large mountain behind it, a little grass at the base, fog fading to white at the edges. Everything fades smoothly to the background colour at all edges, minimalist, tranquil, no text, no watermark, 1200x600.
 
+---
+
+### 4. warrior-samurai.webp (896x1200, Alpha Transparent WebP)
+**Prompt**:
+Japanese ink-wash sumi-e painting of a solitary noble samurai warrior in traditional yoroi armor with katana sword standing resolute on a rocky misty cliff edge. Flowing ceremonial sash, crimson cords, brush splatter accents, gentle autumn leaves drifting. Solitary, powerful, honorable, Karmayodha campus warrior ethos. Pure white background, high contrast, clean transparent cutout, no watermark.
+
+---
+
+### 5. crossed-katanas.webp (1024x1024, Alpha Transparent WebP)
+**Prompt**:
+Japanese ink-wash sumi-e illustration of crossed samurai katana and wakizashi swords daisho. Exquisite wrapped hilt cordage (tsuka-ito), polished gold tsuba guards, wave temper line (hamon) along the steel blades, floating crimson sakura petals and dynamic sumi-e ink brush splatters. Martial honor, competitive duel, pure white background, clean transparent cutout, no watermark.
+
+---
+
+### 6. samurai-kabuto.webp (1024x1024, Alpha Transparent WebP)
+**Prompt**:
+Japanese ink-wash sumi-e illustration of an ornate samurai kabuto helmet with prominent crescent moon maedate crest (datemono), intricate laced shikoro neck guard, crimson silk cords and fierce mempo half-mask. Rich black sumi-e brush strokes, subtle gold leaf accents, pure white background, clean transparent cutout, no watermark.
+
+---
+
+### 7. japanese-scenery-weapons.webp (1376x768, Alpha Transparent WebP)
+**Prompt**:
+Japanese ink-wash sumi-e landscape of a serene bamboo grove and mossy mountain rock, with traditional archery yumi longbow and quiver of arrows resting peacefully beside a weathered stone toro lantern. Distant mist-shrouded peaks, gentle morning fog, minimalist composition, pure white background, clean transparent cutout, no watermark.
+
+
