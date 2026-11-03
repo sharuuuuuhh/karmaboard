@@ -420,16 +420,19 @@ export default function GroupsPage() {
                 return (
                   <motion.div
                     key={grp.id || grp.name || idx}
-                    layout
+                    layout="position"
                     transition={{
                       layout: {
-                        type: "spring",
-                        stiffness: 300,
-                        damping: 32,
-                        mass: 0.6,
+                        duration: 0.22,
+                        ease: [0.16, 1, 0.3, 1],
                       },
                     }}
-                    style={{ display: "flex", flexDirection: "column", height: "100%" }}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      height: "100%",
+                      transition: "transform 0.22s cubic-bezier(0.16, 1, 0.3, 1)",
+                    }}
                   >
                     <GroupCard
                       group={grp}

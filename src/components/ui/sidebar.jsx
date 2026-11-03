@@ -94,10 +94,8 @@ export const DesktopSidebar = ({
         width: animate ? (open ? "260px" : "68px") : "260px",
       }}
       transition={{
-        type: "spring",
-        stiffness: 300,
-        damping: 32,
-        mass: 0.6,
+        duration: 0.22,
+        ease: [0.16, 1, 0.3, 1],
       }}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
@@ -221,15 +219,20 @@ export const SidebarLink = ({
       <div style={{ flexShrink: 0 }}>{link.icon}</div>
       <motion.span
         animate={{
-          display: animate ? (open ? "inline-block" : "none") : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
+          width: animate ? (open ? "auto" : 0) : "auto",
+          x: animate ? (open ? 0 : -6) : 0,
         }}
-        transition={{ duration: 0.15 }}
+        transition={{
+          duration: 0.18,
+          ease: [0.16, 1, 0.3, 1],
+        }}
         style={{
           fontSize: 14,
           fontWeight: active ? 600 : 500,
           whiteSpace: "nowrap",
           overflow: "hidden",
+          display: "inline-block",
         }}
       >
         {link.label}

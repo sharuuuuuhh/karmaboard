@@ -403,8 +403,9 @@ button {
 
 .groups-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 16px;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @media (min-width: 1850px) {
@@ -437,7 +438,9 @@ button {
   text-decoration: none;
   overflow: hidden;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-  transition: transform 150ms ease, box-shadow 150ms ease, outline 150ms ease;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s ease,
+              outline 0.15s ease;
   user-select: none;
   min-height: 270px;
   padding: 16px 14px;

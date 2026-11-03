@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   Sidebar,
   SidebarBody,
@@ -69,12 +70,45 @@ export default function AppSidebar({ isSyncing, onSync }) {
               overflow: "hidden",
             }}
           >
-            <Logo
-              variant={open ? "auto" : "mark"}
-              size="md"
-              tone="light"
-              href="/"
-            />
+            <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+              <Logo
+                variant="mark"
+                size="md"
+                tone="light"
+                href="/"
+              />
+              <motion.div
+                animate={{
+                  opacity: open ? 1 : 0,
+                  width: open ? "auto" : 0,
+                  x: open ? 0 : -8,
+                }}
+                transition={{
+                  duration: 0.18,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                style={{
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: 14,
+                    fontWeight: 700,
+                    letterSpacing: "0.28em",
+                    textTransform: "uppercase",
+                    color: "#FFFFFF",
+                    lineHeight: 1,
+                  }}
+                >
+                  KARMAYODHA
+                </span>
+              </motion.div>
+            </div>
           </div>
 
           {/* Nav Links */}
@@ -122,11 +156,26 @@ export default function AppSidebar({ isSyncing, onSync }) {
                 }}
               />
             </div>
-            {open && (
-              <span style={{ fontSize: 13, fontWeight: 500, whiteSpace: "nowrap" }}>
-                {isSyncing ? "Syncing..." : "Sync Karma"}
-              </span>
-            )}
+            <motion.span
+              animate={{
+                opacity: open ? 1 : 0,
+                width: open ? "auto" : 0,
+                x: open ? 0 : -6,
+              }}
+              transition={{
+                duration: 0.18,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              style={{
+                fontSize: 13,
+                fontWeight: 500,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                display: "inline-block",
+              }}
+            >
+              {isSyncing ? "Syncing..." : "Sync Karma"}
+            </motion.span>
           </div>
         </div>
       </SidebarBody>
