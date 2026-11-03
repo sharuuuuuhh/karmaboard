@@ -1,16 +1,19 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Search, Users, ArrowRight, RotateCcw, LayoutGrid } from "lucide-react";
+import { Search, Users, ArrowRight, RotateCcw, LayoutGrid, Shield } from "lucide-react";
 import PageHeader from "../components/shell/PageHeader";
 import PageGrid, { PageCol } from "../components/common/PageGrid";
 import { karmaStore } from "../data/karmaStore";
 import { formatRelativeTime } from "../utils/dateUtils";
-import { getGroupToken } from "../utils/groupTokens";
+import { getGroupToken, isOfficialTeam } from "../utils/groupTokens";
 import Crest, { CREST_REGISTRY, normalizeGroupSlug } from "../crests";
 
 export default function ActivityPage() {
   const [dataVersion, setDataVersion] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
+  const filterParam = (searchParams.get("filter") || "").toLowerCase();
+  const initialCategory = filterParam === "teams" || filterParam === "groups" ? filterParam : "all";
+  const [categoryFilter, setCategoryFilter] = useState(initialCategory);
   const teamParam = (searchParams.get("team") || searchParams.get("group") || "").toUpperCase();
   const [selectedGroup, setSelectedGroup] = useState(teamParam || "all");
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,8 +22,26 @@ export default function ActivityPage() {
   useEffect(() => {
     if (teamParam && teamParam !== selectedGroup) {
       setSelectedGroup(teamParam);
+      if (isOfficialTeam(teamParam)) {
+        setCategoryFilter((prev) => (prev === "groups" ? "all" : prev));
+      } else {
+        setCategoryFilter((prev) => (prev === "teams" ? "all" : prev));
+      }
     }
   }, [teamParam, selectedGroup]);
+
+  const handleSelectCategory = (cat) => {
+    setCategoryFilter(cat);
+    setSelectedGroup("all");
+    searchParams.delete("team");
+    searchParams.delete("group");
+    if (cat === "all") {
+      searchParams.delete("filter");
+    } else {
+      searchParams.set("filter", cat);
+    }
+    setSearchParams(searchParams, { replace: true });
+  };
 
   const handleSelectGroup = (team) => {
     setSelectedGroup(team);
@@ -48,12 +69,18 @@ export default function ActivityPage() {
 
   const filteredEvents = useMemo(() => {
     return allEvents.filter((ev) => {
-      const matchTeam =
-        selectedGroup === "all" ||
-        (ev.group_name && ev.group_name.toUpperCase() === selectedGroup.toUpperCase()) ||
-        (ev.group_id && ev.group_id.toUpperCase().includes(selectedGroup.toUpperCase())) ||
-        (ev.group_name && normalizeGroupSlug(ev.group_name) === normalizeGroupSlug(selectedGroup)) ||
-        (ev.group_id && normalizeGroupSlug(ev.group_id) === normalizeGroupSlug(selectedGroup));
+      let matchTeam = true;
+      if (selectedGroup !== "all") {
+        matchTeam =
+          (ev.group_name && ev.group_name.toUpperCase() === selectedGroup.toUpperCase()) ||
+          (ev.group_id && ev.group_id.toUpperCase().includes(selectedGroup.toUpperCase())) ||
+          (ev.group_name && normalizeGroupSlug(ev.group_name) === normalizeGroupSlug(selectedGroup)) ||
+          (ev.group_id && normalizeGroupSlug(ev.group_id) === normalizeGroupSlug(selectedGroup));
+      } else if (categoryFilter === "teams") {
+        matchTeam = isOfficialTeam(ev.group_name || ev.group_id);
+      } else if (categoryFilter === "groups") {
+        matchTeam = !isOfficialTeam(ev.group_name || ev.group_id);
+      }
 
       const q = searchTerm.trim().toLowerCase();
       const matchSearch =
@@ -68,7 +95,7 @@ export default function ActivityPage() {
 
       return matchTeam && matchSearch;
     });
-  }, [allEvents, selectedGroup, searchTerm]);
+  }, [allEvents, selectedGroup, categoryFilter, searchTerm]);
 
   // Group events into day categories: Today, Yesterday, This Week, Earlier
   const groupedEvents = useMemo(() => {
@@ -243,6 +270,16 @@ export default function ActivityPage() {
     }));
   }, [dataVersion]);
 
+  const displayedGroupsList = useMemo(() => {
+    if (categoryFilter === "teams") {
+      return allGroupsList.filter((g) => isOfficialTeam(g));
+    }
+    if (categoryFilter === "groups") {
+      return allGroupsList.filter((g) => !isOfficialTeam(g));
+    }
+    return allGroupsList;
+  }, [allGroupsList, categoryFilter]);
+
   return (
     <div
       className="activity-page-root"
@@ -368,29 +405,35 @@ export default function ActivityPage() {
       />
 
       {/* =========================================================================
-          1. TEAM FILTER BAR (Clean, no rings, large crests, subtle opacity)
+          1. TEAM & GROUP FILTER BAR (Clean, no rings, large crests, subtle opacity)
           ========================================================================= */}
       <div className="activity-filter-bar">
-        {/* 'ALL' Item */}
-        {(() => {
-          const isSelected = selectedGroup === "all";
-          const isHovered = hoveredGroup === "all";
+        {/* Category Sort Options: ALL, TEAMS, GROUPS */}
+        {[
+          { id: "all", label: "All", icon: LayoutGrid, ariaLabel: "Filter by All Teams & Groups" },
+          { id: "teams", label: "Teams", icon: Shield, ariaLabel: "Filter by Teams" },
+          { id: "groups", label: "Groups", icon: Users, ariaLabel: "Filter by Groups" },
+        ].map((cat) => {
+          const isSelected = categoryFilter === cat.id && selectedGroup === "all";
+          const isHovered = hoveredGroup === `cat-${cat.id}`;
           const opacity = isSelected ? 1 : isHovered ? 0.85 : 0.55;
           const filter = isSelected ? "none" : "grayscale(25%)";
+          const Icon = cat.icon;
 
           return (
             <button
+              key={cat.id}
               type="button"
-              onClick={() => handleSelectGroup("all")}
-              onMouseEnter={() => setHoveredGroup("all")}
+              onClick={() => handleSelectCategory(cat.id)}
+              onMouseEnter={() => setHoveredGroup(`cat-${cat.id}`)}
               onMouseLeave={() => setHoveredGroup(null)}
               aria-pressed={isSelected}
-              aria-label="Filter by All Teams"
+              aria-label={cat.ariaLabel}
               className="activity-filter-btn"
               style={{ opacity, filter }}
             >
               <div className="activity-all-icon-box">
-                <LayoutGrid
+                <Icon
                   size={28}
                   strokeWidth={1.75}
                   color={isSelected ? "var(--text-primary)" : "var(--text-secondary)"}
@@ -411,7 +454,7 @@ export default function ActivityPage() {
                   whiteSpace: "nowrap",
                 }}
               >
-                All
+                {cat.label}
               </span>
 
               {/* Subtle 2px underline in neutral color */}
@@ -427,10 +470,23 @@ export default function ActivityPage() {
               />
             </button>
           );
-        })()}
+        })}
 
-        {/* All Campus Teams & Community Groups */}
-        {allGroupsList.map((g) => {
+        {/* Subtle vertical divider between Category Sorts and Crests */}
+        <div
+          aria-hidden="true"
+          style={{
+            width: 1,
+            height: 48,
+            background: "var(--border)",
+            margin: "0 6px 14px 6px",
+            flexShrink: 0,
+            alignSelf: "center",
+          }}
+        />
+
+        {/* Filtered Campus Teams & Community Groups Crests */}
+        {displayedGroupsList.map((g) => {
           const isSelected =
             selectedGroup !== "all" &&
             (selectedGroup.toUpperCase() === g.key ||
@@ -1189,7 +1245,13 @@ export default function ActivityPage() {
                     color: "var(--text-primary)",
                   }}
                 >
-                  {selectedTeamToken ? selectedTeamToken.name : "All Teams"}
+                  {selectedTeamToken
+                    ? selectedTeamToken.name
+                    : categoryFilter === "teams"
+                    ? "Official Teams"
+                    : categoryFilter === "groups"
+                    ? "Community Groups"
+                    : "All Teams & Groups"}
                 </span>
               </div>
               </div>

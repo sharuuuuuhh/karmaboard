@@ -38,4 +38,39 @@ describe("ActivityPage", () => {
     fireEvent.click(screen.getByRole("button", { name: /Clear Filter/i }));
     expect(screen.queryByText(/SPOTLIGHT/i)).not.toBeInTheDocument();
   });
+
+  test("category sorts: Teams shows only teams, Groups shows only groups, All restores both", () => {
+    render(
+      <MemoryRouter>
+        <ActivityPage />
+      </MemoryRouter>
+    );
+
+    const teamsCatBtn = screen.getByLabelText(/^Filter by Teams$/i);
+    const groupsCatBtn = screen.getByLabelText(/^Filter by Groups$/i);
+    const allCatBtn = screen.getByLabelText(/Filter by All Teams/i);
+
+    // Initial state: both official teams and community groups are present
+    expect(screen.getByLabelText(/^Filter by TECH$/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Filter by TECHASHI$/i)).toBeInTheDocument();
+
+    // Click Teams category
+    fireEvent.click(teamsCatBtn);
+    expect(screen.getByLabelText(/^Filter by TECH$/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Filter by LEADS$/i)).toBeInTheDocument();
+    expect(screen.queryByLabelText(/^Filter by TECHASHI$/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/^Filter by OFFGRID$/i)).not.toBeInTheDocument();
+
+    // Click Groups category
+    fireEvent.click(groupsCatBtn);
+    expect(screen.queryByLabelText(/^Filter by TECH$/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/^Filter by LEADS$/i)).not.toBeInTheDocument();
+    expect(screen.getByLabelText(/^Filter by TECHASHI$/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Filter by OFFGRID$/i)).toBeInTheDocument();
+
+    // Click All category
+    fireEvent.click(allCatBtn);
+    expect(screen.getByLabelText(/^Filter by TECH$/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Filter by TECHASHI$/i)).toBeInTheDocument();
+  });
 });
