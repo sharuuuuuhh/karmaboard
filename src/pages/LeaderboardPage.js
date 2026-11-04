@@ -200,7 +200,7 @@ export default function LeaderboardPage() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       <style>{`
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
           .leaderboard-controls-wrap {
             flex-direction: column !important;
             align-items: stretch !important;
@@ -212,11 +212,37 @@ export default function LeaderboardPage() {
           .hide-on-mobile {
             display: none !important;
           }
+          .show-on-mobile-flex {
+            display: flex !important;
+          }
+          .leaderboard-standings-mobile-tab {
+            display: inline-flex !important;
+          }
+          .leaderboard-desktop-standings-col {
+            display: none !important;
+          }
           .leaderboard-table-scroll {
             overflow-x: auto !important;
             -webkit-overflow-scrolling: touch !important;
             max-height: none !important;
             overflow-y: visible !important;
+          }
+          .leaderboard-tabs-scroll {
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+            scrollbar-width: none !important;
+            padding-bottom: 2px !important;
+          }
+          .leaderboard-tabs-scroll::-webkit-scrollbar {
+            display: none !important;
+          }
+        }
+        @media (min-width: 769px) {
+          .leaderboard-standings-mobile-tab {
+            display: none !important;
+          }
+          .show-on-mobile-flex {
+            display: none !important;
           }
         }
       `}</style>
@@ -256,30 +282,54 @@ export default function LeaderboardPage() {
               }}
             >
               {/* Left Controls: 3 Filter Tabs + View Switcher */}
-              <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-                {/* 3 Sorts / Filters: All, Teams, Groups */}
+              <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", maxWidth: "100%" }}>
+                {/* 3 Sorts / Filters: All, Teams, Groups (+ Standings on Mobile) */}
                 <div
                   role="tablist"
                   aria-label="Filter leaderboard"
+                  className="leaderboard-tabs-scroll"
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
                     gap: 6,
+                    flexWrap: "nowrap",
+                    maxWidth: "100%",
                   }}
                 >
                   {[
                     { id: "all", label: "All", count: filterCounts.all },
                     { id: "teams", label: "Teams", count: filterCounts.teams },
                     { id: "groups", label: "Groups", count: filterCounts.groups },
+                    {
+                      id: "standings",
+                      label: "Team Standings",
+                      count: groupStandings.length,
+                      className: "leaderboard-standings-mobile-tab",
+                    },
                   ].map((opt) => {
-                    const isActive = filter === opt.id;
+                    const isActive =
+                      opt.id === "standings"
+                        ? view === "groups"
+                        : view === "individuals" && filter === opt.id;
+
+                    const handleTabClick = () => {
+                      if (opt.id === "standings") {
+                        setView("groups");
+                        handleFilterSelect("all");
+                      } else {
+                        setView("individuals");
+                        handleFilterSelect(opt.id);
+                      }
+                    };
+
                     return (
                       <button
                         key={opt.id}
                         type="button"
                         role="tab"
                         aria-selected={isActive}
-                        onClick={() => handleFilterSelect(opt.id)}
+                        className={opt.className || ""}
+                        onClick={handleTabClick}
                         style={{
                           padding: "6px 14px",
                           borderRadius: "var(--radius-pill)",
@@ -290,9 +340,11 @@ export default function LeaderboardPage() {
                           background: isActive ? "var(--ink)" : "#FFFFFF",
                           border: isActive ? "1px solid var(--ink)" : "1px solid var(--border)",
                           cursor: "pointer",
-                          display: "inline-flex",
+                          display: opt.className ? undefined : "inline-flex",
                           alignItems: "center",
                           gap: 6,
+                          whiteSpace: "nowrap",
+                          flexShrink: 0,
                           boxShadow: isActive ? "0 1px 3px rgba(0, 0, 0, 0.12)" : "none",
                           transition: "all 150ms ease",
                         }}
@@ -604,141 +656,253 @@ export default function LeaderboardPage() {
                   </tbody>
                 </table>
               ) : (
-                /* Groups / Teams View Table */
-                <table className="clean-table" style={{ width: "100%", borderCollapse: "collapse", minWidth: 460 }}>
-                  <thead
+                /* Groups / Teams View */
+                <div>
+                  {/* Desktop Table View */}
+                  <table className="clean-table hide-on-mobile" style={{ width: "100%", borderCollapse: "collapse", minWidth: 460 }}>
+                    <thead
+                      style={{
+                        position: "sticky",
+                        top: 0,
+                        zIndex: 2,
+                        background: "#FFFFFF",
+                        boxShadow: "0 1px 0 var(--border)",
+                      }}
+                    >
+                      <tr style={{ height: 40 }}>
+                        <th style={{ width: 64, padding: "8px 16px", fontSize: 11, fontWeight: 600, color: "var(--muted)", letterSpacing: "0.06em", textTransform: "uppercase", textAlign: "left" }}>Rank</th>
+                        <th style={{ padding: "8px 16px", fontSize: 11, fontWeight: 600, color: "var(--muted)", letterSpacing: "0.06em", textTransform: "uppercase", textAlign: "left" }}>Team</th>
+                        <th style={{ padding: "8px 16px", fontSize: 11, fontWeight: 600, color: "var(--muted)", letterSpacing: "0.06em", textTransform: "uppercase", textAlign: "left" }}>Margin / Gap</th>
+                        <th className="hide-on-mobile" style={{ width: 100, textAlign: "center", padding: "8px 12px", fontSize: 11, fontWeight: 600, color: "var(--muted)", letterSpacing: "0.06em", textTransform: "uppercase" }}>Members</th>
+                        <th style={{ textAlign: "right", padding: "8px 16px", fontSize: 11, fontWeight: 600, color: "var(--muted)", letterSpacing: "0.06em", textTransform: "uppercase" }}>Total Karma</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredStandings.map((grp, idx) => {
+                        const token = getGroupToken(grp);
+                        const rank = idx + 1;
+                        const nextGrp = idx > 0 ? filteredStandings[idx - 1] : null;
+                        const prevGrp = idx < filteredStandings.length - 1 ? filteredStandings[idx + 1] : null;
+
+                        let gapText = "";
+                        if (idx === 0 && prevGrp) {
+                          const diff = (grp.karma || 0) - (prevGrp.karma || 0);
+                          gapText = diff > 0 ? `+${diff.toLocaleString()} ahead of #2` : "Tied";
+                        } else if (idx > 0 && nextGrp) {
+                          const diff = (nextGrp.karma || 0) - (grp.karma || 0);
+                          gapText = diff > 0 ? `${diff.toLocaleString()} behind #${idx}` : "Tied";
+                        }
+
+                        return (
+                          <tr
+                            key={grp.id || grp.name || idx}
+                            style={{
+                              height: 56,
+                              borderBottom: "1px solid var(--border)",
+                              background: rank === 1 ? "var(--gold-tint)" : "transparent",
+                              transition: "background 150ms ease",
+                            }}
+                            onMouseEnter={(e) => {
+                              if (rank !== 1) e.currentTarget.style.background = "#FAF8F4";
+                            }}
+                            onMouseLeave={(e) => {
+                              if (rank !== 1) e.currentTarget.style.background = "transparent";
+                            }}
+                          >
+                            <td
+                              className="tabular-nums"
+                              style={{
+                                padding: "8px 16px",
+                                fontSize: 13,
+                                fontWeight: 700,
+                                fontFamily: "var(--font-numeric)",
+                                color: rank === 1 ? "var(--gold)" : "var(--ink)",
+                              }}
+                            >
+                              #{rank}
+                            </td>
+
+                            <td style={{ padding: "8px 16px" }}>
+                              <Link
+                                to={`/groups/${grp.slug || grp.id || grp.name}`}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 12,
+                                  textDecoration: "none",
+                                  color: "inherit",
+                                }}
+                              >
+                                <div style={{ width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                                  <Crest group={grp} size="xs" />
+                                </div>
+                                <span
+                                  style={{
+                                    fontSize: 13.5,
+                                    fontWeight: 800,
+                                    color: "var(--ink)",
+                                    fontFamily: "var(--font-display)",
+                                    letterSpacing: "-0.01em",
+                                    textTransform: "uppercase",
+                                  }}
+                                >
+                                  {token.name}
+                                </span>
+                              </Link>
+                            </td>
+
+                            <td style={{ padding: "8px 16px" }}>
+                              <span
+                                style={{
+                                  fontSize: 12,
+                                  fontWeight: 600,
+                                  color: "var(--muted)",
+                                  fontFamily: "var(--font-body)",
+                                }}
+                              >
+                                {gapText || "Tied"}
+                              </span>
+                            </td>
+
+                            <td className="hide-on-mobile" style={{ textAlign: "center", padding: "8px 12px", fontSize: 12, fontWeight: 600, color: "var(--muted)", fontFamily: "var(--font-body)" }}>
+                              {grp.member_count || grp.members_count || 6} warriors
+                            </td>
+
+                            <td
+                              className="tabular-nums"
+                              style={{
+                                padding: "8px 16px",
+                                textAlign: "right",
+                                fontSize: 13.5,
+                                fontWeight: 700,
+                                fontFamily: "var(--font-numeric)",
+                                color: rank === 1 ? "var(--gold)" : "var(--ink)",
+                              }}
+                            >
+                              {(grp.karma || 0).toLocaleString()}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+
+                  {/* Mobile Standings Card List */}
+                  <div
+                    className="show-on-mobile-flex"
                     style={{
-                      position: "sticky",
-                      top: 0,
-                      zIndex: 2,
-                      background: "#FFFFFF",
-                      boxShadow: "0 1px 0 var(--border)",
+                      display: "none",
+                      flexDirection: "column",
+                      gap: 8,
+                      padding: "14px 12px",
                     }}
                   >
-                    <tr style={{ height: 40 }}>
-                      <th style={{ width: 64, padding: "8px 16px", fontSize: 11, fontWeight: 600, color: "var(--muted)", letterSpacing: "0.06em", textTransform: "uppercase", textAlign: "left" }}>Rank</th>
-                      <th style={{ padding: "8px 16px", fontSize: 11, fontWeight: 600, color: "var(--muted)", letterSpacing: "0.06em", textTransform: "uppercase", textAlign: "left" }}>Team</th>
-                      <th style={{ padding: "8px 16px", fontSize: 11, fontWeight: 600, color: "var(--muted)", letterSpacing: "0.06em", textTransform: "uppercase", textAlign: "left" }}>Margin / Gap</th>
-                      <th className="hide-on-mobile" style={{ width: 100, textAlign: "center", padding: "8px 12px", fontSize: 11, fontWeight: 600, color: "var(--muted)", letterSpacing: "0.06em", textTransform: "uppercase" }}>Members</th>
-                      <th style={{ textAlign: "right", padding: "8px 16px", fontSize: 11, fontWeight: 600, color: "var(--muted)", letterSpacing: "0.06em", textTransform: "uppercase" }}>Total Karma</th>
-                    </tr>
-                  </thead>
-                  <tbody>
                     {filteredStandings.map((grp, idx) => {
-                      const token = getGroupToken(grp);
                       const rank = idx + 1;
+                      const isRank1 = rank === 1;
+                      const token = getGroupToken(grp);
+                      const borderColor = getTeamBorderColor(token.name || grp.name || grp.id, rank);
                       const nextGrp = idx > 0 ? filteredStandings[idx - 1] : null;
                       const prevGrp = idx < filteredStandings.length - 1 ? filteredStandings[idx + 1] : null;
 
-                      let gapText = "";
+                      let gapText = "Tied";
                       if (idx === 0 && prevGrp) {
                         const diff = (grp.karma || 0) - (prevGrp.karma || 0);
-                        gapText = diff > 0 ? `+${diff.toLocaleString()} ahead of #2` : "Tied";
+                        gapText = diff > 0 ? `+${diff.toLocaleString()} ahead` : "Tied";
                       } else if (idx > 0 && nextGrp) {
                         const diff = (nextGrp.karma || 0) - (grp.karma || 0);
-                        gapText = diff > 0 ? `${diff.toLocaleString()} behind #${idx}` : "Tied";
+                        gapText = diff > 0 ? `-${diff.toLocaleString()} pts` : "Tied";
                       }
 
                       return (
-                        <tr
+                        <Link
                           key={grp.id || grp.name || idx}
+                          to={`/groups/${grp.slug || grp.id || grp.name}`}
                           style={{
-                            height: 56,
-                            borderBottom: "1px solid var(--border)",
-                            background: rank === 1 ? "var(--gold-tint)" : "transparent",
-                            transition: "background 150ms ease",
-                          }}
-                          onMouseEnter={(e) => {
-                            if (rank !== 1) e.currentTarget.style.background = "#FAF8F4";
-                          }}
-                          onMouseLeave={(e) => {
-                            if (rank !== 1) e.currentTarget.style.background = "transparent";
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            padding: "10px 12px",
+                            borderRadius: 10,
+                            background: isRank1 ? "var(--gold-tint)" : "#FAF9F6",
+                            border: "1px solid var(--border)",
+                            borderLeft: `4px solid ${borderColor}`,
+                            textDecoration: "none",
                           }}
                         >
-                          <td
-                            className="tabular-nums"
-                            style={{
-                              padding: "8px 16px",
-                              fontSize: 13,
-                              fontWeight: 700,
-                              fontFamily: "var(--font-numeric)",
-                              color: rank === 1 ? "var(--gold)" : "var(--ink)",
-                            }}
-                          >
-                            #{rank}
-                          </td>
-
-                          <td style={{ padding: "8px 16px" }}>
-                            <Link
-                              to={`/groups/${grp.slug || grp.id || grp.name}`}
+                          <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+                            <span
+                              className="tabular-nums"
                               style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 12,
-                                textDecoration: "none",
-                                color: "inherit",
+                                fontSize: 13,
+                                fontWeight: 700,
+                                fontFamily: "var(--font-numeric)",
+                                color: isRank1 ? "var(--gold)" : "var(--ink)",
+                                width: 22,
+                                flexShrink: 0,
                               }}
                             >
-                              <div style={{ width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                                <Crest group={grp} size="xs" />
-                              </div>
-                              <span
+                              #{rank}
+                            </span>
+
+                            <div style={{ width: 26, height: 26, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                              <Crest group={grp} size="xs" />
+                            </div>
+
+                            <div style={{ minWidth: 0 }}>
+                              <div
                                 style={{
-                                  fontSize: 13.5,
-                                  fontWeight: 800,
-                                  color: "var(--ink)",
                                   fontFamily: "var(--font-display)",
+                                  fontWeight: 800,
+                                  fontSize: 12.5,
+                                  color: "var(--ink)",
                                   letterSpacing: "-0.01em",
                                   textTransform: "uppercase",
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
                                 }}
                               >
                                 {token.name}
-                              </span>
-                            </Link>
-                          </td>
+                              </div>
+                              <div
+                                style={{
+                                  fontSize: 10.5,
+                                  fontWeight: 500,
+                                  fontFamily: "var(--font-body)",
+                                  color: "var(--muted)",
+                                }}
+                              >
+                                {gapText}
+                              </div>
+                            </div>
+                          </div>
 
-                          <td style={{ padding: "8px 16px" }}>
-                            <span
-                              style={{
-                                fontSize: 12,
-                                fontWeight: 600,
-                                color: "var(--muted)",
-                                fontFamily: "var(--font-body)",
-                              }}
-                            >
-                              {gapText || "Tied"}
-                            </span>
-                          </td>
-
-                          <td className="hide-on-mobile" style={{ textAlign: "center", padding: "8px 12px", fontSize: 12, fontWeight: 600, color: "var(--muted)", fontFamily: "var(--font-body)" }}>
-                            {grp.member_count || grp.members_count || 6} warriors
-                          </td>
-
-                          <td
+                          <span
                             className="tabular-nums"
                             style={{
-                              padding: "8px 16px",
-                              textAlign: "right",
                               fontSize: 13.5,
                               fontWeight: 700,
                               fontFamily: "var(--font-numeric)",
-                              color: rank === 1 ? "var(--gold)" : "var(--ink)",
+                              color: isRank1 ? "var(--gold)" : "var(--ink)",
+                              marginLeft: 8,
+                              flexShrink: 0,
                             }}
                           >
                             {(grp.karma || 0).toLocaleString()}
-                          </td>
-                        </tr>
+                          </span>
+                        </Link>
                       );
                     })}
-                  </tbody>
-                </table>
+                  </div>
+                </div>
               )}
             </div>
           </div>
         </PageCol>
 
-        {/* Right Zone (Span 4): TEAM STANDINGS Card with Subtle Sumi-e Wash */}
-        <PageCol span={4} spanLg={4} spanMd={2} spanSm={1}>
+        {/* Right Zone (Span 4): TEAM STANDINGS Card with Subtle Sumi-e Wash (Desktop Only) */}
+        <PageCol span={4} spanLg={4} spanMd={2} spanSm={1} className="leaderboard-desktop-standings-col">
           <div
             style={{
               position: "sticky",
