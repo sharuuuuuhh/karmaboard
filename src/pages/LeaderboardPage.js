@@ -221,27 +221,11 @@ export default function LeaderboardPage() {
         }
       `}</style>
 
-      {/* Page Header with Japanese Sumi-e Artwork Banner and Period Popover in Middle */}
+      {/* Page Header with Japanese Sumi-e Artwork Banner */}
       <PageHeader
         title="Leaderboard"
         subtitle={`Standings across all teams and campus warriors • ${periodLabel}`}
         showJapaneseBanner={true}
-        centerActions={
-          <PeriodCalendarPopover
-            period={period}
-            offset={offset}
-            dateLabel={dateLabel}
-            onPeriodChange={handlePeriodChange}
-            onOffsetChange={(newOffset) => setOffset(newOffset)}
-            onDateSelect={(selectedDate) => {
-              const now = new Date();
-              const monthDiff =
-                (selectedDate.getFullYear() - now.getFullYear()) * 12 +
-                (selectedDate.getMonth() - now.getMonth());
-              setOffset(Math.min(0, monthDiff));
-            }}
-          />
-        }
       />
 
       <PageGrid gap={20}>
@@ -343,6 +327,24 @@ export default function LeaderboardPage() {
                     );
                   })}
                 </div>
+              </div>
+
+              {/* Date / Period Selector Button in the exact same level! */}
+              <div style={{ display: "inline-flex", alignItems: "center" }}>
+                <PeriodCalendarPopover
+                  period={period}
+                  offset={offset}
+                  dateLabel={dateLabel}
+                  onPeriodChange={handlePeriodChange}
+                  onOffsetChange={(newOffset) => setOffset(newOffset)}
+                  onDateSelect={(selectedDate) => {
+                    const now = new Date();
+                    const monthDiff =
+                      (selectedDate.getFullYear() - now.getFullYear()) * 12 +
+                      (selectedDate.getMonth() - now.getMonth());
+                    setOffset(Math.min(0, monthDiff));
+                  }}
+                />
               </div>
 
               {/* Search Filter */}

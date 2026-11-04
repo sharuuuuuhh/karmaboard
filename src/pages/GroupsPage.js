@@ -258,28 +258,9 @@ export default function GroupsPage() {
       <PageHeader
         title="Teams & Groups"
         subtitle={subtitle}
-        centerActions={
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              flexWrap: "wrap",
-            }}
-          >
-            <PeriodCalendarPopover
-              period={period}
-              offset={offset}
-              dateLabel={dateRangeInfo.label}
-              onPeriodChange={handlePeriodChange}
-              onOffsetChange={handleOffsetChange}
-              onDateSelect={handleDateSelect}
-            />
-          </div>
-        }
       />
 
-      {/* Category Filter & Sort Bar */}
+      {/* Category Filter, Period Selector & Sort Bar */}
       <div
         style={{
           display: "flex",
@@ -347,6 +328,18 @@ export default function GroupsPage() {
               </button>
             );
           })}
+        </div>
+
+        {/* Date / Period Selector Button in the exact same level! */}
+        <div style={{ display: "inline-flex", alignItems: "center" }}>
+          <PeriodCalendarPopover
+            period={period}
+            offset={offset}
+            dateLabel={dateRangeInfo.label}
+            onPeriodChange={handlePeriodChange}
+            onOffsetChange={handleOffsetChange}
+            onDateSelect={handleDateSelect}
+          />
         </div>
 
         {/* Sort by Dropdown */}

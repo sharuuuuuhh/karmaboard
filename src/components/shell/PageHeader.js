@@ -47,13 +47,14 @@ export default function PageHeader({
       <style>{`
         .page-header-root {
           display: flex;
-          align-items: center;
+          align-items: flex-end;
           justify-content: space-between;
           gap: 16px;
-          margin-bottom: 24px;
+          margin-bottom: 20px;
           position: relative;
           z-index: 60;
-          min-height: 140px;
+          min-height: 90px;
+          padding-bottom: 4px;
         }
         .page-header-title-col {
           display: flex;
@@ -64,7 +65,7 @@ export default function PageHeader({
         }
         .page-header-center-col {
           display: flex;
-          align-items: center;
+          align-items: flex-end;
           justify-content: center;
           position: relative;
           z-index: 60;
@@ -73,7 +74,7 @@ export default function PageHeader({
         }
         .page-header-right-col {
           display: flex;
-          align-items: center;
+          align-items: flex-end;
           gap: 12px;
           position: relative;
           z-index: 60;
