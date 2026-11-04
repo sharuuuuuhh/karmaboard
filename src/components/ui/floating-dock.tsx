@@ -8,7 +8,7 @@ import {
   useMotionValue,
   useSpring,
   useTransform,
-} from "motion/react";
+} from "framer-motion";
 import React, { useRef, useState } from "react";
 
 export interface FloatingDockItem {
@@ -228,3 +228,4 @@ function IconContainer({
 }
 
 export default FloatingDock;
+
