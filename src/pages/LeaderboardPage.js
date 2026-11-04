@@ -249,7 +249,8 @@ export default function LeaderboardPage() {
               boxShadow: "var(--shadow-soft)",
               display: "flex",
               flexDirection: "column",
-              overflow: "hidden",
+              position: "relative",
+              minHeight: 460,
             }}
           >
             {/* Table Control Header */}
@@ -263,6 +264,9 @@ export default function LeaderboardPage() {
                 gap: 12,
                 padding: "16px 20px",
                 borderBottom: "1px solid var(--border)",
+                borderRadius: "var(--radius-card) var(--radius-card) 0 0",
+                position: "relative",
+                zIndex: 40,
               }}
             >
               {/* Left Controls: 3 Filter Tabs + View Switcher */}
@@ -423,6 +427,9 @@ export default function LeaderboardPage() {
                 maxHeight: "calc(100vh - 240px)",
                 overflowY: "auto",
                 overflowX: "auto",
+                borderRadius: "0 0 var(--radius-card) var(--radius-card)",
+                position: "relative",
+                zIndex: 1,
               }}
             >
               {filteredStandings.length === 0 ? (

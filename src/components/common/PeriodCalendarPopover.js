@@ -65,15 +65,16 @@ export default function PeriodCalendarPopover({
       style={{
         position: "relative",
         display: "inline-block",
-        zIndex: isOpen ? 1000 : 1,
+        zIndex: isOpen ? 10000 : 1,
       }}
     >
       <style>{`
         .period-calendar-popover-dropdown {
           position: absolute;
           top: calc(100% + 8px);
-          right: 0;
-          z-index: 9999;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 99999;
           animation: fadeIn 0.18s ease-out;
         }
         @media (max-width: 768px) {
@@ -93,6 +94,7 @@ export default function PeriodCalendarPopover({
             transform: translateX(-50%) !important;
             max-width: calc(100vw - 24px) !important;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25) !important;
+            z-index: 999999 !important;
           }
         }
       `}</style>
