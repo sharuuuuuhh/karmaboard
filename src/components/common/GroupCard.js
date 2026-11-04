@@ -10,6 +10,7 @@ export default function GroupCard({
   karma: explicitKarma,
   memberCount: explicitMemberCount,
   target = 360,
+  showTarget = false,
   variant = "full",
   className = "",
   style = {},
@@ -338,49 +339,53 @@ export default function GroupCard({
         </div>
       </div>
 
-      {/* BOTTOM ZONE: Target Progress Bar & View Team Row */}
+      {/* BOTTOM ZONE: Target Progress Bar (Optional) & View Team Row */}
       <div className="group-card-bottom-zone">
-        {/* Target and Percent */}
-        <div
-          className="group-card-target-row"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            fontFamily: "var(--font-numeric)",
-            fontSize: 11,
-            fontWeight: 700,
-            letterSpacing: "0.06em",
-            textTransform: "uppercase",
-            color: "var(--ink)",
-            marginBottom: 6,
-          }}
-        >
-          <span>TARGET {target}</span>
-          <span className="tabular-nums">{percent}%</span>
-        </div>
+        {showTarget && (
+          <>
+            {/* Target and Percent */}
+            <div
+              className="group-card-target-row"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                fontFamily: "var(--font-numeric)",
+                fontSize: 11,
+                fontWeight: 700,
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+                color: "var(--ink)",
+                marginBottom: 6,
+              }}
+            >
+              <span>TARGET {target}</span>
+              <span className="tabular-nums">{percent}%</span>
+            </div>
 
-        {/* 5px Progress Track with Brand Red Fill */}
-        <div
-          className="group-card-progress-track"
-          style={{
-            width: "100%",
-            height: 5,
-            borderRadius: 9999,
-            background: "#EAE6DF",
-            overflow: "hidden",
-          }}
-        >
-          <div
-            style={{
-              width: `${percent}%`,
-              height: "100%",
-              borderRadius: 9999,
-              background: "var(--crimson)",
-              transition: "width 0.3s ease",
-            }}
-          />
-        </div>
+            {/* 5px Progress Track with Brand Red Fill */}
+            <div
+              className="group-card-progress-track"
+              style={{
+                width: "100%",
+                height: 5,
+                borderRadius: 9999,
+                background: "#EAE6DF",
+                overflow: "hidden",
+              }}
+            >
+              <div
+                style={{
+                  width: `${percent}%`,
+                  height: "100%",
+                  borderRadius: 9999,
+                  background: "var(--crimson)",
+                  transition: "width 0.3s ease",
+                }}
+              />
+            </div>
+          </>
+        )}
 
         {/* Footer Row */}
         <div
@@ -390,7 +395,7 @@ export default function GroupCard({
             alignItems: "center",
             justifyContent: "space-between",
             gap: 6,
-            marginTop: 14,
+            marginTop: showTarget ? 14 : 10,
             paddingTop: 12,
             borderTop: "1px solid var(--border)",
           }}

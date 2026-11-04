@@ -71,11 +71,11 @@ export default function HomePage() {
     void dataVersion;
     return karmaStore.getLeaderboard
       ? karmaStore.getLeaderboard({
-          period,
-          view: "groups",
-          weekOffset: period === "week" ? offset : 0,
-          monthOffset: period === "month" ? offset : 0,
-        })
+        period,
+        view: "groups",
+        weekOffset: period === "week" ? offset : 0,
+        monthOffset: period === "month" ? offset : 0,
+      })
       : [];
   }, [period, offset, dataVersion]);
 
@@ -83,11 +83,11 @@ export default function HomePage() {
     void dataVersion;
     return karmaStore.getLeaderboard
       ? karmaStore.getLeaderboard({
-          period,
-          view: "individuals",
-          weekOffset: period === "week" ? offset : 0,
-          monthOffset: period === "month" ? offset : 0,
-        })
+        period,
+        view: "individuals",
+        weekOffset: period === "week" ? offset : 0,
+        monthOffset: period === "month" ? offset : 0,
+      })
       : [];
   }, [period, offset, dataVersion]);
 
@@ -241,68 +241,68 @@ export default function HomePage() {
       <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", gap: 24, width: "100%" }}>
         {/* Page Header: Title + Subtitle + Single Prominent Period Popover Selector (Centered) */}
         <PageHeader
-        title="Overview"
-        subtitle={subtitle}
-        centerActions={
-          <PeriodCalendarPopover
-            period={period}
-            offset={offset}
-            dateLabel={dateRangeInfo.label}
-            onPeriodChange={handlePeriodChange}
-            onOffsetChange={(newOffset) => setOffset(newOffset)}
-            onDateSelect={(selectedDate) => {
-              const now = new Date();
-              const monthDiff =
-                (selectedDate.getFullYear() - now.getFullYear()) * 12 +
-                (selectedDate.getMonth() - now.getMonth());
-              setOffset(Math.min(0, monthDiff));
-            }}
-          />
-        }
-      />
+          title="Overview"
+          subtitle={subtitle}
+          centerActions={
+            <PeriodCalendarPopover
+              period={period}
+              offset={offset}
+              dateLabel={dateRangeInfo.label}
+              onPeriodChange={handlePeriodChange}
+              onOffsetChange={(newOffset) => setOffset(newOffset)}
+              onDateSelect={(selectedDate) => {
+                const now = new Date();
+                const monthDiff =
+                  (selectedDate.getFullYear() - now.getFullYear()) * 12 +
+                  (selectedDate.getMonth() - now.getMonth());
+                setOffset(Math.min(0, monthDiff));
+              }}
+            />
+          }
+        />
 
-      {/* Row 1: Karma Chart (span 5) | Top Groups Stack (span 4) | Promo Card (span 3) */}
-      <PageGrid gap={20}>
-        <PageCol span={5} spanLg={5} spanMd={2} spanSm={1}>
-          <ChartCard
-            events={allEvents}
-            totalKarma={totalWeeklyKarma}
-            percentageChange="-14.2%"
-            range={period}
-            baseDate={chartBaseDate}
-          />
-        </PageCol>
+        {/* Row 1: Karma Chart (span 5) | Top Groups Stack (span 4) | Promo Card (span 3) */}
+        <PageGrid gap={20}>
+          <PageCol span={5} spanLg={5} spanMd={2} spanSm={1}>
+            <ChartCard
+              events={allEvents}
+              totalKarma={totalWeeklyKarma}
+              percentageChange="-14.2%"
+              range={period}
+              baseDate={chartBaseDate}
+            />
+          </PageCol>
 
-        <PageCol span={4} spanLg={4} spanMd={1} spanSm={1}>
-          <TopGroupsCards groups={groupStandings} />
-        </PageCol>
+          <PageCol span={4} spanLg={4} spanMd={1} spanSm={1}>
+            <TopGroupsCards groups={groupStandings} />
+          </PageCol>
 
-        <PageCol span={3} spanLg={3} spanMd={1} spanSm={1}>
-          <DarkPromoCard
-            groups={groupStandings}
-            countdown={countdown}
-            activeMemberCount={activeMembersCount}
-            period={period}
-          />
-        </PageCol>
-      </PageGrid>
+          <PageCol span={3} spanLg={3} spanMd={1} spanSm={1}>
+            <DarkPromoCard
+              groups={groupStandings}
+              countdown={countdown}
+              activeMemberCount={activeMembersCount}
+              period={period}
+            />
+          </PageCol>
+        </PageGrid>
 
-      {/* Row 2: Leaderboard Table (span 7) | Recent Activity (span 5) */}
-      <PageGrid gap={20}>
-        <PageCol span={7} spanLg={7} spanMd={2} spanSm={1}>
-          <LeaderboardTableCard
-            individuals={displayedIndividuals}
-            groups={groupStandings}
-            period={period}
-            selectedGroupId={selectedGroupId}
-            onSelectGroup={(id) => setSelectedGroupId(id)}
-          />
-        </PageCol>
+        {/* Row 2: Leaderboard Table (span 7) | Recent Activity (span 5) */}
+        <PageGrid gap={20}>
+          <PageCol span={7} spanLg={7} spanMd={2} spanSm={1}>
+            <LeaderboardTableCard
+              individuals={displayedIndividuals}
+              groups={groupStandings}
+              period={period}
+              selectedGroupId={selectedGroupId}
+              onSelectGroup={(id) => setSelectedGroupId(id)}
+            />
+          </PageCol>
 
-        <PageCol span={5} spanLg={5} spanMd={2} spanSm={1} className="home-activity-col">
-          <RecentActivityCard activities={displayedActivities} maxRows={6} />
-        </PageCol>
-      </PageGrid>
+          <PageCol span={5} spanLg={5} spanMd={2} spanSm={1} className="home-activity-col">
+            <RecentActivityCard activities={displayedActivities} maxRows={6} />
+          </PageCol>
+        </PageGrid>
       </div>
     </div>
   );
