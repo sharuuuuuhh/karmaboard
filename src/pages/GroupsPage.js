@@ -496,23 +496,23 @@ export default function GroupsPage() {
 
               <div style={{ position: "relative", zIndex: 1 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 12 }}>
-                  <Sparkles size={16} color="var(--chart-line)" />
-                  <span style={{ fontSize: 12, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  <Sparkles size={16} color="var(--crimson)" />
+                  <span style={{ fontSize: 12, fontWeight: 800, color: "var(--ink)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                     Campus Overview
                   </span>
                 </div>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                  <div style={{ background: "var(--surface-subtle)", padding: "12px", borderRadius: 10 }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)" }}>CAMPUS KARMA</div>
-                    <div className="tabular-nums" style={{ fontSize: 20, fontWeight: 800, color: "var(--text-primary)", marginTop: 2 }}>
+                  <div style={{ background: "#FAF9F6", border: "1px solid var(--border)", padding: "12px", borderRadius: 10 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "var(--muted)" }}>CAMPUS KARMA</div>
+                    <div className="tabular-nums" style={{ fontSize: 20, fontWeight: 800, color: "var(--ink)", marginTop: 2 }}>
                       {totalCampusKarma.toLocaleString()}
                     </div>
                   </div>
 
-                  <div style={{ background: "var(--surface-subtle)", padding: "12px", borderRadius: 10 }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)" }}>WARRIORS</div>
-                    <div className="tabular-nums" style={{ fontSize: 20, fontWeight: 800, color: "var(--text-primary)", marginTop: 2 }}>
+                  <div style={{ background: "#FAF9F6", border: "1px solid var(--border)", padding: "12px", borderRadius: 10 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "var(--muted)" }}>WARRIORS</div>
+                    <div className="tabular-nums" style={{ fontSize: 20, fontWeight: 800, color: "var(--ink)", marginTop: 2 }}>
                       {totalWarriors}
                     </div>
                   </div>
@@ -566,8 +566,8 @@ export default function GroupsPage() {
 
                 <div style={{ position: "relative", zIndex: 1 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 12 }}>
-                    <Swords size={16} color="#DC2626" />
-                    <span style={{ fontSize: 12, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    <Swords size={16} color="var(--crimson)" />
+                    <span style={{ fontSize: 12, fontWeight: 800, color: "var(--ink)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                       Closest Race
                     </span>
                   </div>
@@ -579,15 +579,15 @@ export default function GroupsPage() {
                       justifyContent: "space-between",
                       padding: "12px 14px",
                       borderRadius: 12,
-                      background: "var(--surface-subtle)",
+                      background: "#FAF9F6",
                       border: "1px solid var(--border)",
                     }}
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <Crest group={closestRace.teamA} size="sm" />
                       <div>
-                        <div style={{ fontSize: 12.5, fontWeight: 800 }}>{closestRace.tokenA.name}</div>
-                        <div className="tabular-nums" style={{ fontSize: 11, color: "var(--text-secondary)", fontWeight: 600 }}>
+                        <div style={{ fontSize: 12.5, fontWeight: 800, color: "var(--ink)" }}>{closestRace.tokenA.name}</div>
+                        <div className="tabular-nums" style={{ fontSize: 11, color: "var(--muted)", fontWeight: 600 }}>
                           {(closestRace.teamA.karma || 0).toLocaleString()} pts
                         </div>
                       </div>
@@ -598,9 +598,9 @@ export default function GroupsPage() {
                         style={{
                           fontSize: 10.5,
                           fontWeight: 800,
-                          color: "#DC2626",
-                          background: "#FEE2E2",
-                          padding: "2px 6px",
+                          color: "var(--crimson)",
+                          background: "rgba(179, 32, 42, 0.08)",
+                          padding: "2px 8px",
                           borderRadius: 6,
                         }}
                       >
@@ -611,8 +611,8 @@ export default function GroupsPage() {
                     <div style={{ display: "flex", alignItems: "center", gap: 8, flexDirection: "row-reverse", textAlign: "right" }}>
                       <Crest group={closestRace.teamB} size="sm" />
                       <div>
-                        <div style={{ fontSize: 12.5, fontWeight: 800 }}>{closestRace.tokenB.name}</div>
-                        <div className="tabular-nums" style={{ fontSize: 11, color: "var(--text-secondary)", fontWeight: 600 }}>
+                        <div style={{ fontSize: 12.5, fontWeight: 800, color: "var(--ink)" }}>{closestRace.tokenB.name}</div>
+                        <div className="tabular-nums" style={{ fontSize: 11, color: "var(--muted)", fontWeight: 600 }}>
                           {(closestRace.teamB.karma || 0).toLocaleString()} pts
                         </div>
                       </div>
@@ -635,8 +635,8 @@ export default function GroupsPage() {
               {/* Heading: Retained as Goal Pace */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                  <Award size={16} color="var(--chart-line)" />
-                  <span style={{ fontSize: 12, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  <Award size={16} color="var(--crimson)" />
+                  <span style={{ fontSize: 12, fontWeight: 800, color: "var(--ink)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
                     Goal Pace
                   </span>
                 </div>

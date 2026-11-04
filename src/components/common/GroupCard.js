@@ -36,8 +36,7 @@ export default function GroupCard({
       : 6;
 
   const percent = Math.min(100, Math.round((karma / target) * 100));
-  const isLight = token.cardText === "#1F2A4D";
-  const uniqueId = `${slug}-${rank}`;
+  const isRank1 = rank === 1;
 
   const queryParams =
     period !== undefined && offset !== undefined
@@ -46,235 +45,65 @@ export default function GroupCard({
   const cardLink = `/groups/${group.id || group.name || slug}${queryParams}`;
 
   // ==========================================
-  // COMPACT VARIANT (Used on Home "Top Groups")
+  // COMPACT VARIANT (Used on Home / Unit Tests)
   // ==========================================
   if (variant === "compact") {
     return (
       <Link
         to={cardLink}
-        className={`interactive-group-card-compact ${isLight ? "light-card" : ""} ${className}`}
+        className={`interactive-group-card-compact ${className}`}
         style={{
-          background: token.cardBg,
-          color: token.cardText,
-          boxShadow: "0 1px 2px rgba(0, 0, 0, 0.08)",
+          background: "#FFFFFF",
+          color: "var(--ink)",
+          border: "1px solid var(--border)",
+          borderRadius: 14,
+          padding: "12px 14px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          textDecoration: "none",
+          position: "relative",
+          overflow: "hidden",
+          boxShadow: "var(--shadow-soft)",
+          borderLeft: "3px solid var(--crimson)",
           ...style,
         }}
       >
-        {/* 1px Inner Border */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            boxShadow: `inset 0 0 0 1px ${token.cardBorder}`,
-            clipPath: "polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%)",
-            pointerEvents: "none",
-            zIndex: 3,
-          }}
-        />
-
-        {/* Diagonal Chamfer 1px Line */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 12,
-            width: 16.97,
-            height: 1,
-            transformOrigin: "top left",
-            transform: "rotate(45deg)",
-            background: token.cardBorder,
-            pointerEvents: "none",
-            zIndex: 4,
-          }}
-        />
-
-        {/* Layer A: Giant Watermark Crest */}
-        {crestFiles ? (
-          <img
-            src={crestFiles["384"] || crestFiles["128"]}
-            alt=""
-            aria-hidden="true"
-            style={{
-              position: "absolute",
-              right: -15,
-              bottom: -15,
-              width: 110,
-              height: 110,
-              objectFit: "contain",
-              pointerEvents: "none",
-              opacity: 0.07,
-              filter: token.watermarkFilter || "brightness(0) invert(1)",
-              zIndex: 0,
-            }}
-          />
-        ) : (
-          <svg
-            viewBox="0 0 100 100"
-            style={{
-              position: "absolute",
-              right: -15,
-              bottom: -15,
-              width: 110,
-              height: 110,
-              pointerEvents: "none",
-              opacity: 0.07,
-              filter: token.watermarkFilter || "brightness(0) invert(1)",
-              zIndex: 0,
-            }}
-            fill="none"
-          >
-            <path
-              d="M50 8 L85 22 C85 62 50 90 50 90 C50 90 15 62 15 22 Z"
-              stroke="#FFFFFF"
-              strokeWidth="5"
-              fill="white"
-            />
-          </svg>
-        )}
-
-        {/* Layer B: Faint Angular Facets */}
-        <svg
-          style={{
-            position: "absolute",
-            inset: 0,
-            width: "100%",
-            height: "100%",
-            pointerEvents: "none",
-            opacity: 0.05,
-            zIndex: 0,
-          }}
-          viewBox="0 0 300 80"
-          preserveAspectRatio="none"
-          fill="none"
-          aria-hidden="true"
-        >
-          <polygon
-            points="0,0 80,0 140,80 0,80"
-            fill={token.facetColor || "#FFFFFF"}
-          />
-          <line
-            x1="0"
-            y1="20"
-            x2="300"
-            y2="70"
-            stroke={token.facetColor || "#FFFFFF"}
-            strokeWidth="1.5"
-          />
-        </svg>
-
-        {/* Layer C: Film-grain noise */}
-        <svg
-          style={{
-            position: "absolute",
-            inset: 0,
-            width: "100%",
-            height: "100%",
-            pointerEvents: "none",
-            opacity: 0.04,
-            mixBlendMode: "overlay",
-            zIndex: 0,
-          }}
-          aria-hidden="true"
-        >
-          <filter id={`grain-comp-${uniqueId}`}>
-            <feTurbulence
-              type="fractalNoise"
-              baseFrequency="0.8"
-              numOctaves="3"
-              stitchTiles="stitch"
-            />
-            <feColorMatrix type="saturate" values="0" />
-          </filter>
-          <rect width="100%" height="100%" filter={`url(#grain-comp-${uniqueId})`} />
-        </svg>
-
-        {/* Left: Rank + Hero Crest + Name */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            position: "relative",
-            zIndex: 1,
-            minWidth: 0,
-          }}
-        >
-          {/* Outlined Rank Tag */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
           <span
             className="tabular-nums"
             style={{
+              fontSize: 12.5,
+              fontWeight: 800,
               fontFamily: "var(--font-numeric)",
-              fontVariantNumeric: "tabular-nums",
-              fontSize: 11,
-              fontWeight: 700,
-              color: token.cardText,
-              border: `1px solid ${token.tagBorder || "rgba(255, 255, 255, 0.6)"}`,
-              padding: "1px 6px",
-              borderRadius: 3,
+              color: "var(--crimson)",
+              width: 22,
               flexShrink: 0,
             }}
           >
             #{rank}
           </span>
 
-          {/* Hero Crest */}
-          {crestFiles ? (
-            <img
-              src={crestFiles["128"]}
-              srcSet={`${crestFiles["128"]} 128w, ${crestFiles["384"]} 384w`}
-              sizes="48px"
-              alt={`${displayName} crest`}
-              className="hero-crest-compact"
-              style={{
-                width: 44,
-                height: 44,
-                objectFit: "contain",
-                flexShrink: 0,
-                filter: token.crestOutlineFilter || "drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3))",
-              }}
-            />
-          ) : (
-            <svg
-              viewBox="0 0 100 100"
-              className="hero-crest-compact"
-              style={{
-                width: 44,
-                height: 44,
-                flexShrink: 0,
-                filter: token.crestOutlineFilter || "drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3))",
-              }}
-              fill="none"
-            >
-              <path
-                d="M50 8 L85 22 C85 62 50 90 50 90 C50 90 15 62 15 22 Z"
-                stroke={token.cardAccent || token.cardText}
-                strokeWidth="5"
-                fill="rgba(255, 255, 255, 0.08)"
+          <div style={{ width: 34, height: 34, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            {crestFiles ? (
+              <img
+                src={crestFiles["128"] || crestFiles["384"]}
+                alt=""
+                style={{ width: 34, height: 34, objectFit: "contain" }}
               />
-              <text
-                x="50"
-                y="58"
-                textAnchor="middle"
-                fill={token.cardText}
-                fontSize="20"
-                fontWeight="800"
-                fontFamily="var(--font-display)"
-              >
-                {displayName.slice(0, 4)}
-              </text>
-            </svg>
-          )}
+            ) : (
+              <div style={{ width: 34, height: 34, borderRadius: "50%", background: "#FAF8F5", border: "1px solid var(--border)" }} />
+            )}
+          </div>
 
           <div style={{ minWidth: 0 }}>
             <div
               style={{
                 fontFamily: "var(--font-display)",
                 fontWeight: 800,
-                fontSize: 15,
-                lineHeight: 1.1,
-                color: token.cardText,
+                fontSize: 14,
+                color: "var(--ink)",
                 textTransform: "uppercase",
-                letterSpacing: "-0.02em",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
@@ -285,13 +114,11 @@ export default function GroupCard({
             <div
               style={{
                 fontFamily: "var(--font-body)",
-                fontSize: 11,
+                fontSize: 10.5,
                 fontWeight: 600,
-                color: token.cardText,
-                opacity: 0.8,
-                letterSpacing: "0.06em",
+                color: "var(--muted)",
+                letterSpacing: "0.05em",
                 textTransform: "uppercase",
-                marginTop: 2,
               }}
             >
               {memberCount} WARRIORS
@@ -299,16 +126,14 @@ export default function GroupCard({
           </div>
         </div>
 
-        {/* Right: Big Karma */}
-        <div style={{ textAlign: "right", position: "relative", zIndex: 1, flexShrink: 0 }}>
+        <div style={{ textAlign: "right", flexShrink: 0, marginLeft: 10 }}>
           <div
             className="tabular-nums"
             style={{
               fontFamily: "var(--font-numeric)",
-              fontVariantNumeric: "tabular-nums",
-              fontSize: 20,
-              fontWeight: 700,
-              color: token.cardText,
+              fontSize: 16,
+              fontWeight: 800,
+              color: "var(--ink)",
               lineHeight: 1,
             }}
           >
@@ -318,12 +143,9 @@ export default function GroupCard({
             className="tabular-nums"
             style={{
               fontFamily: "var(--font-numeric)",
-              fontVariantNumeric: "tabular-nums",
               fontSize: 11,
               fontWeight: 700,
-              color: token.cardAccent || token.cardText,
-              letterSpacing: "0.04em",
-              textTransform: "uppercase",
+              color: "var(--crimson)",
               marginTop: 2,
             }}
           >
@@ -336,196 +158,57 @@ export default function GroupCard({
 
   // ==========================================
   // FULL CARD VARIANT (Used on Groups Page)
+  // Clean light card + Red top highlight strip
   // ==========================================
+  const karmaPeriodLabel =
+    period === "month"
+      ? "KARMA THIS MONTH"
+      : period === "all"
+      ? "TOTAL KARMA"
+      : "KARMA THIS WEEK";
+
+  const statusLabel =
+    karma === 0
+      ? "Not started yet"
+      : percent >= 100
+      ? "Goal reached"
+      : "In progress";
+
   return (
     <Link
       to={cardLink}
-      className={`interactive-group-card ${isLight ? "light-card" : ""} ${className}`}
+      className={`interactive-group-card ${className}`}
       style={{
-        background: token.cardBg,
-        color: token.cardText,
+        background: "#FFFFFF",
+        color: "var(--ink)",
         ...style,
       }}
     >
-      {/* 1px Inner Border */}
+      {/* Top Highlight Strip: Brand Red that matches website */}
       <div
-        className="group-card-inner-border"
+        className="group-card-top-accent"
         style={{
           position: "absolute",
-          inset: 0,
-          boxShadow: `inset 0 0 0 1px ${token.cardBorder}`,
-          clipPath: "polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%)",
-          pointerEvents: "none",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 3.5,
+          background: "var(--crimson)",
           zIndex: 3,
         }}
       />
 
-      {/* Diagonal Chamfer 1px Line */}
-      <div
-        className="group-card-chamfer-line"
-        style={{
-          position: "absolute",
-          top: 0,
-          right: 18,
-          width: 25.46,
-          height: 1,
-          transformOrigin: "top left",
-          transform: "rotate(45deg)",
-          background: token.cardBorder,
-          pointerEvents: "none",
-          zIndex: 4,
-        }}
-      />
-
-      {/* Layer A: Giant Watermark Crest */}
-      {crestFiles ? (
-        <img
-          src={crestFiles["384"] || crestFiles["128"]}
-          alt=""
-          aria-hidden="true"
-          className="group-card-watermark"
-          style={{
-            position: "absolute",
-            right: -30,
-            bottom: -30,
-            width: 250,
-            height: 250,
-            objectFit: "contain",
-            pointerEvents: "none",
-            opacity: 0.07,
-            filter: token.watermarkFilter || "brightness(0) invert(1)",
-            userSelect: "none",
-            zIndex: 0,
-          }}
-        />
-      ) : (
-        <svg
-          viewBox="0 0 100 100"
-          className="group-card-watermark"
-          style={{
-            position: "absolute",
-            right: -30,
-            bottom: -30,
-            width: 250,
-            height: 250,
-            pointerEvents: "none",
-            opacity: 0.07,
-            filter: token.watermarkFilter || "brightness(0) invert(1)",
-            userSelect: "none",
-            zIndex: 0,
-          }}
-          fill="none"
-        >
-          <path
-            d="M50 8 L85 22 C85 62 50 90 50 90 C50 90 15 62 15 22 Z"
-            stroke="#FFFFFF"
-            strokeWidth="5"
-            fill="white"
-          />
-        </svg>
-      )}
-
-      {/* Layer B: Faint Angular Facet Pattern */}
-      <svg
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          pointerEvents: "none",
-          opacity: 0.05,
-          zIndex: 0,
-        }}
-        viewBox="0 0 400 300"
-        preserveAspectRatio="none"
-        fill="none"
-        aria-hidden="true"
-      >
-        <polygon
-          points="0,0 140,0 220,180 70,300 0,300"
-          fill={token.facetColor || "#FFFFFF"}
-        />
-        <line
-          x1="0"
-          y1="70"
-          x2="400"
-          y2="230"
-          stroke={token.facetColor || "#FFFFFF"}
-          strokeWidth="1.5"
-        />
-        <line
-          x1="200"
-          y1="0"
-          x2="400"
-          y2="130"
-          stroke={token.facetColor || "#FFFFFF"}
-          strokeWidth="1.5"
-        />
-      </svg>
-
-      {/* Layer C: Film-grain Noise Overlay */}
-      <svg
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          pointerEvents: "none",
-          opacity: 0.04,
-          mixBlendMode: "overlay",
-          zIndex: 0,
-        }}
-        aria-hidden="true"
-      >
-        <filter id={`grain-${uniqueId}`}>
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.75"
-            numOctaves="3"
-            stitchTiles="stitch"
-          />
-          <feColorMatrix type="saturate" values="0" />
-        </filter>
-        <rect width="100%" height="100%" filter={`url(#grain-${uniqueId})`} />
-      </svg>
-
-      {/* =======================================
-          TOP ZONE: Hero Crest + Rank & Large Karma
-          ======================================= */}
-      <div
-        className="group-card-top-zone"
-        style={{
-          display: "flex",
-          alignItems: "flex-start",
-          justifyContent: "space-between",
-          position: "relative",
-          zIndex: 1,
-          width: "100%",
-          gap: 6,
-        }}
-      >
-        {/* Left: Hero Crest */}
-        <div
-          className="group-card-crest-wrapper"
-          style={{
-            flex: "1 1 auto",
-            minWidth: 0,
-            maxWidth: "calc(100% - 105px)",
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
+      {/* TOP ZONE: Original Crest (Left) + Outlined Rank & Karma (Right) */}
+      <div className="group-card-top-zone">
+        {/* Left: Original Crest */}
+        <div className="group-card-crest-wrapper">
           {crestFiles ? (
             <img
               src={crestFiles["384"] || crestFiles["128"]}
-              srcSet={`${crestFiles["128"]} 128w, ${crestFiles["384"]} 384w`}
-              sizes="(max-width: 768px) 48px, (max-width: 1200px) 100px, 125px"
               alt={`${displayName} crest`}
               className="hero-crest-img"
               style={{
-                filter:
-                  token.crestOutlineFilter ||
-                  "drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35))",
+                filter: "drop-shadow(0 4px 8px rgba(0, 0, 0, 0.12))",
               }}
             />
           ) : (
@@ -533,72 +216,44 @@ export default function GroupCard({
               viewBox="0 0 100 100"
               className="hero-crest-img"
               fill="none"
-              xmlns="http://www.w3.org/2000/svg"
               style={{
-                filter:
-                  token.crestOutlineFilter ||
-                  "drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35))",
+                filter: "drop-shadow(0 4px 8px rgba(0, 0, 0, 0.12))",
               }}
             >
               <path
                 d="M50 8 L85 22 C85 62 50 90 50 90 C50 90 15 62 15 22 Z"
-                stroke={token.cardAccent || token.cardText}
+                stroke="var(--crimson)"
                 strokeWidth="4"
-                strokeLinejoin="round"
-                fill="rgba(255, 255, 255, 0.08)"
-              />
-              <path
-                d="M50 15 L78 26 C78 58 50 82 50 82 C50 82 22 58 22 26 Z"
-                stroke={token.cardAccent || token.cardText}
-                strokeWidth="1.5"
-                strokeOpacity="0.4"
-                strokeLinejoin="round"
-                fill="none"
+                fill="#FAF8F5"
               />
               <text
                 x="50"
-                y="56"
+                y="58"
                 textAnchor="middle"
-                fill={token.cardText}
-                fontSize="14"
+                fill="var(--ink)"
+                fontSize="18"
                 fontWeight="800"
                 fontFamily="var(--font-display)"
-                letterSpacing="0.08em"
               >
-                {displayName.slice(0, 6)}
+                {displayName.slice(0, 4)}
               </text>
             </svg>
           )}
         </div>
 
-        {/* Right: Outlined Rank Tag + Vertically-Centered Karma */}
-        <div
-          className="group-card-stat-zone"
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-end",
-            textAlign: "right",
-            flexShrink: 0,
-            minWidth: 95,
-            maxWidth: 115,
-            paddingLeft: 4,
-            position: "relative",
-            zIndex: 2,
-          }}
-        >
-          {/* Top-Right Outlined Rank Tag */}
+        {/* Right: Rank Tag + Karma Number */}
+        <div className="group-card-stat-zone">
           <span
-            className="group-card-rank-tag"
+            className="group-card-rank-tag tabular-nums"
             style={{
-              fontFamily: "var(--font-display)",
-              fontVariationSettings: "'wdth' 112",
+              fontFamily: "var(--font-numeric)",
               fontSize: 11.5,
-              fontWeight: 700,
-              color: token.cardText,
-              border: `1px solid ${token.tagBorder || "rgba(255, 255, 255, 0.6)"}`,
-              padding: "1.5px 7px",
-              borderRadius: 4,
+              fontWeight: 800,
+              color: isRank1 ? "var(--crimson)" : "var(--ink)",
+              background: "#FAF8F5",
+              border: "1px solid var(--border)",
+              padding: "2px 7px",
+              borderRadius: 6,
               lineHeight: 1.2,
               display: "inline-block",
             }}
@@ -606,17 +261,15 @@ export default function GroupCard({
             #{rank}
           </span>
 
-          {/* Vertically centered with crest: Karma Number */}
-          <div className="group-card-karma-box" style={{ marginTop: 8, marginBottom: 2 }}>
+          <div className="group-card-karma-box">
             <div
               className="tabular-nums group-card-karma-val"
               style={{
-                fontFamily: "var(--font-display)",
-                fontVariationSettings: "'wdth' 125",
+                fontFamily: "var(--font-numeric)",
                 fontWeight: 800,
-                fontSize: "clamp(26px, 2.3vw, 40px)",
-                lineHeight: 0.95,
-                color: token.cardText,
+                fontSize: 32,
+                lineHeight: 1,
+                color: "var(--ink)",
                 letterSpacing: "-0.02em",
               }}
             >
@@ -625,51 +278,34 @@ export default function GroupCard({
             <div
               className="group-card-karma-lbl"
               style={{
-                fontFamily: "var(--font-display)",
-                fontVariationSettings: "'wdth' 112",
-                fontWeight: 600,
+                fontFamily: "var(--font-body)",
+                fontWeight: 700,
                 fontSize: 9.5,
                 letterSpacing: "0.06em",
                 textTransform: "uppercase",
-                color: token.cardText,
-                opacity: 0.8,
-                marginTop: 3,
+                color: "var(--muted)",
+                marginTop: 4,
                 whiteSpace: "nowrap",
               }}
             >
-              {period === "month"
-                ? "KARMA THIS MONTH"
-                : period === "all"
-                ? "TOTAL KARMA"
-                : "KARMA THIS WEEK"}
+              {karmaPeriodLabel}
             </div>
           </div>
         </div>
       </div>
 
-      {/* =======================================
-          MIDDLE ZONE: Team Name & Subtitle
-          ======================================= */}
-      <div
-        className="group-card-mid-zone"
-        style={{
-          position: "relative",
-          zIndex: 1,
-          marginTop: 10,
-          marginBottom: 10,
-        }}
-      >
+      {/* MIDDLE ZONE: Team Name & Subtitle */}
+      <div className="group-card-mid-zone">
         <div
           className="group-card-name"
           style={{
             fontFamily: "var(--font-display)",
-            fontVariationSettings: "'wdth' 125",
             fontWeight: 800,
-            fontSize: "clamp(20px, 1.8vw, 26px)",
-            lineHeight: 1.05,
+            fontSize: 22,
+            lineHeight: 1.1,
             textTransform: "uppercase",
-            letterSpacing: "-0.01em",
-            color: token.cardText,
+            letterSpacing: "-0.015em",
+            color: "var(--ink)",
             whiteSpace: "nowrap",
             overflow: "hidden",
             textOverflow: "ellipsis",
@@ -683,15 +319,13 @@ export default function GroupCard({
             display: "flex",
             alignItems: "center",
             flexWrap: "wrap",
-            gap: 6,
-            fontFamily: "var(--font-display)",
-            fontVariationSettings: "'wdth' 112",
+            gap: 5,
+            fontFamily: "var(--font-body)",
             fontSize: 10.5,
             fontWeight: 600,
-            letterSpacing: "0.12em",
+            letterSpacing: "0.08em",
             textTransform: "uppercase",
-            color: token.cardText,
-            opacity: 0.85,
+            color: "var(--muted)",
             marginTop: 4,
             whiteSpace: "nowrap",
             overflow: "hidden",
@@ -704,10 +338,8 @@ export default function GroupCard({
         </div>
       </div>
 
-      {/* =======================================
-          BOTTOM ZONE: Progress Bar & Footer Row
-          ======================================= */}
-      <div className="group-card-bottom-zone" style={{ position: "relative", zIndex: 1, width: "100%" }}>
+      {/* BOTTOM ZONE: Target Progress Bar & View Team Row */}
+      <div className="group-card-bottom-zone">
         {/* Target and Percent */}
         <div
           className="group-card-target-row"
@@ -715,14 +347,12 @@ export default function GroupCard({
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            fontFamily: "var(--font-display)",
-            fontVariationSettings: "'wdth' 112",
-            fontSize: 10.5,
-            fontWeight: 600,
-            letterSpacing: "0.1em",
+            fontFamily: "var(--font-numeric)",
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: "0.06em",
             textTransform: "uppercase",
-            color: token.cardText,
-            opacity: 0.9,
+            color: "var(--ink)",
             marginBottom: 6,
           }}
         >
@@ -730,14 +360,14 @@ export default function GroupCard({
           <span className="tabular-nums">{percent}%</span>
         </div>
 
-        {/* 4px Progress Track */}
+        {/* 5px Progress Track with Brand Red Fill */}
         <div
           className="group-card-progress-track"
           style={{
             width: "100%",
-            height: 4,
-            borderRadius: 2,
-            background: token.progressTrack || "rgba(255, 255, 255, 0.20)",
+            height: 5,
+            borderRadius: 9999,
+            background: "#EAE6DF",
             overflow: "hidden",
           }}
         >
@@ -745,8 +375,8 @@ export default function GroupCard({
             style={{
               width: `${percent}%`,
               height: "100%",
-              borderRadius: 2,
-              background: token.cardAccent,
+              borderRadius: 9999,
+              background: "var(--crimson)",
               transition: "width 0.3s ease",
             }}
           />
@@ -760,40 +390,35 @@ export default function GroupCard({
             alignItems: "center",
             justifyContent: "space-between",
             gap: 6,
-            marginTop: 12,
-            paddingTop: 8,
-            borderTop: `1px solid ${token.cardBorder}`,
+            marginTop: 14,
+            paddingTop: 12,
+            borderTop: "1px solid var(--border)",
           }}
         >
           <span
             className="group-card-status-text"
             style={{
               fontSize: 11.5,
-              fontWeight: 600,
-              color: token.cardText,
-              opacity: 0.85,
+              fontWeight: 500,
+              fontFamily: "var(--font-body)",
+              color: "var(--muted)",
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",
             }}
           >
-            {karma === 0
-              ? "Not started yet"
-              : percent >= 100
-              ? "Goal reached"
-              : "In progress"}
+            {statusLabel}
           </span>
 
           <span
             className="group-card-view-btn"
             style={{
-              fontFamily: "var(--font-display)",
-              fontVariationSettings: "'wdth' 112",
-              fontSize: 11,
+              fontFamily: "var(--font-body)",
+              fontSize: 11.5,
               fontWeight: 700,
-              letterSpacing: "0.12em",
+              letterSpacing: "0.06em",
               textTransform: "uppercase",
-              color: token.cardAccent,
+              color: "var(--crimson)",
               display: "inline-flex",
               alignItems: "center",
               gap: 4,
@@ -802,7 +427,7 @@ export default function GroupCard({
             }}
           >
             <span>VIEW TEAM</span>
-            <ArrowRight size={12} />
+            <ArrowRight size={12} strokeWidth={2.5} />
           </span>
         </div>
       </div>
