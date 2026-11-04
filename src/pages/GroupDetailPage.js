@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import { karmaStore } from "../data/karmaStore";
 import { getGroupToken, isOfficialTeam } from "../utils/groupTokens";
-import { computeDefaultGroupTarget } from "../utils/goalUtils";
 import {
   getWeekBoundaries,
   getMonthBoundaries,
@@ -307,8 +306,6 @@ export default function GroupDetailPage() {
 
   const members = detail.contributions || [];
   const activeMembersCount = members.filter((m) => (m.karma || 0) > 0).length;
-  const targetKarma = computeDefaultGroupTarget([], members.length || 6);
-  const targetPercent = Math.min(100, Math.round((currentKarma / targetKarma) * 100));
   const rosterPct = members.length > 0 ? Math.round((activeMembersCount / members.length) * 100) : 0;
 
   const filteredMembers = members.filter((m) => {
@@ -864,68 +861,7 @@ export default function GroupDetailPage() {
             </div>
           </div>
 
-          {/* Stat 3: Team Target Pace */}
-          <div style={{ ...cardBoxStyle, padding: "20px 22px" }}>
-            <div
-              style={{
-                fontFamily: "var(--font-body)",
-                fontSize: 11,
-                fontWeight: 600,
-                letterSpacing: "0.06em",
-                textTransform: "uppercase",
-                color: "var(--muted)",
-                marginBottom: 8,
-              }}
-            >
-              TEAM TARGET PACE
-            </div>
-            <div
-              className="tabular-nums"
-              style={{
-                fontFamily: "var(--font-numeric)",
-                fontSize: 38,
-                fontWeight: 800,
-                lineHeight: 1,
-                color: "var(--ink)",
-              }}
-            >
-              {targetPercent}%
-            </div>
-            {/* Rounded pace bar: track light gray, fill = --team-accent */}
-            <div
-              style={{
-                width: "100%",
-                height: 6,
-                borderRadius: "var(--radius-pill)",
-                background: "var(--surface-subtle)",
-                overflow: "hidden",
-                marginTop: 10,
-                marginBottom: 8,
-              }}
-            >
-              <div
-                style={{
-                  width: `${targetPercent}%`,
-                  height: "100%",
-                  borderRadius: "var(--radius-pill)",
-                  background: teamAccent,
-                  transition: "width 0.3s ease",
-                }}
-              />
-            </div>
-            <div
-              style={{
-                fontSize: 12,
-                fontWeight: 500,
-                fontFamily: "var(--font-body)",
-                color: "var(--muted)",
-              }}
-            >
-              {currentKarma.toLocaleString()} / {targetKarma.toLocaleString()} target
-            </div>
-          </div>
-
-          {/* Stat 4: Roster Engagement */}
+          {/* Stat 3: Roster Engagement */}
           <div style={{ ...cardBoxStyle, padding: "20px 22px" }}>
             <div
               style={{
@@ -1666,41 +1602,16 @@ export default function GroupDetailPage() {
           <div style={{ width: 42, height: 4, background: "var(--crimson)", borderRadius: 9999, marginTop: 8 }} />
         </div>
 
-        {/* Stat 3: Team Target Pace & Roster Engagement */}
+        {/* Stat 3: Roster Engagement */}
         <div className="team-stat-card" style={{ ...cardBoxStyle, padding: "16px 18px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
           <div className="team-stat-lbl" style={{ fontFamily: "var(--font-body)", fontSize: 10.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--muted)" }}>
-            TEAM TARGET PACE
+            ROSTER ENGAGEMENT
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 4 }}>
-            <svg width="42" height="42" viewBox="0 0 42 42" style={{ flexShrink: 0 }}>
-              <circle cx="21" cy="21" r="16" stroke="#EAE6DF" strokeWidth="4" fill="none" />
-              <circle
-                cx="21"
-                cy="21"
-                r="16"
-                stroke={targetPercent >= 100 ? "var(--green)" : "var(--crimson)"}
-                strokeWidth="4"
-                fill="none"
-                strokeDasharray={100.5}
-                strokeDashoffset={100.5 * (1 - targetPercent / 100)}
-                strokeLinecap="round"
-                transform="rotate(-90 21 21)"
-              />
-              <text x="21" y="25" textAnchor="middle" fontSize="10" fontWeight="800" fontFamily="var(--font-numeric)" fill="var(--ink)">
-                {targetPercent}%
-              </text>
-            </svg>
-            <div>
-              <div className="tabular-nums" style={{ fontSize: 12, fontWeight: 800, color: "var(--ink)", fontFamily: "var(--font-numeric)" }}>
-                {currentKarma.toLocaleString()} / {targetKarma.toLocaleString()}
-              </div>
-              <div style={{ fontSize: 9.5, color: "var(--muted)", fontWeight: 600, textTransform: "uppercase" }}>
-                target
-              </div>
-            </div>
+          <div className="team-stat-val tabular-nums" style={{ fontFamily: "var(--font-numeric)", fontSize: 30, fontWeight: 800, lineHeight: 1.1, color: "var(--ink)", marginTop: 4 }}>
+            {activeMembersCount} / {members.length}
           </div>
           <div style={{ fontSize: 9.5, color: "var(--muted)", marginTop: 4 }}>
-            Roster Engagement: {activeMembersCount}/{members.length} active ({rosterPct}%)
+            {rosterPct}% active this week
           </div>
         </div>
       </div>
