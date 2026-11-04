@@ -152,11 +152,11 @@ export default function HomePage() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-      {/* Page Header: Title + Subtitle + Single Prominent Period Popover Selector */}
+      {/* Page Header: Title + Subtitle + Single Prominent Period Popover Selector (Centered) */}
       <PageHeader
         title="Overview"
         subtitle={subtitle}
-        rightActions={
+        centerActions={
           <PeriodCalendarPopover
             period={period}
             offset={offset}

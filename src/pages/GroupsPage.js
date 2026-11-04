@@ -262,8 +262,7 @@ export default function GroupsPage() {
       <PageHeader
         title="Teams & Groups"
         subtitle={subtitle}
-        centerActions={true}
-        rightActions={
+        centerActions={
           <div
             style={{
               display: "flex",

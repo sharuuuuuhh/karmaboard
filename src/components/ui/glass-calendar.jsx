@@ -120,24 +120,22 @@ export const GlassCalendar = React.forwardRef(
       <div
         ref={ref}
         style={{
-          background: "rgba(255, 255, 255, 0.98)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          border: "1px solid rgba(226, 232, 240, 0.9)",
-          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0,0,0,0.05)",
-          borderRadius: "24px",
+          background: "#FFFFFF",
+          border: "1px solid var(--border)",
+          boxShadow: "0 16px 40px rgba(22, 22, 26, 0.12), 0 2px 6px rgba(22, 22, 26, 0.04)",
+          borderRadius: "20px",
           padding: "20px",
           width: "320px",
-          color: "#1e293b",
-          fontFamily: "inherit",
+          color: "var(--ink)",
+          fontFamily: "var(--font-body)",
           zIndex: 1000,
         }}
         className={cn("glass-calendar-popup", className)}
         {...props}
       >
         {/* Header Bar: Period Switcher */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingBottom: "12px", marginBottom: "12px", borderBottom: "1px solid #f1f5f9" }}>
-          <div style={{ display: "flex", gap: "4px", background: "#f1f5f9", padding: "4px", borderRadius: "10px", fontSize: "12px", fontWeight: "600" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingBottom: "12px", marginBottom: "12px", borderBottom: "1px solid var(--border)" }}>
+          <div style={{ display: "flex", gap: "3px", background: "var(--surface-subtle)", border: "1px solid var(--border)", padding: "3px", borderRadius: "var(--radius-pill)", fontSize: "12px", fontWeight: "600" }}>
             <button
               type="button"
               onClick={() => handlePeriodTab("month")}
@@ -145,11 +143,13 @@ export const GlassCalendar = React.forwardRef(
                 border: "none",
                 cursor: "pointer",
                 padding: "4px 12px",
-                borderRadius: "7px",
-                background: viewMode === "month" ? "#ffffff" : "transparent",
-                color: viewMode === "month" ? "#0f172a" : "#64748b",
+                borderRadius: "var(--radius-pill)",
+                background: viewMode === "month" ? "#FFFFFF" : "transparent",
+                color: viewMode === "month" ? "var(--ink)" : "var(--muted)",
                 boxShadow: viewMode === "month" ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
-                fontWeight: "600",
+                fontWeight: viewMode === "month" ? "700" : "500",
+                fontFamily: "var(--font-body)",
+                transition: "all 0.15s ease",
               }}
             >
               Monthly
@@ -161,18 +161,20 @@ export const GlassCalendar = React.forwardRef(
                 border: "none",
                 cursor: "pointer",
                 padding: "4px 12px",
-                borderRadius: "7px",
-                background: viewMode === "all" ? "#ffffff" : "transparent",
-                color: viewMode === "all" ? "#0f172a" : "#64748b",
+                borderRadius: "var(--radius-pill)",
+                background: viewMode === "all" ? "#FFFFFF" : "transparent",
+                color: viewMode === "all" ? "var(--ink)" : "var(--muted)",
                 boxShadow: viewMode === "all" ? "0 1px 3px rgba(0,0,0,0.08)" : "none",
-                fontWeight: "600",
+                fontWeight: viewMode === "all" ? "700" : "500",
+                fontFamily: "var(--font-body)",
+                transition: "all 0.15s ease",
               }}
             >
               All Time
             </button>
           </div>
 
-          <span style={{ fontSize: "11px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.05em", color: "#94a3b8" }}>
+          <span className="tabular-nums" style={{ fontSize: "11px", fontWeight: "700", fontFamily: "var(--font-numeric)", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--muted)" }}>
             {format(selectedDate, "MMM yyyy")}
           </span>
         </div>
@@ -180,38 +182,59 @@ export const GlassCalendar = React.forwardRef(
         {/* Month Navigation */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px" }}>
           <div>
-            <div style={{ fontWeight: "700", fontSize: "16px", color: "#0f172a" }}>
+            <div style={{ fontWeight: "800", fontSize: "16px", color: "var(--ink)", fontFamily: "var(--font-display)", letterSpacing: "-0.01em" }}>
               {format(currentMonth, "MMMM yyyy")}
             </div>
-            <div style={{ fontSize: "11px", color: "#94a3b8" }}>
+            <div style={{ fontSize: "11px", color: "var(--muted)", fontFamily: "var(--font-body)" }}>
               Pick month to inspect stats
             </div>
           </div>
-          <div style={{ display: "flex", gap: "4px" }}>
+          <div style={{ display: "flex", gap: "6px" }}>
             <button
               type="button"
               onClick={handlePrevMonth}
-              style={{ border: "none", background: "#f8fafc", padding: "6px", borderRadius: "8px", cursor: "pointer", color: "#475569" }}
+              style={{
+                border: "1px solid var(--border)",
+                background: "var(--surface-subtle)",
+                padding: "6px",
+                borderRadius: "8px",
+                cursor: "pointer",
+                color: "var(--ink)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "background 0.15s ease",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "#EDE8DF")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "var(--surface-subtle)")}
               aria-label="Previous month"
             >
-              <ChevronLeft size={16} />
+              <ChevronLeft size={16} strokeWidth={2.2} />
             </button>
             <button
               type="button"
               onClick={handleNextMonth}
               disabled={isCurrentOrFutureMonth}
               style={{
-                border: "none",
-                background: "#f8fafc",
+                border: "1px solid var(--border)",
+                background: "var(--surface-subtle)",
                 padding: "6px",
                 borderRadius: "8px",
                 cursor: isCurrentOrFutureMonth ? "not-allowed" : "pointer",
-                color: isCurrentOrFutureMonth ? "#cbd5e1" : "#475569",
+                color: isCurrentOrFutureMonth ? "rgba(107, 107, 114, 0.4)" : "var(--ink)",
                 opacity: isCurrentOrFutureMonth ? 0.45 : 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "background 0.15s ease",
               }}
+              onMouseEnter={(e) => {
+                if (!isCurrentOrFutureMonth) e.currentTarget.style.background = "#EDE8DF";
+              }}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "var(--surface-subtle)")}
               aria-label="Next month"
             >
-              <ChevronRight size={16} />
+              <ChevronRight size={16} strokeWidth={2.2} />
             </button>
           </div>
         </div>
@@ -219,7 +242,7 @@ export const GlassCalendar = React.forwardRef(
         {/* Day-of-week header */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", textAlign: "center", marginBottom: "8px" }}>
           {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => (
-            <span key={day} style={{ fontSize: "11px", fontWeight: "600", color: "#94a3b8", textTransform: "uppercase", padding: "4px 0" }}>
+            <span key={day} style={{ fontSize: "11px", fontWeight: "700", color: "var(--muted)", textTransform: "uppercase", padding: "4px 0", fontFamily: "var(--font-body)" }}>
               {day}
             </span>
           ))}
@@ -249,25 +272,25 @@ export const GlassCalendar = React.forwardRef(
             const isLastDayOfWeek = day.dayOfWeek === 6 || day.date.getDate() === getDaysInMonth(currentMonth);
 
             let bg = "transparent";
-            let textColor = "#334155";
+            let textColor = "var(--ink)";
             let borderRadius = "8px";
 
             if (isWeekActive) {
-              bg = "#0f172a";
-              textColor = "#ffffff";
+              bg = "var(--ink)";
+              textColor = "#FFFFFF";
               borderRadius = `${isFirstDayOfWeek ? "12px" : "0"} ${isLastDayOfWeek ? "12px" : "0"} ${isLastDayOfWeek ? "12px" : "0"} ${isFirstDayOfWeek ? "12px" : "0"}`;
             } else if (isWeekHovered) {
-              bg = "#f1f5f9";
-              textColor = "#0f172a";
+              bg = "var(--surface-subtle)";
+              textColor = "var(--ink)";
               borderRadius = `${isFirstDayOfWeek ? "12px" : "0"} ${isLastDayOfWeek ? "12px" : "0"} ${isLastDayOfWeek ? "12px" : "0"} ${isFirstDayOfWeek ? "12px" : "0"}`;
             } else if (isExactDay) {
-              bg = "#0f172a";
-              textColor = "#ffffff";
-              borderRadius = "12px";
+              bg = "var(--ink)";
+              textColor = "#FFFFFF";
+              borderRadius = "10px";
             } else if (isCurrentToday) {
-              bg = "#eef2ff";
-              textColor = "#4f46e5";
-              borderRadius = "12px";
+              bg = "rgba(179, 32, 42, 0.08)";
+              textColor = "var(--crimson)";
+              borderRadius = "10px";
             }
 
             return (
@@ -298,18 +321,20 @@ export const GlassCalendar = React.forwardRef(
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: "12px",
+                    fontSize: "12.5px",
                     fontWeight: isWeekActive || isExactDay || isCurrentToday ? "700" : "500",
                     cursor: "pointer",
                     border: "none",
                     background: "transparent",
                     color: textColor,
                     position: "relative",
+                    fontFamily: "var(--font-numeric)",
+                    fontVariantNumeric: "tabular-nums",
                   }}
                 >
                   {getDate(day.date)}
                   {isCurrentToday && !isWeekActive && !isExactDay && (
-                    <span style={{ position: "absolute", bottom: "3px", width: "4px", height: "4px", borderRadius: "50%", background: "#4f46e5" }} />
+                    <span style={{ position: "absolute", bottom: "3px", width: "4px", height: "4px", borderRadius: "50%", background: "var(--crimson)" }} />
                   )}
                 </motion.button>
               </div>
@@ -318,7 +343,7 @@ export const GlassCalendar = React.forwardRef(
         </div>
 
         {/* Quick presets footer */}
-        <div style={{ marginTop: "14px", paddingTop: "10px", borderTop: "1px solid #f1f5f9", display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "11px", color: "#64748b" }}>
+        <div style={{ marginTop: "14px", paddingTop: "10px", borderTop: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "11px", color: "var(--muted)" }}>
           <button
             type="button"
             onClick={() => {
@@ -329,11 +354,11 @@ export const GlassCalendar = React.forwardRef(
               onMonthChange?.(now);
               onDateSelect?.(now);
             }}
-            style={{ border: "none", background: "none", color: "#4f46e5", fontWeight: "700", cursor: "pointer", padding: 0 }}
+            style={{ border: "none", background: "none", color: "var(--crimson)", fontWeight: "700", cursor: "pointer", padding: 0, fontFamily: "var(--font-body)" }}
           >
             Current Month
           </button>
-          <span>Asia/Kolkata</span>
+          <span style={{ fontFamily: "var(--font-numeric)" }}>Asia/Kolkata</span>
         </div>
       </div>
     );

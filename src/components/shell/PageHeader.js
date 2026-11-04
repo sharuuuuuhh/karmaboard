@@ -5,11 +5,26 @@ export default function PageHeader({
   title,
   subtitle,
   rightActions,
-  centerActions = false,
+  centerActions,
   hideSearch = false,
   showJapaneseBanner = true,
 }) {
   const isOverview = title === "Overview" || showJapaneseBanner;
+
+  // Resolve center content vs right content
+  const centerContent =
+    React.isValidElement(centerActions)
+      ? centerActions
+      : centerActions === true
+      ? rightActions
+      : null;
+
+  const rightContent =
+    React.isValidElement(centerActions)
+      ? rightActions
+      : centerActions === true
+      ? null
+      : rightActions;
 
   const renderSubtitle = () => {
     if (!subtitle) return null;
@@ -27,7 +42,7 @@ export default function PageHeader({
   };
 
   return (
-    <header className={`page-header-root ${centerActions ? "page-header-has-center" : ""}`}>
+    <header className="page-header-root">
       <style>{`
         .page-header-root {
           display: flex;
@@ -35,7 +50,6 @@ export default function PageHeader({
           justify-content: space-between;
           gap: 16px;
           margin-bottom: 24px;
-          flex-wrap: wrap;
           position: relative;
           min-height: 140px;
         }
@@ -44,32 +58,24 @@ export default function PageHeader({
           flex-direction: column;
           position: relative;
           z-index: 2;
+          flex-shrink: 0;
         }
-        .page-header-actions-col {
+        .page-header-center-col {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          z-index: 2;
+          flex: 1;
+          margin: 0 16px;
+        }
+        .page-header-right-col {
           display: flex;
           align-items: center;
           gap: 12px;
           position: relative;
           z-index: 2;
-        }
-
-        /* Desktop: when centerActions is true */
-        @media (min-width: 769px) {
-          .page-header-has-center {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-          }
-          .page-header-has-center .page-header-actions-col {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-          }
-          .page-header-has-center .page-header-search-slot {
-            margin-left: auto;
-          }
+          flex-shrink: 0;
         }
 
         .page-header-art-layer {
@@ -90,24 +96,30 @@ export default function PageHeader({
             height: 200px;
           }
         }
-        /* Mobile (<= 768px): center actions, hide art banner */
+        /* Mobile (<= 768px): center actions below title, hide art banner */
         @media (max-width: 768px) {
           .page-header-root {
             min-height: auto;
             gap: 14px;
+            flex-wrap: wrap;
           }
           .page-header-art-layer {
             display: none !important;
           }
-          .page-header-actions-col {
+          .page-header-title-col {
+            flex: 1;
+            min-width: 0;
+          }
+          .page-header-center-col {
             width: 100% !important;
             display: flex !important;
             justify-content: center !important;
             align-items: center !important;
-            margin: 4px auto 0 auto !important;
+            margin: 6px auto 0 auto !important;
+            order: 3;
           }
-          .page-header-has-center .page-header-search-slot {
-            margin-left: 0;
+          .page-header-right-col {
+            flex-shrink: 0;
           }
         }
       `}</style>
@@ -167,9 +179,17 @@ export default function PageHeader({
         )}
       </div>
 
-      {(rightActions || !hideSearch) && (
-        <div className="page-header-actions-col">
-          {rightActions}
+      {/* Column 2: Center Actions (e.g. Date Range / Period Popover almost in the middle) */}
+      {centerContent && (
+        <div className="page-header-center-col">
+          {centerContent}
+        </div>
+      )}
+
+      {/* Column 3: Right Actions & Search */}
+      {(rightContent || !hideSearch) && (
+        <div className="page-header-right-col">
+          {rightContent}
           {!hideSearch && (
             <div className="page-header-search-slot">
               <SearchExpand />

@@ -215,12 +215,12 @@ export default function LeaderboardPage() {
         }
       `}</style>
 
-      {/* Page Header with Japanese Sumi-e Artwork Banner and Period Popover on Right */}
+      {/* Page Header with Japanese Sumi-e Artwork Banner and Period Popover in Middle */}
       <PageHeader
         title="Leaderboard"
         subtitle={`Standings across all teams and campus warriors • ${periodLabel}`}
         showJapaneseBanner={true}
-        rightActions={
+        centerActions={
           <PeriodCalendarPopover
             period={period}
             offset={offset}

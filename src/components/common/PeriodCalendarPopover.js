@@ -80,18 +80,18 @@ export default function PeriodCalendarPopover({
           }
         }
       `}</style>
-      {/* Trigger Bar - Prominent, minimal pill */}
+      {/* Trigger Bar - Refined Japanese Theme Pill */}
       <div
         style={{
           display: "flex",
           alignItems: "center",
-          gap: 6,
+          gap: 4,
           background: "#FFFFFF",
           border: "1px solid var(--border)",
           borderRadius: "var(--radius-pill)",
-          padding: "4px 10px 4px 6px",
-          boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03)",
-          height: 42,
+          padding: "3px 8px 3px 6px",
+          boxShadow: "0 1px 2px rgba(22, 22, 26, 0.04), 0 4px 16px rgba(22, 22, 26, 0.04)",
+          height: 40,
           boxSizing: "border-box",
         }}
       >
@@ -103,24 +103,24 @@ export default function PeriodCalendarPopover({
               onOffsetChange?.(offset - 1);
             }}
             style={{
-              width: 30,
-              height: 30,
+              width: 28,
+              height: 28,
               borderRadius: "50%",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: "var(--text-secondary)",
+              color: "var(--ink)",
               cursor: "pointer",
               border: "none",
               background: "transparent",
               transition: "background 0.15s ease, color 0.15s ease",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "#f1f5f9")}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "var(--surface-subtle)")}
             onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
             title="Previous period"
             aria-label="Previous period"
           >
-            <ChevronLeft size={18} />
+            <ChevronLeft size={16} strokeWidth={2.2} />
           </button>
         )}
 
@@ -132,30 +132,39 @@ export default function PeriodCalendarPopover({
             display: "flex",
             alignItems: "center",
             gap: 8,
-            padding: "6px 14px",
+            padding: "5px 12px",
             borderRadius: "var(--radius-pill)",
-            fontSize: 13.5,
+            fontSize: 13,
             fontWeight: 600,
             letterSpacing: "-0.01em",
             fontFamily: "var(--font-body)",
-            color: "var(--text-primary)",
+            color: "var(--ink)",
             whiteSpace: "nowrap",
             background: isOpen ? "var(--surface-subtle)" : "transparent",
             border: "none",
             cursor: "pointer",
             transition: "all 0.15s ease",
           }}
+          onMouseEnter={(e) => {
+            if (!isOpen) e.currentTarget.style.background = "var(--surface-subtle)";
+          }}
+          onMouseLeave={(e) => {
+            if (!isOpen) e.currentTarget.style.background = "transparent";
+          }}
           title="Click to open calendar"
           aria-expanded={isOpen}
         >
-          <Calendar size={16} color="#4f46e5" />
-          <span>{dateLabel || "Select Date"}</span>
+          <Calendar size={15} color="var(--crimson)" strokeWidth={2.2} />
+          <span className="tabular-nums" style={{ fontFamily: "var(--font-body)" }}>
+            {dateLabel || "Select Date"}
+          </span>
           <ChevronDown
-            size={14}
-            color="var(--text-muted)"
+            size={13}
+            strokeWidth={2}
+            color={isOpen ? "var(--crimson)" : "var(--muted)"}
             style={{
               transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
-              transition: "transform 0.2s ease",
+              transition: "transform 0.2s ease, color 0.15s ease",
             }}
           />
         </button>
@@ -169,26 +178,26 @@ export default function PeriodCalendarPopover({
             }}
             disabled={offset >= 0}
             style={{
-              width: 30,
-              height: 30,
+              width: 28,
+              height: 28,
               borderRadius: "50%",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: offset >= 0 ? "var(--text-muted)" : "var(--text-secondary)",
+              color: offset >= 0 ? "rgba(107, 107, 114, 0.35)" : "var(--ink)",
               cursor: offset >= 0 ? "not-allowed" : "pointer",
               border: "none",
               background: "transparent",
               transition: "background 0.15s ease, color 0.15s ease",
             }}
             onMouseEnter={(e) => {
-              if (offset < 0) e.currentTarget.style.background = "#f1f5f9";
+              if (offset < 0) e.currentTarget.style.background = "var(--surface-subtle)";
             }}
             onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
             title="Next period"
             aria-label="Next period"
           >
-            <ChevronRight size={18} />
+            <ChevronRight size={16} strokeWidth={2.2} />
           </button>
         )}
       </div>
