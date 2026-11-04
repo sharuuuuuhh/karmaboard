@@ -109,19 +109,19 @@ async function syncAllKarma() {
   const successful = results.filter((r) => r.ok);
   console.log(`Scraped ${successful.length}/${students.length} successfully in ${Math.round((Date.now() - t0) / 1000)}s.`);
 
-  // Determine monthly baseline from karma_history
+  // Determine monthly baseline from karma_history (latest snapshot BEFORE this month)
   const now = new Date();
   const today = now.toISOString().split("T")[0];
   const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
 
-  const { data: monthSnapshots } = await supabase
+  const { data: preMonthSnapshots } = await supabase
     .from("karma_history")
     .select("muid, karma, recorded_at")
-    .gte("recorded_at", monthStart)
-    .order("recorded_at", { ascending: true });
+    .lt("recorded_at", monthStart)
+    .order("recorded_at", { ascending: false });
 
   const baselineMap = new Map();
-  (monthSnapshots || []).forEach((row) => {
+  (preMonthSnapshots || []).forEach((row) => {
     if (!baselineMap.has(row.muid)) {
       baselineMap.set(row.muid, row.karma);
     }
@@ -133,8 +133,8 @@ async function syncAllKarma() {
     const batch = successful.slice(i, i + BATCH_UPDATE);
     await Promise.all(
       batch.map(async ({ muid, karma, rank, full_name }) => {
-        const baseline = baselineMap.get(muid);
-        const monthlyKarma = baseline !== undefined ? Math.max(0, karma - baseline) : 0;
+        const baseline = baselineMap.get(muid) || 0;
+        const monthlyKarma = Math.max(0, karma - baseline);
 
         const update = { karma, monthly_karma: monthlyKarma };
         if (rank !== null) update.rank = rank;

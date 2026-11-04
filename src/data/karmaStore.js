@@ -327,8 +327,14 @@ class KarmaStore {
         histByMuid.forEach((records, muid) => {
           const member = liveMembers.find((m) => m.muid.toLowerCase() === muid.toLowerCase());
           records.sort((a, b) => a.recorded_at.localeCompare(b.recorded_at));
-          let prevKarma = records[0]?.karma || 0;
-          for (let i = 1; i < records.length; i++) {
+
+          // If student joined in/after November (earliest snapshot >= 2026-11-01), they started with 0 karma,
+          // so records[0] is their first earned karma event!
+          const joinedInNov = records[0]?.recorded_at >= "2026-11-01";
+          const startIndex = joinedInNov ? 0 : 1;
+          let prevKarma = joinedInNov ? 0 : (records[0]?.karma || 0);
+
+          for (let i = startIndex; i < records.length; i++) {
             const rec = records[i];
             const delta = rec.karma - prevKarma;
             if (delta > 0) {

@@ -118,21 +118,23 @@ module.exports = async function handler(req, res) {
     }
 
     // 3. Determine month start baseline for monthly_karma calculation
+    // A student's baseline for the current month is their karma BEFORE this month started (recorded_at < monthStart).
+    // If they have no records before this month, they joined in this month, so their baseline is 0.
     const now = new Date();
     const today = now.toISOString().split("T")[0]; // YYYY-MM-DD
     const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
 
     const successfulResults = results.filter((r) => r.ok);
 
-    // Fetch earliest snapshot in current month for each student
-    const { data: monthSnapshots } = await supabase
+    // Fetch latest snapshot BEFORE current month for each student
+    const { data: preMonthSnapshots } = await supabase
       .from("karma_history")
       .select("muid, karma, recorded_at")
-      .gte("recorded_at", monthStart)
-      .order("recorded_at", { ascending: true });
+      .lt("recorded_at", monthStart)
+      .order("recorded_at", { ascending: false });
 
     const baselineMap = new Map();
-    (monthSnapshots || []).forEach((row) => {
+    (preMonthSnapshots || []).forEach((row) => {
       if (!baselineMap.has(row.muid)) {
         baselineMap.set(row.muid, row.karma);
       }
@@ -141,8 +143,8 @@ module.exports = async function handler(req, res) {
     // 4. Write successful results back to Supabase (including monthly_karma)
     const updates = await Promise.all(
       successfulResults.map(async ({ muid, karma, rank, full_name }) => {
-        const baseline = baselineMap.get(muid);
-        const monthlyKarma = baseline !== undefined ? Math.max(0, karma - baseline) : 0;
+        const baseline = baselineMap.get(muid) || 0;
+        const monthlyKarma = Math.max(0, karma - baseline);
 
         const update = { karma, monthly_karma: monthlyKarma };
         if (rank !== null) update.rank = rank;
