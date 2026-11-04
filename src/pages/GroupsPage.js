@@ -6,6 +6,7 @@ import {
   Swords,
   Award,
   ArrowUpDown,
+  Clock,
 } from "lucide-react";
 import PageHeader from "../components/shell/PageHeader";
 import PageGrid, { PageCol } from "../components/common/PageGrid";
@@ -628,7 +629,7 @@ export default function GroupsPage() {
               </div>
             )}
 
-            {/* 3. Goal Progress List */}
+            {/* 3. Goal Progress List (Retained with Work in Progress card) */}
             <div
               style={{
                 background: "#FFFFFF",
@@ -638,14 +639,93 @@ export default function GroupsPage() {
                 boxShadow: "var(--shadow-soft)",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 12 }}>
-                <Award size={16} color="var(--chart-line)" />
-                <span style={{ fontSize: 12, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                  Goal Pace
+              {/* Heading: Retained as Goal Pace */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                  <Award size={16} color="var(--chart-line)" />
+                  <span style={{ fontSize: 12, fontWeight: 800, color: "var(--text-primary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                    Goal Pace
+                  </span>
+                </div>
+                <span
+                  style={{
+                    fontSize: 10,
+                    fontWeight: 700,
+                    fontFamily: "var(--font-numeric)",
+                    letterSpacing: "0.06em",
+                    textTransform: "uppercase",
+                    padding: "2px 8px",
+                    borderRadius: "var(--radius-pill)",
+                    background: "var(--surface-subtle)",
+                    color: "var(--muted)",
+                    border: "1px solid var(--border)",
+                  }}
+                >
+                  In Progress
                 </span>
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {/* Work in Progress Card */}
+              <div
+                style={{
+                  background: "#FAF8F4",
+                  border: "1px dashed var(--border)",
+                  borderRadius: 14,
+                  padding: "22px 16px",
+                  textAlign: "center",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 10,
+                }}
+              >
+                <div
+                  style={{
+                    width: 38,
+                    height: 38,
+                    borderRadius: "50%",
+                    background: "#FFFFFF",
+                    border: "1px solid var(--border)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "var(--gold)",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+                  }}
+                >
+                  <Clock size={18} strokeWidth={2.2} />
+                </div>
+                <div>
+                  <div
+                    style={{
+                      fontSize: 13,
+                      fontWeight: 800,
+                      fontFamily: "var(--font-display)",
+                      color: "var(--ink)",
+                      letterSpacing: "-0.01em",
+                      marginBottom: 4,
+                    }}
+                  >
+                    Work In Progress
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 11.5,
+                      fontWeight: 500,
+                      fontFamily: "var(--font-body)",
+                      color: "var(--muted)",
+                      lineHeight: 1.45,
+                      maxWidth: 220,
+                    }}
+                  >
+                    Goal tracking and pace analytics are currently being calibrated for campus teams.
+                  </div>
+                </div>
+              </div>
+
+              {/* Preserved Goal List Data (retained for future activation) */}
+              {/*
+              <div style={{ display: "none", flexDirection: "column", gap: 10 }}>
                 {displayedGroups.map((grp) => {
                   const token = getGroupToken(grp);
                   const memberCount = grp.member_count || grp.members_count || 6;
@@ -670,6 +750,7 @@ export default function GroupsPage() {
                   );
                 })}
               </div>
+              */}
             </div>
           </div>
         </PageCol>
