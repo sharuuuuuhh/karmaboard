@@ -80,19 +80,16 @@ export default function MobileDock({ isSyncing, onSync }) {
         aria-label="Mobile Navigation Dock"
         style={{
           position: "fixed",
-          bottom: "calc(12px + env(safe-area-inset-bottom, 0px))",
-          left: 12,
-          right: 12,
+          bottom: 0,
+          left: 0,
+          right: 0,
+          width: "100%",
           zIndex: 9999,
-          maxWidth: 480,
-          margin: "0 auto",
-          borderRadius: 28,
-          background: "rgba(255, 255, 255, 0.92)",
-          backdropFilter: "blur(20px) saturate(180%)",
-          WebkitBackdropFilter: "blur(20px) saturate(180%)",
-          border: "1px solid var(--border)",
-          boxShadow: "0 8px 32px rgba(22, 22, 26, 0.08)",
-          padding: "6px 10px",
+          borderRadius: 0,
+          background: "#16161A",
+          borderTop: "2px solid var(--crimson)",
+          boxShadow: "0 -4px 24px rgba(0, 0, 0, 0.4)",
+          padding: "6px 12px calc(8px + env(safe-area-inset-bottom, 0px)) 12px",
           userSelect: "none",
           boxSizing: "border-box",
           alignItems: "center",
@@ -102,6 +99,8 @@ export default function MobileDock({ isSyncing, onSync }) {
         <div
           style={{
             width: "100%",
+            maxWidth: 540,
+            margin: "0 auto",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
@@ -146,22 +145,23 @@ export default function MobileDock({ isSyncing, onSync }) {
                   aria-label={item.label}
                   aria-current={active ? "page" : undefined}
                 >
-                  {/* Icon Circle (Pine filled circle for active) */}
+                  {/* Icon Circle (Crimson Red filled circle for active) */}
                   <div
                     style={{
                       width: 36,
                       height: 36,
                       borderRadius: "50%",
-                      background: active ? "var(--pine, #1F4A38)" : "transparent",
+                      background: active ? "var(--crimson)" : "transparent",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      color: active ? "#FFFFFF" : "var(--muted)",
+                      color: active ? "#FFFFFF" : "rgba(255, 255, 255, 0.55)",
+                      boxShadow: active ? "0 2px 8px rgba(179, 32, 42, 0.4)" : "none",
                       transition: "background 0.18s ease, color 0.18s ease",
                       flexShrink: 0,
                     }}
                   >
-                    <Icon size={19} strokeWidth={1.5} />
+                    <Icon size={19} strokeWidth={active ? 2 : 1.7} />
                   </div>
 
                   {/* Label */}
@@ -170,7 +170,7 @@ export default function MobileDock({ isSyncing, onSync }) {
                       fontSize: 10.5,
                       fontWeight: active ? 700 : 500,
                       fontFamily: "var(--font-body)",
-                      color: active ? "var(--pine, #1F4A38)" : "var(--muted)",
+                      color: active ? "#FFFFFF" : "rgba(255, 255, 255, 0.5)",
                       lineHeight: 1,
                       whiteSpace: "nowrap",
                       overflow: "hidden",
@@ -190,14 +190,14 @@ export default function MobileDock({ isSyncing, onSync }) {
           <div
             style={{
               width: 1,
-              height: 32,
-              background: "var(--border)",
+              height: 28,
+              background: "rgba(255, 255, 255, 0.15)",
               margin: "0 4px",
               flexShrink: 0,
             }}
           />
 
-          {/* Refresh Action in Rounded Light Gray Square */}
+          {/* Refresh Action in Rounded Dark Square */}
           <button
             type="button"
             onClick={onSync}
@@ -206,16 +206,16 @@ export default function MobileDock({ isSyncing, onSync }) {
             aria-label="Refresh Data"
             className="mobile-dock-sync-btn"
             style={{
-              width: 42,
-              height: 42,
-              borderRadius: 14,
-              background: "#FAF8F4",
-              border: "1px solid var(--border)",
+              width: 40,
+              height: 40,
+              borderRadius: 12,
+              background: "rgba(255, 255, 255, 0.08)",
+              border: "1px solid rgba(255, 255, 255, 0.12)",
               cursor: isSyncing ? "wait" : "pointer",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: "var(--ink)",
+              color: isSyncing ? "var(--crimson)" : "rgba(255, 255, 255, 0.8)",
               transition: "background 0.15s ease, transform 0.15s ease",
               outline: "none",
               flexShrink: 0,
@@ -223,7 +223,7 @@ export default function MobileDock({ isSyncing, onSync }) {
           >
             <RotateCw
               size={17}
-              strokeWidth={1.5}
+              strokeWidth={1.8}
               style={{
                 animation: isSyncing ? "spinSync 0.8s linear infinite" : "none",
               }}
