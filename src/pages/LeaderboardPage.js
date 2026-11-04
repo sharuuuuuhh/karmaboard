@@ -177,24 +177,8 @@ export default function LeaderboardPage() {
       .toUpperCase();
   };
 
-  const getTeamBorderColor = (teamName, rank) => {
-    const norm = String(teamName || "").toLowerCase();
-    if (norm.includes("tech")) return "var(--gold)";
-    if (norm.includes("market")) return "var(--green)";
-    if (norm.includes("operat")) return "#4F46E5";
-    if (norm.includes("lead")) return "var(--crimson)";
-    if (norm.includes("creativ")) return "#0EA5E9";
-    if (norm.includes("media")) return "#71717A";
-    if (norm.includes("content")) return "#D97706";
-    if (norm.includes("muniverse")) return "#C9A227";
-    if (norm.includes("infinitea")) return "#6366F1";
-    if (norm.includes("sfc")) return "#8B5CF6";
-    if (norm.includes("muverse")) return "#EC4899";
-    if (rank === 1) return "var(--gold)";
-    if (rank === 2) return "var(--green)";
-    if (rank === 3) return "#4F46E5";
-    if (rank === 4) return "var(--crimson)";
-    return "#DCD7CC";
+  const getTeamBorderColor = () => {
+    return "var(--crimson)";
   };
 
   return (
@@ -477,14 +461,7 @@ export default function LeaderboardPage() {
                           ? mem.streak
                           : 0;
 
-                      const rankColor =
-                        rankNum === 1
-                          ? "var(--gold)"
-                          : rankNum === 3
-                          ? "var(--crimson)"
-                          : rankNum === 2
-                          ? "var(--muted)"
-                          : "var(--ink)";
+                      const rankColor = "var(--crimson)";
 
                       return (
                         <tr
@@ -699,7 +676,7 @@ export default function LeaderboardPage() {
                             style={{
                               height: 56,
                               borderBottom: "1px solid var(--border)",
-                              background: rank === 1 ? "var(--gold-tint)" : "transparent",
+                              background: rank === 1 ? "rgba(179, 32, 42, 0.05)" : "transparent",
                               transition: "background 150ms ease",
                             }}
                             onMouseEnter={(e) => {
@@ -716,7 +693,7 @@ export default function LeaderboardPage() {
                                 fontSize: 13,
                                 fontWeight: 700,
                                 fontFamily: "var(--font-numeric)",
-                                color: rank === 1 ? "var(--gold)" : "var(--ink)",
+                                color: "var(--crimson)",
                               }}
                             >
                               #{rank}
@@ -776,7 +753,7 @@ export default function LeaderboardPage() {
                                 fontSize: 13.5,
                                 fontWeight: 700,
                                 fontFamily: "var(--font-numeric)",
-                                color: rank === 1 ? "var(--gold)" : "var(--ink)",
+                                color: "var(--ink)",
                               }}
                             >
                               {(grp.karma || 0).toLocaleString()}
@@ -824,7 +801,7 @@ export default function LeaderboardPage() {
                             justifyContent: "space-between",
                             padding: "10px 12px",
                             borderRadius: 10,
-                            background: isRank1 ? "var(--gold-tint)" : "#FAF9F6",
+                            background: isRank1 ? "rgba(179, 32, 42, 0.05)" : "#FAF9F6",
                             border: "1px solid var(--border)",
                             borderLeft: `4px solid ${borderColor}`,
                             textDecoration: "none",
@@ -837,7 +814,7 @@ export default function LeaderboardPage() {
                                 fontSize: 13,
                                 fontWeight: 700,
                                 fontFamily: "var(--font-numeric)",
-                                color: isRank1 ? "var(--gold)" : "var(--ink)",
+                                color: "var(--crimson)",
                                 width: 22,
                                 flexShrink: 0,
                               }}
@@ -884,7 +861,7 @@ export default function LeaderboardPage() {
                               fontSize: 13.5,
                               fontWeight: 700,
                               fontFamily: "var(--font-numeric)",
-                              color: isRank1 ? "var(--gold)" : "var(--ink)",
+                              color: "var(--ink)",
                               marginLeft: 8,
                               flexShrink: 0,
                             }}
@@ -997,17 +974,17 @@ export default function LeaderboardPage() {
                       justifyContent: "space-between",
                       padding: "8px 12px 8px 10px",
                       borderRadius: 8,
-                      background: isRank1 ? "var(--gold-tint)" : "#FAF9F6",
+                      background: isRank1 ? "rgba(179, 32, 42, 0.05)" : "#FAF9F6",
                       borderLeft: `3px solid ${borderColor}`,
                       textDecoration: "none",
                       transition: "background 150ms ease, transform 150ms ease",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = isRank1 ? "#F7E9C6" : "#F3F0EA";
+                      e.currentTarget.style.background = isRank1 ? "rgba(179, 32, 42, 0.09)" : "#F3F0EA";
                       e.currentTarget.style.transform = "translateY(-1px)";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = isRank1 ? "var(--gold-tint)" : "#FAF9F6";
+                      e.currentTarget.style.background = isRank1 ? "rgba(179, 32, 42, 0.05)" : "#FAF9F6";
                       e.currentTarget.style.transform = "translateY(0)";
                     }}
                   >
@@ -1019,7 +996,7 @@ export default function LeaderboardPage() {
                           fontSize: 12.5,
                           fontWeight: 700,
                           fontFamily: "var(--font-numeric)",
-                          color: isRank1 ? "var(--gold)" : "var(--ink)",
+                          color: "var(--crimson)",
                           width: 22,
                           flexShrink: 0,
                         }}
@@ -1076,7 +1053,7 @@ export default function LeaderboardPage() {
                         fontSize: 13,
                         fontWeight: 700,
                         fontFamily: "var(--font-numeric)",
-                        color: isRank1 ? "var(--gold)" : "var(--ink)",
+                        color: "var(--ink)",
                         marginLeft: 8,
                         flexShrink: 0,
                       }}

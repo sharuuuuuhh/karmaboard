@@ -7,15 +7,7 @@ export default function TopGroupsCards({ groups = [] }) {
   // Top 4 teams to comfortably fill vertical card space
   const topTeams = groups.slice(0, 4);
 
-  const getTeamBorderColor = (teamName, rank) => {
-    const norm = String(teamName || "").toLowerCase();
-    if (norm.includes("tech")) return "var(--gold)";
-    if (norm.includes("market")) return "var(--green)";
-    if (norm.includes("operat")) return "#64748B"; // slate
-    if (norm.includes("lead")) return "var(--crimson)";
-    if (rank === 1) return "var(--gold)";
-    if (rank === 2) return "var(--green)";
-    if (rank === 3) return "#64748B";
+  const getTeamBorderColor = () => {
     return "var(--crimson)";
   };
 
@@ -175,7 +167,7 @@ export default function TopGroupsCards({ groups = [] }) {
                 justifyContent: "space-between",
                 padding: "10px 14px 10px 12px",
                 borderRadius: 10,
-                background: isRank1 ? "var(--gold-tint)" : "#FAF9F6",
+                background: isRank1 ? "rgba(179, 32, 42, 0.05)" : "#FAF9F6",
                 borderLeft: `3px solid ${borderColor}`,
                 textDecoration: "none",
                 flex: 1,
@@ -183,11 +175,11 @@ export default function TopGroupsCards({ groups = [] }) {
                 transition: "background 150ms ease, transform 150ms ease",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = isRank1 ? "#F7E9C6" : "#F3F0EA";
+                e.currentTarget.style.background = isRank1 ? "rgba(179, 32, 42, 0.09)" : "#F3F0EA";
                 e.currentTarget.style.transform = "translateY(-1px)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = isRank1 ? "var(--gold-tint)" : "#FAF9F6";
+                e.currentTarget.style.background = isRank1 ? "rgba(179, 32, 42, 0.05)" : "#FAF9F6";
                 e.currentTarget.style.transform = "translateY(0)";
               }}
             >
@@ -200,7 +192,7 @@ export default function TopGroupsCards({ groups = [] }) {
                     fontSize: 14,
                     fontWeight: 800,
                     fontFamily: "var(--font-numeric)",
-                    color: isRank1 ? "var(--gold)" : rank === 4 ? "var(--crimson)" : "var(--muted)",
+                    color: "var(--crimson)",
                     width: 26,
                     flexShrink: 0,
                   }}
@@ -249,7 +241,7 @@ export default function TopGroupsCards({ groups = [] }) {
                 </span>
               </div>
 
-              {/* Right Zone: Points in Soft Gold Pill */}
+              {/* Right Zone: Points in Soft Crimson Pill */}
               <div
                 className="top-teams-pts-pill tabular-nums"
                 style={{
@@ -257,8 +249,8 @@ export default function TopGroupsCards({ groups = [] }) {
                   fontVariantNumeric: "tabular-nums",
                   fontSize: 12.5,
                   fontWeight: 700,
-                  color: "var(--gold)",
-                  background: "var(--gold-tint)",
+                  color: "var(--crimson)",
+                  background: "rgba(179, 32, 42, 0.06)",
                   padding: "4px 10px",
                   borderRadius: "var(--radius-pill)",
                   textAlign: "center",
