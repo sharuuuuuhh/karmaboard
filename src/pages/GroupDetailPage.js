@@ -3,8 +3,6 @@ import { useParams, Link, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft,
   Search,
-  Copy,
-  Check,
   TrendingUp,
   TrendingDown,
   Minus,
@@ -69,7 +67,6 @@ export default function GroupDetailPage() {
   );
   const [memberSearch, setMemberSearch] = useState("");
   const [showAllMembers, setShowAllMembers] = useState(false);
-  const [copiedKey, setCopiedKey] = useState(null);
 
   const getInitials = (name) => {
     if (!name) return "U";
@@ -119,14 +116,6 @@ export default function GroupDetailPage() {
       }
     }
   }, [paramPeriod, paramOffset, period, offset]);
-
-  const handleCopy = (text, key) => {
-    if (navigator?.clipboard?.writeText) {
-      navigator.clipboard.writeText(text);
-    }
-    setCopiedKey(key);
-    setTimeout(() => setCopiedKey(null), 2000);
-  };
 
   const handlePeriodChange = (newPeriod) => {
     setPeriod(newPeriod);
@@ -330,12 +319,6 @@ export default function GroupDetailPage() {
       (m.muid && m.muid.toLowerCase().includes(q))
     );
   });
-
-  const handleCopyNudgeMessage = () => {
-    const giantNames = sleepingGiantsData.giants.map((g) => g.name).join(", ");
-    const text = `Hey team ${displayName}! ${giantNames} - we need your help this week! Log your contributions on Karmayodha and let's keep our rank.`;
-    handleCopy(text, "nudge");
-  };
 
   // Shared card container styling
   const cardBoxStyle = {
@@ -1573,8 +1556,8 @@ export default function GroupDetailPage() {
               </div>
             ) : (
               <>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 12 }}>
-                  {sleepingGiantsData.giants.map((g) => (
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {sleepingGiantsData.giants.map((g, idx, arr) => (
                     <div
                       key={g.id || g.muid}
                       style={{
@@ -1582,7 +1565,7 @@ export default function GroupDetailPage() {
                         alignItems: "center",
                         justifyContent: "space-between",
                         padding: "6px 0",
-                        borderBottom: "1px solid var(--border)",
+                        borderBottom: idx === arr.length - 1 ? "none" : "1px solid var(--border)",
                       }}
                     >
                       <div style={{ minWidth: 0 }}>
@@ -1629,50 +1612,6 @@ export default function GroupDetailPage() {
                     </div>
                   ))}
                 </div>
-
-                {/* Encouraging Plain-Text Copy Button (No emojis) */}
-                <button
-                  type="button"
-                  onClick={handleCopyNudgeMessage}
-                  style={{
-                    width: "100%",
-                    padding: "7px 12px",
-                    borderRadius: "var(--radius-pill)",
-                    background: "#FFFFFF",
-                    border: "1px solid var(--border)",
-                    color: "var(--ink)",
-                    fontFamily: "var(--font-body)",
-                    fontSize: 11.5,
-                    fontWeight: 700,
-                    letterSpacing: "0.04em",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 6,
-                    transition: "all 150ms ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = "var(--ink)";
-                    e.currentTarget.style.background = "#FAF8F4";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = "var(--border)";
-                    e.currentTarget.style.background = "#FFFFFF";
-                  }}
-                >
-                  {copiedKey === "nudge" ? (
-                    <>
-                      <Check size={13} color="var(--green)" />
-                      <span style={{ color: "var(--green)" }}>Copied</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy size={13} />
-                      <span>Copy Nudge Message</span>
-                    </>
-                  )}
-                </button>
               </>
             )}
           </div>
