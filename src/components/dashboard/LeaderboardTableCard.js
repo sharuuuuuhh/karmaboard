@@ -75,6 +75,9 @@ export default function LeaderboardTableCard({
             border-radius: 24px !important;
             padding: 20px !important;
             box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06) !important;
+            background: #FFFFFF !important;
+            position: relative;
+            z-index: 2;
           }
           .desktop-empty-state-art {
             display: none !important;

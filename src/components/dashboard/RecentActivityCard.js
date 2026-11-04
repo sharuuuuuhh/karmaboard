@@ -54,6 +54,9 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
             border-radius: 24px !important;
             padding: 20px !important;
             box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06) !important;
+            background: #FFFFFF !important;
+            position: relative;
+            z-index: 2;
           }
           .recent-activity-name-col {
             max-width: 100px !important;

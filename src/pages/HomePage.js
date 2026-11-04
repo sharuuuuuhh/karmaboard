@@ -152,53 +152,59 @@ export default function HomePage() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24, position: "relative" }}>
       <style>{`
-        .mobile-bg-wash-left,
-        .mobile-bg-wash-right,
-        .mobile-petal-bottom {
+        .mobile-bg-wash-container {
           display: none;
         }
         @media (max-width: 768px) {
-          .mobile-bg-wash-left {
+          .mobile-bg-wash-container {
             display: block !important;
-            position: fixed;
-            top: 140px;
-            left: 0;
-            width: 130px;
-            height: 480px;
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
             z-index: 0;
+          }
+          .mobile-bg-wash-left {
+            position: absolute;
+            top: 80px;
+            left: -40px;
+            width: 120px;
+            height: 480px;
             pointer-events: none;
             mix-blend-mode: multiply;
-            opacity: 0.6;
+            opacity: 0.25;
+            mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 25%, rgba(0,0,0,0) 75%);
+            -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 25%, rgba(0,0,0,0) 75%);
           }
           .mobile-bg-wash-right {
-            display: block !important;
-            position: fixed;
-            top: 280px;
-            right: 0;
-            width: 130px;
+            position: absolute;
+            top: 260px;
+            right: -40px;
+            width: 120px;
             height: 480px;
-            z-index: 0;
             pointer-events: none;
             mix-blend-mode: multiply;
-            opacity: 0.6;
+            opacity: 0.25;
+            mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 25%, rgba(0,0,0,0) 75%);
+            -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 25%, rgba(0,0,0,0) 75%);
           }
           .mobile-petal-bottom {
-            display: block !important;
-            position: fixed;
-            bottom: 80px;
+            position: absolute;
+            bottom: 20px;
             left: -10px;
-            width: 120px;
-            height: 120px;
-            z-index: 0;
+            width: 90px;
+            height: 90px;
             pointer-events: none;
             mix-blend-mode: multiply;
-            opacity: 0.5;
+            opacity: 0.25;
+            mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 80%);
+            -webkit-mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 80%);
           }
           .home-activity-col {
             order: -1;
           }
         }
-        @media (max-width: 360px) {
+        @media (max-width: 480px) {
           .mobile-bg-wash-left,
           .mobile-bg-wash-right {
             display: none !important;
@@ -206,81 +212,85 @@ export default function HomePage() {
         }
       `}</style>
 
-      {/* Mobile Background Japanese Ink Washes & Floating Petal */}
-      <div className="mobile-bg-wash-left" aria-hidden="true">
-        <picture>
-          <source
-            type="image/avif"
-            srcSet="/assets/art/mobile/m-bg-wash-left@1x.avif 298w, /assets/art/mobile/m-bg-wash-left@2x.avif 597w, /assets/art/mobile/m-bg-wash-left@3x.avif 896w"
-            sizes="130px"
-          />
-          <source
-            type="image/webp"
-            srcSet="/assets/art/mobile/m-bg-wash-left@1x.webp 298w, /assets/art/mobile/m-bg-wash-left@2x.webp 597w, /assets/art/mobile/m-bg-wash-left@3x.webp 896w"
-            sizes="130px"
-          />
-          <img
-            src="/assets/art/mobile/m-bg-wash-left.webp"
-            alt=""
-            aria-hidden="true"
-            loading="lazy"
-            width={896}
-            height={1200}
-            style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "left top" }}
-          />
-        </picture>
+      {/* Mobile Background Japanese Ink Washes & Floating Petal (Strictly in canvas background at zIndex 0) */}
+      <div className="mobile-bg-wash-container" aria-hidden="true">
+        <div className="mobile-bg-wash-left" aria-hidden="true">
+          <picture>
+            <source
+              type="image/avif"
+              srcSet="/assets/art/mobile/m-bg-wash-left@1x.avif 298w, /assets/art/mobile/m-bg-wash-left@2x.avif 597w, /assets/art/mobile/m-bg-wash-left@3x.avif 896w"
+              sizes="120px"
+            />
+            <source
+              type="image/webp"
+              srcSet="/assets/art/mobile/m-bg-wash-left@1x.webp 298w, /assets/art/mobile/m-bg-wash-left@2x.webp 597w, /assets/art/mobile/m-bg-wash-left@3x.webp 896w"
+              sizes="120px"
+            />
+            <img
+              src="/assets/art/mobile/m-bg-wash-left.webp"
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+              width={896}
+              height={1200}
+              style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "left top" }}
+            />
+          </picture>
+        </div>
+
+        <div className="mobile-bg-wash-right" aria-hidden="true">
+          <picture>
+            <source
+              type="image/avif"
+              srcSet="/assets/art/mobile/m-bg-wash-right@1x.avif 298w, /assets/art/mobile/m-bg-wash-right@2x.avif 597w, /assets/art/mobile/m-bg-wash-right@3x.avif 896w"
+              sizes="120px"
+            />
+            <source
+              type="image/webp"
+              srcSet="/assets/art/mobile/m-bg-wash-right@1x.webp 298w, /assets/art/mobile/m-bg-wash-right@2x.webp 597w, /assets/art/mobile/m-bg-wash-right@3x.webp 896w"
+              sizes="120px"
+            />
+            <img
+              src="/assets/art/mobile/m-bg-wash-right.webp"
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+              width={896}
+              height={1200}
+              style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "right top" }}
+            />
+          </picture>
+        </div>
+
+        <div className="mobile-petal-bottom" aria-hidden="true">
+          <picture>
+            <source
+              type="image/avif"
+              srcSet="/assets/art/mobile/m-petal-bottom@1x.avif 341w, /assets/art/mobile/m-petal-bottom@2x.avif 682w, /assets/art/mobile/m-petal-bottom@3x.avif 1024w"
+              sizes="90px"
+            />
+            <source
+              type="image/webp"
+              srcSet="/assets/art/mobile/m-petal-bottom@1x.webp 341w, /assets/art/mobile/m-petal-bottom@2x.webp 682w, /assets/art/mobile/m-petal-bottom@3x.webp 1024w"
+              sizes="90px"
+            />
+            <img
+              src="/assets/art/mobile/m-petal-bottom.webp"
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+              width={1024}
+              height={1024}
+              style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "left bottom" }}
+            />
+          </picture>
+        </div>
       </div>
 
-      <div className="mobile-bg-wash-right" aria-hidden="true">
-        <picture>
-          <source
-            type="image/avif"
-            srcSet="/assets/art/mobile/m-bg-wash-right@1x.avif 298w, /assets/art/mobile/m-bg-wash-right@2x.avif 597w, /assets/art/mobile/m-bg-wash-right@3x.avif 896w"
-            sizes="130px"
-          />
-          <source
-            type="image/webp"
-            srcSet="/assets/art/mobile/m-bg-wash-right@1x.webp 298w, /assets/art/mobile/m-bg-wash-right@2x.webp 597w, /assets/art/mobile/m-bg-wash-right@3x.webp 896w"
-            sizes="130px"
-          />
-          <img
-            src="/assets/art/mobile/m-bg-wash-right.webp"
-            alt=""
-            aria-hidden="true"
-            loading="lazy"
-            width={896}
-            height={1200}
-            style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "right top" }}
-          />
-        </picture>
-      </div>
-
-      <div className="mobile-petal-bottom" aria-hidden="true">
-        <picture>
-          <source
-            type="image/avif"
-            srcSet="/assets/art/mobile/m-petal-bottom@1x.avif 341w, /assets/art/mobile/m-petal-bottom@2x.avif 682w, /assets/art/mobile/m-petal-bottom@3x.avif 1024w"
-            sizes="120px"
-          />
-          <source
-            type="image/webp"
-            srcSet="/assets/art/mobile/m-petal-bottom@1x.webp 341w, /assets/art/mobile/m-petal-bottom@2x.webp 682w, /assets/art/mobile/m-petal-bottom@3x.webp 1024w"
-            sizes="120px"
-          />
-          <img
-            src="/assets/art/mobile/m-petal-bottom.webp"
-            alt=""
-            aria-hidden="true"
-            loading="lazy"
-            width={1024}
-            height={1024}
-            style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "left bottom" }}
-          />
-        </picture>
-      </div>
-
-      {/* Page Header: Title + Subtitle + Single Prominent Period Popover Selector (Centered) */}
-      <PageHeader
+      {/* Foreground Content (Strictly above background washes at zIndex 1) */}
+      <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", gap: 24, width: "100%" }}>
+        {/* Page Header: Title + Subtitle + Single Prominent Period Popover Selector (Centered) */}
+        <PageHeader
         title="Overview"
         subtitle={subtitle}
         centerActions={
@@ -343,6 +353,7 @@ export default function HomePage() {
           <RecentActivityCard activities={displayedActivities} maxRows={6} />
         </PageCol>
       </PageGrid>
+      </div>
     </div>
   );
 }
