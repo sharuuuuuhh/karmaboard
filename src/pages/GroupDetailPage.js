@@ -10,7 +10,6 @@ import {
   Minus,
   ChevronDown,
   ChevronUp,
-  Crown,
 } from "lucide-react";
 import { karmaStore } from "../data/karmaStore";
 import { getGroupToken, isOfficialTeam } from "../utils/groupTokens";
@@ -384,28 +383,56 @@ export default function GroupDetailPage() {
           -webkit-mask-composite: source-in;
         }
 
-        /* 3 Stat Cards Row */
+        /* Responsive Visibility: Desktop 3-Column (Image 2) vs Mobile Compact (Image 1 cleaned) */
+        @media (min-width: 992px) {
+          .team-desktop-layout {
+            display: block !important;
+          }
+          .team-mobile-layout {
+            display: none !important;
+          }
+        }
+        @media (max-width: 991px) {
+          .team-desktop-layout {
+            display: none !important;
+          }
+          .team-mobile-layout {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 14px !important;
+          }
+        }
+
+        /* Desktop 3-Column Grid (Image 2 style) */
+        .team-detail-grid {
+          display: grid;
+          grid-template-columns: 280px minmax(0, 1fr) 280px;
+          gap: 20px;
+          align-items: start;
+        }
+        @media (min-width: 1440px) {
+          .team-detail-grid {
+            grid-template-columns: 300px minmax(0, 1fr) 300px;
+          }
+        }
+        @media (max-width: 1279px) and (min-width: 992px) {
+          .team-detail-grid {
+            grid-template-columns: minmax(0, 1fr) 280px;
+          }
+          .team-stats-stack {
+            grid-column: 1 / -1;
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 14px !important;
+          }
+        }
+
+        /* Mobile 3-Card Stat Row */
         .team-stats-row {
           display: grid;
           grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: 14px;
+          gap: 10px;
           width: 100%;
-        }
-
-        /* 2-Column Sub Grid for Team MVP & Next Target */
-        .team-sub-grid {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 14px;
-          width: 100%;
-        }
-
-        .sleeping-giants-body {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          flex-wrap: wrap;
-          gap: 16px;
         }
 
         @media (max-width: 640px) {
@@ -433,18 +460,6 @@ export default function GroupDetailPage() {
           }
           .team-stat-lbl {
             font-size: 9px !important;
-          }
-          .team-sub-grid {
-            grid-template-columns: 1fr !important;
-            gap: 12px !important;
-          }
-          .sleeping-giants-body {
-            flex-direction: column !important;
-            align-items: stretch !important;
-          }
-          .sleeping-giants-btn {
-            width: 100% !important;
-            justify-content: center !important;
           }
         }
       `}</style>
@@ -746,7 +761,930 @@ export default function GroupDetailPage() {
       {/* =========================================================================
           3 STAT CARDS IN ONE ROW: Campus Standing | Lead/Overtake | Target Pace
           ========================================================================= */}
-      <div className="team-stats-row">
+      
+      {/* =========================================================================
+          DESKTOP 3-COLUMN DASHBOARD (Visible on screens >= 992px - Matches Image 2)
+          ========================================================================= */}
+      <div className="team-desktop-layout">
+        <div className="team-detail-grid">
+        {/* =======================================================================
+            LEFT COLUMN: 4 Stat Cards (Clean white, 20px radius, soft shadow)
+            ======================================================================= */}
+        <div className="team-stats-stack" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          {/* Stat 1: Campus Standing (with faint misty-mountain watermark at 5.5% opacity) */}
+          <div style={{ ...cardBoxStyle, padding: "20px 22px" }}>
+            <div
+              style={{
+                fontFamily: "var(--font-body)",
+                fontSize: 11,
+                fontWeight: 600,
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+                color: "var(--muted)",
+                marginBottom: 8,
+              }}
+            >
+              CAMPUS STANDING
+            </div>
+            <div
+              className="tabular-nums"
+              style={{
+                fontFamily: "var(--font-numeric)",
+                fontSize: 38,
+                fontWeight: 800,
+                lineHeight: 1,
+                color: "var(--ink)",
+              }}
+            >
+              #{currentRank}
+            </div>
+            <div
+              style={{
+                fontSize: 12,
+                fontWeight: 500,
+                fontFamily: "var(--font-body)",
+                color: "var(--muted)",
+                marginTop: 6,
+              }}
+            >
+              #{currentRank} of {sameTypeCount} {isOfficial ? "teams" : "groups"}
+            </div>
+
+            {/* Faint misty-mountain watermark in bottom-right at 5.5% opacity */}
+            <img
+              src="/assets/art/empty-state.webp"
+              alt=""
+              aria-hidden="true"
+              style={{
+                position: "absolute",
+                right: -10,
+                bottom: -10,
+                width: 130,
+                height: 80,
+                objectFit: "contain",
+                opacity: 0.055,
+                mixBlendMode: "multiply",
+                pointerEvents: "none",
+                userSelect: "none",
+              }}
+            />
+          </div>
+
+          {/* Stat 2: Lead Margin / Points to Bypass */}
+          <div style={{ ...cardBoxStyle, padding: "20px 22px" }}>
+            <div
+              style={{
+                fontFamily: "var(--font-body)",
+                fontSize: 11,
+                fontWeight: 600,
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+                color: "var(--muted)",
+                marginBottom: 8,
+              }}
+            >
+              {currentRank === 1 ? "LEAD MARGIN" : "POINTS TO BYPASS"}
+            </div>
+            <div
+              className="tabular-nums"
+              style={{
+                fontFamily: "var(--font-numeric)",
+                fontSize: 38,
+                fontWeight: 800,
+                lineHeight: 1,
+                color:
+                  currentRank === 1
+                    ? "var(--green)"
+                    : chasingData.pointsNeeded > 0
+                    ? "var(--crimson)"
+                    : "var(--ink)",
+              }}
+            >
+              {currentRank === 1
+                ? `+${(chasingData.gap || 0).toLocaleString()}`
+                : (chasingData.pointsNeeded || 0) === 0
+                ? "0"
+                : `-${(chasingData.pointsNeeded || 0).toLocaleString()}`}
+            </div>
+            <div
+              style={{
+                fontSize: 12,
+                fontWeight: 500,
+                fontFamily: "var(--font-body)",
+                color: "var(--muted)",
+                marginTop: 6,
+              }}
+            >
+              {currentRank === 1
+                ? `Ahead of ${chasingData.rival ? chasingData.rival.name : "runner-up"}`
+                : `Needed to overtake ${chasingData.rival ? chasingData.rival.name : "team ahead"}`}
+            </div>
+          </div>
+
+          {/* Stat 3: Team Target Pace */}
+          <div style={{ ...cardBoxStyle, padding: "20px 22px" }}>
+            <div
+              style={{
+                fontFamily: "var(--font-body)",
+                fontSize: 11,
+                fontWeight: 600,
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+                color: "var(--muted)",
+                marginBottom: 8,
+              }}
+            >
+              TEAM TARGET PACE
+            </div>
+            <div
+              className="tabular-nums"
+              style={{
+                fontFamily: "var(--font-numeric)",
+                fontSize: 38,
+                fontWeight: 800,
+                lineHeight: 1,
+                color: "var(--ink)",
+              }}
+            >
+              {targetPercent}%
+            </div>
+            {/* Rounded pace bar: track light gray, fill = --team-accent */}
+            <div
+              style={{
+                width: "100%",
+                height: 6,
+                borderRadius: "var(--radius-pill)",
+                background: "var(--surface-subtle)",
+                overflow: "hidden",
+                marginTop: 10,
+                marginBottom: 8,
+              }}
+            >
+              <div
+                style={{
+                  width: `${targetPercent}%`,
+                  height: "100%",
+                  borderRadius: "var(--radius-pill)",
+                  background: teamAccent,
+                  transition: "width 0.3s ease",
+                }}
+              />
+            </div>
+            <div
+              style={{
+                fontSize: 12,
+                fontWeight: 500,
+                fontFamily: "var(--font-body)",
+                color: "var(--muted)",
+              }}
+            >
+              {currentKarma.toLocaleString()} / {targetKarma.toLocaleString()} target
+            </div>
+          </div>
+
+          {/* Stat 4: Roster Engagement */}
+          <div style={{ ...cardBoxStyle, padding: "20px 22px" }}>
+            <div
+              style={{
+                fontFamily: "var(--font-body)",
+                fontSize: 11,
+                fontWeight: 600,
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+                color: "var(--muted)",
+                marginBottom: 8,
+              }}
+            >
+              ROSTER ENGAGEMENT
+            </div>
+            <div
+              className="tabular-nums"
+              style={{
+                fontFamily: "var(--font-numeric)",
+                fontSize: 38,
+                fontWeight: 800,
+                lineHeight: 1,
+                color: "var(--ink)",
+              }}
+            >
+              {activeMembersCount} / {members.length}
+            </div>
+            <div
+              style={{
+                fontSize: 12,
+                fontWeight: 500,
+                fontFamily: "var(--font-body)",
+                color: "var(--muted)",
+                marginTop: 6,
+              }}
+            >
+              {rosterPct}% of warriors active this week
+            </div>
+          </div>
+        </div>
+
+        {/* =======================================================================
+            CENTER COLUMN: Team Roster Card
+            ======================================================================= */}
+        <div style={{ ...cardBoxStyle, padding: "24px 24px 16px 24px", display: "flex", flexDirection: "column" }}>
+          {/* Header & Search */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: 12,
+            }}
+          >
+            <div>
+              <h3
+                style={{
+                  margin: 0,
+                  fontFamily: "var(--font-display)",
+                  fontSize: 18,
+                  fontWeight: 800,
+                  textTransform: "uppercase",
+                  letterSpacing: "-0.01em",
+                  color: "var(--ink)",
+                }}
+              >
+                TEAM ROSTER
+              </h3>
+              <span
+                style={{
+                  fontFamily: "var(--font-body)",
+                  fontSize: 11.5,
+                  fontWeight: 600,
+                  letterSpacing: "0.06em",
+                  textTransform: "uppercase",
+                  color: "var(--muted)",
+                }}
+              >
+                {members.length} WARRIORS ENROLLED ΓÇó {activeMembersCount} ACTIVE
+              </span>
+            </div>
+
+            {/* Clean White Search Bar */}
+            <div style={{ position: "relative", minWidth: 180, maxWidth: 220 }}>
+              <Search
+                size={14}
+                color="var(--muted)"
+                style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }}
+              />
+              <input
+                type="text"
+                placeholder="Search warrior..."
+                value={memberSearch}
+                onChange={(e) => setMemberSearch(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "6px 12px 6px 34px",
+                  borderRadius: "var(--radius-pill)",
+                  border: "1px solid var(--border)",
+                  background: "#FFFFFF",
+                  fontSize: 12.5,
+                  fontFamily: "var(--font-body)",
+                  color: "var(--ink)",
+                  outline: "none",
+                  transition: "border-color 150ms ease",
+                }}
+                onFocus={(e) => (e.target.style.borderColor = "var(--ink)")}
+                onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
+              />
+            </div>
+          </div>
+
+          {/* Thin --team-accent Line Under Header */}
+          <div
+            style={{
+              width: "100%",
+              height: 2,
+              background: teamAccent,
+              marginTop: 14,
+            }}
+          />
+
+          {/* Scrollable Table Area */}
+          <div
+            className="custom-scrollbar team-roster-table-scroll"
+            style={{
+              flex: 1,
+              maxHeight: 540,
+              overflowY: "auto",
+              overflowX: "hidden",
+            }}
+          >
+            {filteredMembers.length === 0 ? (
+              <div style={{ padding: "36px 20px", textAlign: "center", color: "var(--muted)", fontSize: 13, fontFamily: "var(--font-body)" }}>
+                No warriors matched "{memberSearch}".
+              </div>
+            ) : (
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead style={{ position: "sticky", top: 0, zIndex: 2, background: "#FFFFFF" }}>
+                  <tr
+                    style={{
+                      height: 38,
+                      borderBottom: "1px solid var(--border)",
+                      fontSize: 11,
+                      fontWeight: 600,
+                      letterSpacing: "0.06em",
+                      color: "var(--muted)",
+                      textTransform: "uppercase",
+                      textAlign: "left",
+                    }}
+                  >
+                    <th style={{ padding: "8px 14px", width: 44 }}>#</th>
+                    <th style={{ padding: "8px 14px" }}>WARRIOR</th>
+                    <th style={{ padding: "8px 14px", textAlign: "right" }}>KARMA</th>
+                    <th className="team-roster-share-col" style={{ padding: "8px 14px", textAlign: "right", width: 70 }}>
+                      SHARE
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredMembers.map((mem, idx) => {
+                    const isTopRank = idx === 0 && (mem.karma || 0) > 0;
+                    const sharePct = mem.share || 0;
+                    const isMVP = detail.mvp && detail.mvp.id === mem.id && (mem.karma || 0) > 0;
+                    const rankNum = idx + 1;
+                    const rankColor =
+                      rankNum === 1
+                        ? "var(--gold)"
+                        : rankNum === 2
+                        ? "#6B6B72"
+                        : rankNum === 3
+                        ? "#B45309"
+                        : "var(--muted)";
+
+                    return (
+                      <tr
+                        key={mem.id || mem.muid || idx}
+                        style={{
+                          height: 54,
+                          borderBottom: "1px solid var(--border)",
+                          background: isTopRank ? "var(--gold-tint)" : "transparent",
+                          borderLeft: isTopRank ? `3px solid ${teamAccent}` : "3px solid transparent",
+                          transition: "background 150ms ease",
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isTopRank) e.currentTarget.style.background = "#FAF8F4";
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isTopRank) e.currentTarget.style.background = "transparent";
+                        }}
+                      >
+                        {/* Rank # (Gold #1, Silver #2, Bronze #3, Muted rest) */}
+                        <td
+                          className="tabular-nums"
+                          style={{
+                            padding: "10px 14px",
+                            fontSize: 13,
+                            fontWeight: 800,
+                            fontFamily: "var(--font-numeric)",
+                            color: rankColor,
+                          }}
+                        >
+                          #{rankNum}
+                        </td>
+
+                        {/* Warrior Cell: Bold Name + Small Muted Email Handle (No dark avatar!) */}
+                        <td style={{ padding: "10px 14px" }}>
+                          <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                              <Link
+                                to={`/u/${encodeURIComponent(mem.muid || mem.id)}`}
+                                style={{
+                                  fontSize: 13.5,
+                                  fontWeight: 700,
+                                  fontFamily: "var(--font-body)",
+                                  color: "var(--ink)",
+                                  textDecoration: "none",
+                                  whiteSpace: "nowrap",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                }}
+                              >
+                                {mem.name}
+                              </Link>
+                              {isMVP && (
+                                <span
+                                  style={{
+                                    fontSize: 9.5,
+                                    fontWeight: 800,
+                                    fontFamily: "var(--font-numeric)",
+                                    color: "var(--gold)",
+                                    background: "var(--gold-tint)",
+                                    padding: "1px 5px",
+                                    borderRadius: 3,
+                                    letterSpacing: "0.06em",
+                                  }}
+                                >
+                                  MVP
+                                </span>
+                              )}
+                            </div>
+                            <span
+                              style={{
+                                fontSize: 11.5,
+                                fontFamily: "var(--font-body)",
+                                color: "var(--muted)",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                maxWidth: 220,
+                              }}
+                            >
+                              {mem.muid || "mulearn"}
+                            </span>
+                            {/* Mobile only: share percentage underneath */}
+                            <span
+                              className="mobile-only-share tabular-nums"
+                              style={{
+                                display: "none",
+                                fontSize: 11,
+                                fontWeight: 700,
+                                color: teamAccent,
+                                marginTop: 2,
+                              }}
+                            >
+                              {sharePct}% share
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* Karma in Space Grotesk bold ink */}
+                        <td
+                          className="tabular-nums"
+                          style={{
+                            padding: "10px 14px",
+                            textAlign: "right",
+                            fontSize: 14,
+                            fontWeight: 800,
+                            fontFamily: "var(--font-numeric)",
+                            color: "var(--ink)",
+                          }}
+                        >
+                          {(mem.karma || 0).toLocaleString()}
+                        </td>
+
+                        {/* Share Percentage in --team-accent */}
+                        <td
+                          className="team-roster-share-col tabular-nums"
+                          style={{
+                            padding: "10px 14px",
+                            textAlign: "right",
+                            fontSize: 12.5,
+                            fontWeight: 700,
+                            fontFamily: "var(--font-numeric)",
+                            color: teamAccent,
+                          }}
+                        >
+                          {sharePct}%
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+
+        {/* =======================================================================
+            RIGHT COLUMN: Team MVP, Chasing You, Sleeping Giants
+            ======================================================================= */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          {/* 1. Team MVP Card */}
+          <div style={{ ...cardBoxStyle, padding: "20px" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 12,
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "var(--font-body)",
+                  fontSize: 10.5,
+                  fontWeight: 800,
+                  color: "var(--gold)",
+                  background: "var(--gold-tint)",
+                  padding: "3px 8px",
+                  borderRadius: "var(--radius-pill)",
+                  letterSpacing: "0.06em",
+                  textTransform: "uppercase",
+                }}
+              >
+                TEAM MVP
+              </span>
+              <Crest group={group} size="xs" />
+            </div>
+
+            {detail.mvp && (detail.mvp.karma || 0) > 0 ? (
+              <div>
+                <div
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 700,
+                    fontFamily: "var(--font-body)",
+                    color: "var(--ink)",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {detail.mvp.name}
+                </div>
+                <div
+                  style={{
+                    fontSize: 11.5,
+                    fontFamily: "var(--font-body)",
+                    color: "var(--muted)",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {detail.mvp.muid}
+                </div>
+
+                <div
+                  className="tabular-nums"
+                  style={{
+                    fontFamily: "var(--font-numeric)",
+                    fontSize: 18,
+                    fontWeight: 800,
+                    color: "var(--gold)",
+                    marginTop: 8,
+                  }}
+                >
+                  +{(detail.mvp.karma || 0).toLocaleString()} KARMA
+                </div>
+              </div>
+            ) : (
+              <div style={{ fontSize: 13, color: "var(--muted)", padding: "8px 0", fontFamily: "var(--font-body)" }}>
+                No MVP yet
+              </div>
+            )}
+          </div>
+
+          {/* 2. Chasing You / Next Target Card */}
+          <div style={{ ...cardBoxStyle, padding: "20px" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 12,
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "var(--font-body)",
+                  fontSize: 11,
+                  fontWeight: 700,
+                  letterSpacing: "0.06em",
+                  textTransform: "uppercase",
+                  color: "var(--muted)",
+                }}
+              >
+                {chasingData.title}
+              </span>
+
+              {chasingData.threatLabel && (
+                <span
+                  style={{
+                    fontFamily: "var(--font-body)",
+                    fontSize: 10,
+                    fontWeight: 800,
+                    letterSpacing: "0.06em",
+                    textTransform: "uppercase",
+                    padding: "3px 8px",
+                    borderRadius: "var(--radius-pill)",
+                    background:
+                      chasingData.threatLabel === "SAFE"
+                        ? "rgba(46, 158, 91, 0.12)"
+                        : chasingData.threatLabel === "CLOSING IN" || chasingData.threatLabel === "WITHIN REACH"
+                        ? "#FEF3C7"
+                        : "rgba(179, 32, 42, 0.12)",
+                    color:
+                      chasingData.threatLabel === "SAFE"
+                        ? "var(--green)"
+                        : chasingData.threatLabel === "CLOSING IN" || chasingData.threatLabel === "WITHIN REACH"
+                        ? "#D97706"
+                        : "var(--crimson)",
+                  }}
+                >
+                  {chasingData.threatLabel}
+                </span>
+              )}
+            </div>
+
+            {chasingData.rival ? (
+              <>
+                {/* Rival Crest & Name Link */}
+                <Link
+                  to={`/groups/${chasingData.rival.id || chasingData.rival.name}?period=${encodeURIComponent(period)}&offset=${encodeURIComponent(offset)}`}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    textDecoration: "none",
+                    marginBottom: 12,
+                  }}
+                >
+                  <Crest group={chasingData.rival} size="sm" />
+                  <div>
+                    <div
+                      style={{
+                        fontSize: 13.5,
+                        fontWeight: 800,
+                        fontFamily: "var(--font-display)",
+                        textTransform: "uppercase",
+                        color: "var(--ink)",
+                      }}
+                    >
+                      {chasingData.rival.name}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 10.5,
+                        fontFamily: "var(--font-body)",
+                        fontWeight: 700,
+                        letterSpacing: "0.06em",
+                        textTransform: "uppercase",
+                        color: "var(--crimson)",
+                      }}
+                    >
+                      VIEW TEAM ΓåÆ
+                    </div>
+                  </div>
+                </Link>
+
+                {/* Metrics Rows */}
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 8,
+                    fontSize: 11.5,
+                    borderTop: "1px solid var(--border)",
+                    paddingTop: 10,
+                    marginBottom: 10,
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ color: "var(--muted)", textTransform: "uppercase", fontSize: 11, fontWeight: 600 }}>
+                      {currentRank === 1 ? "GAP BEHIND YOU" : "GAP TO CATCH"}
+                    </span>
+                    <span
+                      className="tabular-nums"
+                      style={{
+                        fontFamily: "var(--font-numeric)",
+                        fontWeight: 800,
+                        color: "var(--gold)",
+                      }}
+                    >
+                      {chasingData.gap.toLocaleString()} PTS
+                    </span>
+                  </div>
+
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ color: "var(--muted)", textTransform: "uppercase", fontSize: 11, fontWeight: 600 }}>
+                      GAINED THIS WEEK
+                    </span>
+                    <span
+                      className="tabular-nums"
+                      style={{
+                        fontFamily: "var(--font-numeric)",
+                        fontWeight: 700,
+                        color: "var(--ink)",
+                      }}
+                    >
+                      {(chasingData.gainedThisWeek || 0).toLocaleString()} PTS
+                    </span>
+                  </div>
+
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ color: "var(--muted)", textTransform: "uppercase", fontSize: 11, fontWeight: 600 }}>
+                      TREND
+                    </span>
+                    <span
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 3,
+                        fontFamily: "var(--font-numeric)",
+                        fontWeight: 700,
+                        color:
+                          chasingData.trend === "up"
+                            ? "var(--green)"
+                            : chasingData.trend === "down"
+                            ? "var(--crimson)"
+                            : "var(--muted)",
+                      }}
+                    >
+                      {chasingData.trend === "up" && <TrendingUp size={12} strokeWidth={2.2} />}
+                      {chasingData.trend === "down" && <TrendingDown size={12} strokeWidth={2.2} />}
+                      {chasingData.trend === "flat" && <Minus size={12} strokeWidth={2.2} />}
+                      <span>
+                        {chasingData.trend === "up"
+                          ? `+${chasingData.trendDiff}`
+                          : chasingData.trend === "down"
+                          ? `-${chasingData.trendDiff}`
+                          : "0"}
+                      </span>
+                    </span>
+                  </div>
+                </div>
+
+                {/* Reset & Points Needed Text */}
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: "var(--muted)",
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {countdownText}. {currentRank === 1
+                    ? `They need ${chasingData.pointsNeeded} to pass you.`
+                    : `You need ${chasingData.pointsNeeded} to pass them.`}
+                </div>
+              </>
+            ) : (
+              <div style={{ fontSize: 12.5, color: "var(--muted)", padding: "8px 0" }}>
+                {chasingData.statusMessage || "No rival team ranked yet"}
+              </div>
+            )}
+          </div>
+
+          {/* 3. Sleeping Giants Card */}
+          <div style={{ ...cardBoxStyle, padding: "20px" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 12,
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "var(--font-body)",
+                  fontSize: 11,
+                  fontWeight: 700,
+                  letterSpacing: "0.06em",
+                  textTransform: "uppercase",
+                  color: "var(--muted)",
+                }}
+              >
+                SLEEPING GIANTS
+              </span>
+
+              {sleepingGiantsData.giants.length > 0 && (
+                <span
+                  style={{
+                    fontFamily: "var(--font-body)",
+                    fontSize: 10,
+                    fontWeight: 800,
+                    letterSpacing: "0.06em",
+                    textTransform: "uppercase",
+                    color: "var(--gold)",
+                    background: "var(--gold-tint)",
+                    padding: "3px 8px",
+                    borderRadius: "var(--radius-pill)",
+                  }}
+                >
+                  {sleepingGiantsData.giants.length} READY TO RETURN
+                </span>
+              )}
+            </div>
+
+            {!sleepingGiantsData.hasEnoughHistory ? (
+              <div style={{ fontSize: 12, color: "var(--muted)", padding: "8px 0" }}>
+                Not enough history yet
+              </div>
+            ) : sleepingGiantsData.giants.length === 0 ? (
+              <div style={{ fontSize: 12, color: "var(--muted)", padding: "8px 0" }}>
+                Everyone has scored this week
+              </div>
+            ) : (
+              <>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 12 }}>
+                  {sleepingGiantsData.giants.map((g) => (
+                    <div
+                      key={g.id || g.muid}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        padding: "6px 0",
+                        borderBottom: "1px solid var(--border)",
+                      }}
+                    >
+                      <div style={{ minWidth: 0 }}>
+                        <div
+                          style={{
+                            fontSize: 13,
+                            fontWeight: 700,
+                            fontFamily: "var(--font-body)",
+                            color: "var(--ink)",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        >
+                          {g.name}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: 10.5,
+                            fontFamily: "var(--font-body)",
+                            fontWeight: 600,
+                            color: "var(--muted)",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.06em",
+                          }}
+                        >
+                          LAST SCORED {g.daysAgo}D AGO
+                        </div>
+                      </div>
+
+                      <div style={{ textAlign: "right", flexShrink: 0 }}>
+                        <span
+                          className="tabular-nums"
+                          style={{
+                            fontFamily: "var(--font-numeric)",
+                            fontSize: 11.5,
+                            fontWeight: 800,
+                            color: "var(--gold)",
+                          }}
+                        >
+                          AVG {g.avg} / WK
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Encouraging Plain-Text Copy Button (No emojis) */}
+                <button
+                  type="button"
+                  onClick={handleCopyNudgeMessage}
+                  style={{
+                    width: "100%",
+                    padding: "7px 12px",
+                    borderRadius: "var(--radius-pill)",
+                    background: "#FFFFFF",
+                    border: "1px solid var(--border)",
+                    color: "var(--ink)",
+                    fontFamily: "var(--font-body)",
+                    fontSize: 11.5,
+                    fontWeight: 700,
+                    letterSpacing: "0.04em",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 6,
+                    transition: "all 150ms ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = "var(--ink)";
+                    e.currentTarget.style.background = "#FAF8F4";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = "var(--border)";
+                    e.currentTarget.style.background = "#FFFFFF";
+                  }}
+                >
+                  {copiedKey === "nudge" ? (
+                    <>
+                      <Check size={13} color="var(--green)" />
+                      <span style={{ color: "var(--green)" }}>Copied</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy size={13} />
+                      <span>Copy Nudge Message</span>
+                    </>
+                  )}
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+      </div>
+
+      {/* =========================================================================
+          MOBILE COMPACT LAYOUT (Visible on screens < 992px - Removed Chasing/Sleeping)
+          ========================================================================= */}
+      <div className="team-mobile-layout">
+        <div className="team-stats-row">
         {/* Stat 1: Campus Standing */}
         <div className="team-stat-card" style={{ ...cardBoxStyle, padding: "16px 18px", position: "relative" }}>
           <div className="team-stat-lbl" style={{ fontFamily: "var(--font-body)", fontSize: 10.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--muted)" }}>
@@ -858,7 +1796,7 @@ export default function GroupDetailPage() {
                 color: "var(--muted)",
               }}
             >
-              {members.length} WARRIORS ENROLLED • {activeMembersCount} ACTIVE
+              {members.length} WARRIORS ENROLLED ΓÇó {activeMembersCount} ACTIVE
             </span>
           </div>
 
@@ -1107,300 +2045,6 @@ export default function GroupDetailPage() {
           </div>
         )}
       </div>
-
-      {/* =========================================================================
-          SUB-GRID: Team MVP (Left) | Next Target (Right)
-          ========================================================================= */}
-      <div className="team-sub-grid">
-        {/* Card 1: Team MVP */}
-        <div style={{ ...cardBoxStyle, padding: "18px 20px" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-            <span
-              style={{
-                fontFamily: "var(--font-body)",
-                fontSize: 10,
-                fontWeight: 800,
-                color: "var(--gold)",
-                background: "var(--gold-tint)",
-                padding: "3px 8px",
-                borderRadius: "var(--radius-pill)",
-                letterSpacing: "0.06em",
-                textTransform: "uppercase",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 5,
-              }}
-            >
-              <Crown size={12} fill="currentColor" />
-              <span>TEAM MVP</span>
-            </span>
-            <Crest group={group} size="xs" />
-          </div>
-
-          {detail.mvp && (detail.mvp.karma || 0) > 0 ? (
-            <div>
-              <div style={{ fontSize: 14.5, fontWeight: 800, fontFamily: "var(--font-body)", color: "var(--ink)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                {detail.mvp.name}
-              </div>
-              <div style={{ fontSize: 11, fontFamily: "var(--font-body)", color: "var(--muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {detail.mvp.muid}
-              </div>
-              <div className="tabular-nums" style={{ fontFamily: "var(--font-numeric)", fontSize: 20, fontWeight: 800, color: "var(--gold)", marginTop: 6 }}>
-                +{(detail.mvp.karma || 0).toLocaleString()} KARMA
-              </div>
-            </div>
-          ) : (
-            <div style={{ fontSize: 12.5, color: "var(--muted)", padding: "6px 0" }}>
-              No MVP this period
-            </div>
-          )}
-
-          <img
-            src="/assets/art/empty-state.webp"
-            alt=""
-            aria-hidden="true"
-            style={{
-              position: "absolute",
-              right: -8,
-              bottom: -8,
-              width: 100,
-              height: 60,
-              objectFit: "contain",
-              opacity: 0.05,
-              mixBlendMode: "multiply",
-              pointerEvents: "none",
-            }}
-          />
-        </div>
-
-        {/* Card 2: Next Target */}
-        <div style={{ ...cardBoxStyle, padding: "18px 20px" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-            <span style={{ fontFamily: "var(--font-body)", fontSize: 10.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--muted)" }}>
-              {chasingData.title}
-            </span>
-
-            {chasingData.threatLabel && (
-              <span
-                style={{
-                  fontFamily: "var(--font-body)",
-                  fontSize: 9.5,
-                  fontWeight: 800,
-                  letterSpacing: "0.06em",
-                  textTransform: "uppercase",
-                  padding: "2px 7px",
-                  borderRadius: "var(--radius-pill)",
-                  background:
-                    chasingData.threatLabel === "SAFE"
-                      ? "rgba(46, 158, 91, 0.12)"
-                      : chasingData.threatLabel === "CLOSING IN" || chasingData.threatLabel === "WITHIN REACH"
-                      ? "#FEF3C7"
-                      : "rgba(179, 32, 42, 0.12)",
-                  color:
-                    chasingData.threatLabel === "SAFE"
-                      ? "var(--green)"
-                      : chasingData.threatLabel === "CLOSING IN" || chasingData.threatLabel === "WITHIN REACH"
-                      ? "#D97706"
-                      : "var(--crimson)",
-                }}
-              >
-                {chasingData.threatLabel}
-              </span>
-            )}
-          </div>
-
-          {chasingData.rival ? (
-            <>
-              <Link
-                to={`/groups/${chasingData.rival.id || chasingData.rival.name}?period=${encodeURIComponent(period)}&offset=${encodeURIComponent(offset)}`}
-                style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", marginBottom: 10 }}
-              >
-                <Crest group={chasingData.rival} size="sm" />
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 800, fontFamily: "var(--font-display)", textTransform: "uppercase", color: "var(--ink)" }}>
-                    {chasingData.rival.name}
-                  </div>
-                  <div style={{ fontSize: 10, fontFamily: "var(--font-body)", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--crimson)" }}>
-                    VIEW TEAM →
-                  </div>
-                </div>
-              </Link>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 11, borderTop: "1px solid var(--border)", paddingTop: 8, marginBottom: 8 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ color: "var(--muted)", textTransform: "uppercase", fontSize: 10, fontWeight: 600 }}>
-                    {currentRank === 1 ? "GAP BEHIND YOU" : "GAP TO CATCH"}
-                  </span>
-                  <span className="tabular-nums" style={{ fontFamily: "var(--font-numeric)", fontWeight: 800, color: "var(--gold)" }}>
-                    {chasingData.gap.toLocaleString()} PTS
-                  </span>
-                </div>
-
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ color: "var(--muted)", textTransform: "uppercase", fontSize: 10, fontWeight: 600 }}>
-                    GAINED THIS WEEK
-                  </span>
-                  <span className="tabular-nums" style={{ fontFamily: "var(--font-numeric)", fontWeight: 700, color: "var(--ink)" }}>
-                    {(chasingData.gainedThisWeek || 0).toLocaleString()} PTS
-                  </span>
-                </div>
-
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ color: "var(--muted)", textTransform: "uppercase", fontSize: 10, fontWeight: 600 }}>
-                    TREND
-                  </span>
-                  <span
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 3,
-                      fontFamily: "var(--font-numeric)",
-                      fontWeight: 700,
-                      color:
-                        chasingData.trend === "up"
-                          ? "var(--green)"
-                          : chasingData.trend === "down"
-                          ? "var(--crimson)"
-                          : "var(--muted)",
-                    }}
-                  >
-                    {chasingData.trend === "up" && <TrendingUp size={12} strokeWidth={2.2} />}
-                    {chasingData.trend === "down" && <TrendingDown size={12} strokeWidth={2.2} />}
-                    {chasingData.trend === "flat" && <Minus size={12} strokeWidth={2.2} />}
-                    <span>
-                      {chasingData.trend === "up"
-                        ? `+${chasingData.trendDiff}`
-                        : chasingData.trend === "down"
-                        ? `-${chasingData.trendDiff}`
-                        : "0"}
-                    </span>
-                  </span>
-                </div>
-              </div>
-
-              <div style={{ fontSize: 10.5, color: "var(--muted)", lineHeight: 1.3 }}>
-                {countdownText}. {currentRank === 1
-                  ? `They need ${chasingData.pointsNeeded} to pass you.`
-                  : `You need ${chasingData.pointsNeeded} to pass them.`}
-              </div>
-            </>
-          ) : (
-            <div style={{ fontSize: 12, color: "var(--muted)", padding: "6px 0" }}>
-              {chasingData.statusMessage || "No rival team ranked yet"}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* =========================================================================
-          SLEEPING GIANTS CARD: Full width at the bottom with Red Copy Nudge Button
-          ========================================================================= */}
-      <div style={{ ...cardBoxStyle, padding: "20px 22px" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-          <span style={{ fontFamily: "var(--font-body)", fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--muted)" }}>
-            SLEEPING GIANTS
-          </span>
-
-          {sleepingGiantsData.giants.length > 0 && (
-            <span
-              style={{
-                fontFamily: "var(--font-body)",
-                fontSize: 10,
-                fontWeight: 800,
-                letterSpacing: "0.06em",
-                textTransform: "uppercase",
-                color: "var(--gold)",
-                background: "var(--gold-tint)",
-                padding: "3px 8px",
-                borderRadius: "var(--radius-pill)",
-              }}
-            >
-              {sleepingGiantsData.giants.length} READY TO RETURN
-            </span>
-          )}
-        </div>
-
-        {!sleepingGiantsData.hasEnoughHistory ? (
-          <div style={{ fontSize: 12, color: "var(--muted)", padding: "8px 0" }}>
-            Not enough history yet
-          </div>
-        ) : sleepingGiantsData.giants.length === 0 ? (
-          <div style={{ fontSize: 12, color: "var(--muted)", padding: "8px 0" }}>
-            Everyone has scored this week
-          </div>
-        ) : (
-          <div className="sleeping-giants-body">
-            {/* Left: Sleeping Warriors List */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 10, flex: 1, minWidth: 240 }}>
-              {sleepingGiantsData.giants.slice(0, 3).map((g) => (
-                <div
-                  key={g.id || g.muid}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    padding: "6px 0",
-                    borderBottom: "1px solid var(--border)",
-                  }}
-                >
-                  <div style={{ minWidth: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, fontFamily: "var(--font-body)", color: "var(--ink)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                      {g.name}
-                    </div>
-                    <div style={{ fontSize: 10, fontFamily: "var(--font-body)", fontWeight: 600, color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                      LAST SCORED {g.daysAgo}D AGO
-                    </div>
-                  </div>
-
-                  <div style={{ textAlign: "right", flexShrink: 0 }}>
-                    <span className="tabular-nums" style={{ fontFamily: "var(--font-numeric)", fontSize: 11, fontWeight: 800, color: "var(--gold)" }}>
-                      AVG {g.avg} / WK
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Right: Bold Red Nudge Button matching the screenshot */}
-            <button
-              type="button"
-              className="sleeping-giants-btn"
-              onClick={handleCopyNudgeMessage}
-              style={{
-                background: "var(--crimson)",
-                color: "#FFFFFF",
-                border: "none",
-                borderRadius: 12,
-                padding: "12px 20px",
-                fontFamily: "var(--font-body)",
-                fontSize: 12.5,
-                fontWeight: 700,
-                letterSpacing: "0.04em",
-                cursor: "pointer",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 8,
-                flexShrink: 0,
-                boxShadow: "0 4px 14px rgba(179, 32, 42, 0.25)",
-                transition: "all 150ms ease",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.92")}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-            >
-              {copiedKey === "nudge" ? (
-                <>
-                  <Check size={15} color="#FFFFFF" />
-                  <span>Copied Nudge!</span>
-                </>
-              ) : (
-                <>
-                  <Copy size={15} color="#FFFFFF" />
-                  <span>Copy Nudge Message</span>
-                </>
-              )}
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );

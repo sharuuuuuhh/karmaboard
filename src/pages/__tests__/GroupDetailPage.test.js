@@ -22,9 +22,9 @@ describe("GroupDetailPage", () => {
     expect(screen.getByRole("button", { name: /^Monthly$/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /^All Time$/i })).toBeInTheDocument();
 
-    expect(screen.getByText(/Campus Standing/i)).toBeInTheDocument();
-    expect(screen.getByText(/Team Target Pace/i)).toBeInTheDocument();
-    expect(screen.getByText(/Roster Engagement/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Campus Standing/i)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(/Team Target Pace/i)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(/Roster Engagement/i)[0]).toBeInTheDocument();
   });
 
   test("renders for /groups/grp-tech without crashing", () => {
