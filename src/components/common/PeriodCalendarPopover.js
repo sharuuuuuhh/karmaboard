@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { Calendar, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { GlassCalendar } from "../ui/glass-calendar";
-import { getMonthBoundaries, getWeekBoundaries } from "../../utils/dateUtils";
+import { getMonthBoundaries } from "../../utils/dateUtils";
 
 export default function PeriodCalendarPopover({
   period = "month",

@@ -187,6 +187,7 @@ export default function ActivityPage() {
 
   // Full campus roster: 7 official teams + custom crest groups first, then remaining community groups
   const allGroupsList = useMemo(() => {
+    void dataVersion;
     const storeGroups = karmaStore.groups || [];
     const priorityOrder = [
       "TECH",

@@ -68,6 +68,7 @@ export default function HomePage() {
 
   // Real store data with period and offset applied
   const groupStandings = useMemo(() => {
+    void dataVersion;
     return karmaStore.getLeaderboard
       ? karmaStore.getLeaderboard({
           period,
@@ -79,6 +80,7 @@ export default function HomePage() {
   }, [period, offset, dataVersion]);
 
   const rawIndividualStandings = useMemo(() => {
+    void dataVersion;
     return karmaStore.getLeaderboard
       ? karmaStore.getLeaderboard({
           period,
@@ -89,7 +91,10 @@ export default function HomePage() {
       : [];
   }, [period, offset, dataVersion]);
 
-  const allEvents = useMemo(() => karmaStore.karmaEvents || [], [dataVersion]);
+  const allEvents = useMemo(() => {
+    void dataVersion;
+    return karmaStore.karmaEvents || [];
+  }, [dataVersion]);
 
   // Filter individuals by group if a chip is selected
   const displayedIndividuals = useMemo(() => {

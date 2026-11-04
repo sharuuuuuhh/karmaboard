@@ -5,10 +5,7 @@ import {
   Flame,
   ArrowUpRight,
   ArrowDownRight,
-  Minus,
   Crown,
-  Trophy,
-  Users,
   ChevronRight,
 } from "lucide-react";
 import PageHeader from "../components/shell/PageHeader";
@@ -26,6 +23,14 @@ export default function LeaderboardPage() {
       ? "groups"
       : "individuals";
   const [view, setView] = useState(initialView);
+
+  useEffect(() => {
+    const v =
+      searchParams.get("view") === "teams" || searchParams.get("view") === "groups"
+        ? "groups"
+        : "individuals";
+    setView(v);
+  }, [searchParams]);
 
   const initialFilter = ["all", "teams", "groups"].includes(searchParams.get("filter"))
     ? searchParams.get("filter")
@@ -48,17 +53,6 @@ export default function LeaderboardPage() {
     );
   };
 
-  const handleViewSelect = (newView) => {
-    setView(newView);
-    setSearchParams(
-      (prev) => {
-        const p = new URLSearchParams(prev);
-        p.set("view", newView === "groups" ? "teams" : "individuals");
-        return p;
-      },
-      { replace: true }
-    );
-  };
   const [period, setPeriod] = useState("month"); // 'month' | 'all'
   const [offset, setOffset] = useState(0);
   const [search, setSearch] = useState("");
@@ -97,6 +91,7 @@ export default function LeaderboardPage() {
   }, [period, offset]);
 
   const standings = useMemo(() => {
+    void dataVersion;
     return karmaStore.getLeaderboard
       ? karmaStore.getLeaderboard({
           period,
@@ -109,6 +104,7 @@ export default function LeaderboardPage() {
 
   // Group standings for the right-hand sidebar
   const groupStandings = useMemo(() => {
+    void dataVersion;
     return karmaStore.getLeaderboard
       ? karmaStore.getLeaderboard({
           period,
@@ -641,8 +637,6 @@ export default function LeaderboardPage() {
                         gapText = diff > 0 ? `${diff.toLocaleString()} behind #${idx}` : "Tied";
                       }
 
-                      const borderColor = getTeamBorderColor(grp.name || grp.id, rank);
-
                       return (
                         <tr
                           key={grp.id || grp.name || idx}
@@ -752,7 +746,6 @@ export default function LeaderboardPage() {
               borderRadius: "var(--radius-card)",
               padding: "22px 20px",
               boxShadow: "var(--shadow-soft)",
-              position: "relative",
               overflow: "hidden",
             }}
           >

@@ -1,5 +1,3 @@
-import React from "react";
-
 /**
  * MobileHeader is kept as a clean empty placeholder because on mobile
  * the brand logo and transparent art header are integrated directly into PageHeader

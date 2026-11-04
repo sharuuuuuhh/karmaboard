@@ -1,21 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
-import { getGroupToken } from "../../utils/groupTokens";
 import { formatRelativeTime } from "../../utils/dateUtils";
 import { karmaStore } from "../../data/karmaStore";
 import Crest from "../../crests";
 
 export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
   const rows = activities.slice(0, maxRows);
-
-  // Check if any event is under 24 hours old
-  const isAnyLive = rows.some((act) => {
-    const ts = act.timestamp || act.created_at;
-    if (!ts) return false;
-    const diffHours = (Date.now() - new Date(ts).getTime()) / (1000 * 60 * 60);
-    return diffHours < 24 && diffHours >= 0;
-  });
 
   const getMemberName = (act) => {
     if (act.member_name && act.member_name !== "Member") return act.member_name;
@@ -27,16 +18,6 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
       return act.muid.split("@")[0];
     }
     return "Student";
-  };
-
-  const getInitials = (name) => {
-    if (!name) return "U";
-    return name
-      .split(" ")
-      .map((p) => p[0])
-      .join("")
-      .slice(0, 2)
-      .toUpperCase();
   };
 
   const formatActivityTime = (timestamp) => {
