@@ -174,7 +174,6 @@ export default function HomePage() {
           <ChartCard
             events={allEvents}
             totalKarma={totalWeeklyKarma}
-            percentageChange="+14.2%"
             range={period}
             baseDate={chartBaseDate}
           />

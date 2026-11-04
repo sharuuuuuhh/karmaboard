@@ -5,7 +5,7 @@ import { getDailyKarmaSeries } from "../../utils/dashboardHelpers";
 export default function ChartCard({
   events = [],
   totalKarma = 0,
-  percentageChange = "+14.2%",
+  percentageChange = null,
   range = "week",
   baseDate = new Date(),
   title,
@@ -177,25 +177,27 @@ export default function ChartCard({
           >
             {totalKarma.toLocaleString()}
           </span>
-          <span
-            className="tabular-nums"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 4,
-              padding: "4px 10px",
-              borderRadius: "var(--radius-pill)",
-              background: "rgba(46, 158, 91, 0.12)",
-              color: "var(--green)",
-              fontSize: 12.5,
-              fontWeight: 700,
-              fontFamily: "var(--font-numeric)",
-              fontVariantNumeric: "tabular-nums",
-            }}
-          >
-            <TrendingUp size={14} />
-            <span>{percentageChange}</span>
-          </span>
+          {percentageChange && (
+            <span
+              className="tabular-nums"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 4,
+                padding: "4px 10px",
+                borderRadius: "var(--radius-pill)",
+                background: "rgba(46, 158, 91, 0.12)",
+                color: "var(--green)",
+                fontSize: 12.5,
+                fontWeight: 700,
+                fontFamily: "var(--font-numeric)",
+                fontVariantNumeric: "tabular-nums",
+              }}
+            >
+              <TrendingUp size={14} />
+              <span>{percentageChange}</span>
+            </span>
+          )}
         </div>
       </div>
 
