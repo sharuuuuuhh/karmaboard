@@ -8,6 +8,9 @@ import {
   TrendingUp,
   TrendingDown,
   Minus,
+  ChevronDown,
+  ChevronUp,
+  Crown,
 } from "lucide-react";
 import { karmaStore } from "../data/karmaStore";
 import { getGroupToken, isOfficialTeam } from "../utils/groupTokens";
@@ -66,7 +69,18 @@ export default function GroupDetailPage() {
     paramOffset !== null ? parseInt(paramOffset, 10) || 0 : initialShared.offset || 0
   );
   const [memberSearch, setMemberSearch] = useState("");
+  const [showAllMembers, setShowAllMembers] = useState(false);
   const [copiedKey, setCopiedKey] = useState(null);
+
+  const getInitials = (name) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map((p) => p[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+  };
 
   useEffect(() => {
     const unsub = karmaStore.subscribe(() => {
@@ -335,19 +349,25 @@ export default function GroupDetailPage() {
     overflow: "hidden",
   };
 
+  const isSearching = Boolean(memberSearch.trim());
+  const visibleMembers = isSearching || showAllMembers
+    ? filteredMembers
+    : filteredMembers.slice(0, 3);
+
   return (
     <div
+      className="team-detail-page-root"
       style={{
         width: "100%",
         display: "flex",
         flexDirection: "column",
-        gap: 20,
+        gap: 18,
         paddingBottom: 40,
         position: "relative",
       }}
     >
       <style>{`
-        /* Top Background Sumi-e Landscape Art Layer (Sun, Pagoda, Misty Hills) */
+        /* Top Background Sumi-e Landscape Art Layer */
         .team-detail-art-layer {
           position: absolute;
           top: -24px;
@@ -364,72 +384,72 @@ export default function GroupDetailPage() {
           -webkit-mask-composite: source-in;
         }
 
-        /* Responsive 3-Column Grid */
-        .team-detail-grid {
+        /* 3 Stat Cards Row */
+        .team-stats-row {
           display: grid;
-          grid-template-columns: 280px minmax(0, 1fr) 280px;
-          gap: 20px;
-          align-items: start;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 14px;
+          width: 100%;
         }
-        @media (min-width: 1440px) {
-          .team-detail-grid {
-            grid-template-columns: 300px minmax(0, 1fr) 300px;
-          }
+
+        /* 2-Column Sub Grid for Team MVP & Next Target */
+        .team-sub-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 14px;
+          width: 100%;
         }
-        @media (max-width: 1279px) and (min-width: 1024px) {
-          .team-detail-grid {
-            grid-template-columns: minmax(0, 1fr) 280px;
-          }
-          .team-stats-stack {
-            grid-column: 1 / -1;
-            display: grid !important;
-            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            gap: 14px !important;
-          }
+
+        .sleeping-giants-body {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 16px;
         }
-        @media (max-width: 1023px) {
-          .team-detail-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-          }
-          .team-stats-stack {
-            display: grid !important;
-            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            gap: 14px !important;
-          }
-        }
-        @media (max-width: 639px) {
+
+        @media (max-width: 640px) {
           .team-hero-card {
-            padding: 20px !important;
+            padding: 18px 16px !important;
             flex-direction: column !important;
             align-items: flex-start !important;
-            gap: 20px !important;
+            gap: 16px !important;
           }
           .team-hero-right-zone {
             text-align: left !important;
             width: 100% !important;
-            padding-top: 16px !important;
-            border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+            padding-top: 14px !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
           }
-          .team-stats-stack {
+          .team-stats-row {
+            gap: 8px !important;
+          }
+          .team-stat-card {
+            padding: 12px 10px !important;
+            border-radius: 14px !important;
+          }
+          .team-stat-val {
+            font-size: 24px !important;
+          }
+          .team-stat-lbl {
+            font-size: 9px !important;
+          }
+          .team-sub-grid {
             grid-template-columns: 1fr !important;
             gap: 12px !important;
           }
-          .team-roster-share-col {
-            display: none !important;
+          .sleeping-giants-body {
+            flex-direction: column !important;
+            align-items: stretch !important;
           }
-          .mobile-only-share {
-            display: block !important;
-          }
-          .team-roster-table-scroll {
-            overflow-x: auto !important;
-            -webkit-overflow-scrolling: touch !important;
+          .sleeping-giants-btn {
+            width: 100% !important;
+            justify-content: center !important;
           }
         }
       `}</style>
 
-      {/* Top Background Sumi-e Landscape Banner (Anchored Top-Right) */}
+      {/* Top Background Sumi-e Landscape Banner */}
       <div className="team-detail-art-layer" aria-hidden="true">
         <img
           src="/assets/art/header-banner.webp"
@@ -465,11 +485,10 @@ export default function GroupDetailPage() {
             display: "inline-flex",
             alignItems: "center",
             gap: 8,
-            fontSize: 11.5,
+            fontSize: 12,
             fontWeight: 700,
             fontFamily: "var(--font-body)",
-            letterSpacing: "0.06em",
-            textTransform: "uppercase",
+            letterSpacing: "0.04em",
             color: "var(--muted)",
             textDecoration: "none",
             transition: "color 150ms ease",
@@ -477,7 +496,7 @@ export default function GroupDetailPage() {
           onMouseEnter={(e) => (e.currentTarget.style.color = "var(--ink)")}
           onMouseLeave={(e) => (e.currentTarget.style.color = "var(--muted)")}
         >
-          <ArrowLeft size={14} strokeWidth={2.2} />
+          <ArrowLeft size={14} strokeWidth={2.4} />
           <span>Back to all teams</span>
         </Link>
 
@@ -492,7 +511,7 @@ export default function GroupDetailPage() {
       </div>
 
       {/* =========================================================================
-          HERO BANNER: The ONLY dark card (var(--ink) with dark-card-art.webp anchored right)
+          HERO BANNER: Unified Dark Card with Original Crest, Title, Motto & Karma
           ========================================================================= */}
       <div
         className="team-hero-card"
@@ -501,16 +520,16 @@ export default function GroupDetailPage() {
           background: "var(--ink)",
           borderRadius: 20,
           overflow: "hidden",
-          padding: "28px 32px",
+          padding: "24px 28px",
           boxShadow: "0 1px 2px rgba(0, 0, 0, 0.08), 0 12px 32px rgba(0, 0, 0, 0.22)",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           flexWrap: "wrap",
-          gap: 28,
+          gap: 20,
         }}
       >
-        {/* Dark Japanese Ink-Wash Mountains + Torii Art (anchored right at ~78% opacity) */}
+        {/* Dark Japanese Ink-Wash Mountains + Torii Art */}
         <div
           aria-hidden="true"
           style={{
@@ -536,7 +555,6 @@ export default function GroupDetailPage() {
               opacity: 0.78,
             }}
           />
-          {/* Left-to-right dark gradient overlay so left stays pure black */}
           <div
             style={{
               position: "absolute",
@@ -547,100 +565,76 @@ export default function GroupDetailPage() {
           />
         </div>
 
-        {/* Left Side: Hero Crest (130px) + Meta Stack */}
+        {/* Left Side: Hero Crest + Meta Stack */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 22,
+            gap: 18,
             flexWrap: "wrap",
             minWidth: 0,
             position: "relative",
             zIndex: 1,
           }}
         >
-          {/* Crest (never redrawn or recolored, drop shadow) */}
           {crestFiles ? (
             <img
               src={crestFiles["384"] || crestFiles["128"]}
               srcSet={`${crestFiles["128"]} 128w, ${crestFiles["384"]} 384w`}
-              sizes="140px"
+              sizes="110px"
               alt={`${displayName} crest`}
               style={{
-                height: 130,
+                height: 84,
                 width: "auto",
-                maxWidth: 140,
+                maxWidth: 96,
                 objectFit: "contain",
                 display: "block",
                 flexShrink: 0,
-                filter: "drop-shadow(0 8px 18px rgba(0, 0, 0, 0.45))",
+                filter: "drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45))",
               }}
             />
           ) : (
-            <svg
-              viewBox="0 0 100 100"
-              style={{
-                height: 120,
-                width: "auto",
-                maxWidth: 120,
-                flexShrink: 0,
-                filter: "drop-shadow(0 8px 18px rgba(0, 0, 0, 0.45))",
-              }}
-              fill="none"
-            >
-              <path
-                d="M50 8 L85 22 C85 62 50 90 50 90 C50 90 15 62 15 22 Z"
-                stroke="rgba(255, 255, 255, 0.4)"
-                strokeWidth="4"
-                strokeLinejoin="round"
-                fill="rgba(255, 255, 255, 0.08)"
-              />
-              <text
-                x="50"
-                y="56"
-                textAnchor="middle"
-                fill="#FFFFFF"
-                fontSize="14"
-                fontWeight="800"
-                fontFamily="var(--font-display)"
-                letterSpacing="0.08em"
-              >
-                {displayName.slice(0, 6)}
-              </text>
-            </svg>
-          )}
-
-          {/* Department line, Team Name, Rank pill, Role badge, Motto */}
-          <div style={{ minWidth: 0 }}>
-            {token.discipline && (
-              <div
-                style={{
-                  fontFamily: "var(--font-body)",
-                  fontSize: 11,
-                  fontWeight: 700,
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  color: "rgba(255, 255, 255, 0.72)",
-                  marginBottom: 4,
-                }}
-              >
-                {token.discipline}
-              </div>
-            )}
-
             <div
               style={{
+                width: 80,
+                height: 80,
+                borderRadius: 16,
+                background: "rgba(255, 255, 255, 0.08)",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
                 display: "flex",
                 alignItems: "center",
-                flexWrap: "wrap",
-                gap: 12,
+                justifyContent: "center",
+                fontSize: 24,
+                fontWeight: 800,
+                color: "#FFFFFF",
+                flexShrink: 0,
               }}
             >
+              {displayName.slice(0, 2)}
+            </div>
+          )}
+
+          <div style={{ minWidth: 0 }}>
+            <div
+              style={{
+                fontFamily: "var(--font-body)",
+                fontSize: 10,
+                fontWeight: 700,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: "rgba(255, 255, 255, 0.72)",
+                marginBottom: 3,
+              }}
+            >
+              {token.discipline || "COMMUNITY GUILD & CONNECTED UNIVERSE"}
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
               <h1
                 style={{
                   margin: 0,
                   fontFamily: "var(--font-display)",
-                  fontSize: "clamp(34px, 4.2vw, 50px)",
+                  fontSize: "clamp(26px, 3.5vw, 40px)",
                   fontWeight: 800,
                   lineHeight: 1.05,
                   textTransform: "uppercase",
@@ -651,15 +645,14 @@ export default function GroupDetailPage() {
                 {displayName}
               </h1>
 
-              {/* Outlined Rank Pill (outlined with --team-accent) */}
               <span
                 style={{
                   fontFamily: "var(--font-display)",
-                  fontSize: 11,
+                  fontSize: 10.5,
                   fontWeight: 700,
                   color: teamAccent,
                   border: `1px solid ${teamAccent}`,
-                  padding: "3px 10px",
+                  padding: "2px 8px",
                   borderRadius: "var(--radius-pill)",
                   textTransform: "uppercase",
                   letterSpacing: "0.08em",
@@ -668,17 +661,16 @@ export default function GroupDetailPage() {
                 RANK #{currentRank}
               </span>
 
-              {/* Subtle outlined pill with team subtitle / roleBadge */}
               {token.roleBadge && (
                 <span
                   style={{
                     fontFamily: "var(--font-display)",
-                    fontSize: 11,
+                    fontSize: 10.5,
                     fontWeight: 700,
                     color: "rgba(255, 255, 255, 0.8)",
                     border: "1px solid rgba(255, 255, 255, 0.22)",
                     background: "rgba(255, 255, 255, 0.05)",
-                    padding: "3px 10px",
+                    padding: "2px 8px",
                     borderRadius: "var(--radius-pill)",
                     textTransform: "uppercase",
                     letterSpacing: "0.08em",
@@ -689,16 +681,15 @@ export default function GroupDetailPage() {
               )}
             </div>
 
-            {/* Italic motto (hidden if missing) */}
             {token.motto && (
               <div
                 style={{
-                  marginTop: 8,
-                  fontSize: 13,
+                  marginTop: 6,
+                  fontSize: 12,
                   fontStyle: "italic",
                   fontWeight: 500,
                   fontFamily: "var(--font-body)",
-                  color: "rgba(255, 255, 255, 0.72)",
+                  color: "rgba(255, 255, 255, 0.7)",
                   lineHeight: 1.3,
                 }}
               >
@@ -708,14 +699,14 @@ export default function GroupDetailPage() {
           </div>
         </div>
 
-        {/* Right Side: Huge Karma number in Space Grotesk + Total Karma + Active Warriors */}
+        {/* Right Side: Huge Karma + Active Count */}
         <div className="team-hero-right-zone" style={{ textAlign: "right", flexShrink: 0, position: "relative", zIndex: 1 }}>
           <div
             className="tabular-nums"
             style={{
               fontFamily: "var(--font-numeric)",
               fontWeight: 800,
-              fontSize: "clamp(52px, 5.5vw, 68px)",
+              fontSize: "clamp(42px, 5vw, 56px)",
               lineHeight: 0.95,
               letterSpacing: "-0.03em",
               color: "#FFFFFF",
@@ -726,12 +717,12 @@ export default function GroupDetailPage() {
           <div
             style={{
               fontFamily: "var(--font-body)",
-              fontSize: 11,
+              fontSize: 10.5,
               fontWeight: 600,
               letterSpacing: "0.08em",
               textTransform: "uppercase",
               color: "rgba(255, 255, 255, 0.6)",
-              marginTop: 6,
+              marginTop: 4,
             }}
           >
             TOTAL KARMA
@@ -739,12 +730,12 @@ export default function GroupDetailPage() {
           <div
             style={{
               fontFamily: "var(--font-body)",
-              fontSize: 11,
+              fontSize: 10.5,
               fontWeight: 700,
               letterSpacing: "0.06em",
               textTransform: "uppercase",
               color: "var(--gold)",
-              marginTop: 4,
+              marginTop: 3,
             }}
           >
             {activeMembersCount} OF {members.length} WARRIORS ACTIVE
@@ -753,922 +744,663 @@ export default function GroupDetailPage() {
       </div>
 
       {/* =========================================================================
-          BODY 3-COLUMN GRID:
-          Left (Span ~25%): 4 Stat Cards
-          Center (Span ~50%): Team Roster Card
-          Right (Span ~25%): Team MVP, Chasing You, Sleeping Giants
+          3 STAT CARDS IN ONE ROW: Campus Standing | Lead/Overtake | Target Pace
           ========================================================================= */}
-      <div className="team-detail-grid">
-        {/* =======================================================================
-            LEFT COLUMN: 4 Stat Cards (Clean white, 20px radius, soft shadow)
-            ======================================================================= */}
-        <div className="team-stats-stack" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          {/* Stat 1: Campus Standing (with faint misty-mountain watermark at 5.5% opacity) */}
-          <div style={{ ...cardBoxStyle, padding: "20px 22px" }}>
-            <div
+      <div className="team-stats-row">
+        {/* Stat 1: Campus Standing */}
+        <div className="team-stat-card" style={{ ...cardBoxStyle, padding: "16px 18px", position: "relative" }}>
+          <div className="team-stat-lbl" style={{ fontFamily: "var(--font-body)", fontSize: 10.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--muted)" }}>
+            CAMPUS STANDING
+          </div>
+          <div className="team-stat-val tabular-nums" style={{ fontFamily: "var(--font-numeric)", fontSize: 30, fontWeight: 800, lineHeight: 1.1, color: "var(--ink)", marginTop: 4 }}>
+            #{currentRank}
+          </div>
+          <div style={{ fontSize: 11, fontWeight: 500, fontFamily: "var(--font-body)", color: "var(--muted)", marginTop: 4 }}>
+            of {sameTypeCount} {isOfficial ? "teams" : "groups"}
+          </div>
+          <img
+            src="/assets/art/empty-state.webp"
+            alt=""
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              right: -6,
+              bottom: -6,
+              width: 90,
+              height: 55,
+              objectFit: "contain",
+              opacity: 0.055,
+              mixBlendMode: "multiply",
+              pointerEvents: "none",
+            }}
+          />
+        </div>
+
+        {/* Stat 2: Overtake Margin */}
+        <div className="team-stat-card" style={{ ...cardBoxStyle, padding: "16px 18px" }}>
+          <div className="team-stat-lbl" style={{ fontFamily: "var(--font-body)", fontSize: 10.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--muted)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            {currentRank === 1
+              ? "LEAD MARGIN"
+              : `${chasingData.pointsNeeded || 0} PTS TO OVERTAKE ${chasingData.rival ? chasingData.rival.name : "TEAM AHEAD"}`}
+          </div>
+          <div className="team-stat-val tabular-nums" style={{ fontFamily: "var(--font-numeric)", fontSize: 30, fontWeight: 800, lineHeight: 1.1, color: currentRank === 1 ? "var(--green)" : "var(--crimson)", marginTop: 4 }}>
+            {currentRank === 1 ? `+${chasingData.gap || 0}` : (chasingData.pointsNeeded || 0)}
+          </div>
+          <div style={{ width: 42, height: 4, background: "var(--crimson)", borderRadius: 9999, marginTop: 8 }} />
+        </div>
+
+        {/* Stat 3: Team Target Pace & Roster Engagement */}
+        <div className="team-stat-card" style={{ ...cardBoxStyle, padding: "16px 18px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <div className="team-stat-lbl" style={{ fontFamily: "var(--font-body)", fontSize: 10.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--muted)" }}>
+            TEAM TARGET PACE
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 4 }}>
+            <svg width="42" height="42" viewBox="0 0 42 42" style={{ flexShrink: 0 }}>
+              <circle cx="21" cy="21" r="16" stroke="#EAE6DF" strokeWidth="4" fill="none" />
+              <circle
+                cx="21"
+                cy="21"
+                r="16"
+                stroke={targetPercent >= 100 ? "var(--green)" : "var(--crimson)"}
+                strokeWidth="4"
+                fill="none"
+                strokeDasharray={100.5}
+                strokeDashoffset={100.5 * (1 - targetPercent / 100)}
+                strokeLinecap="round"
+                transform="rotate(-90 21 21)"
+              />
+              <text x="21" y="25" textAnchor="middle" fontSize="10" fontWeight="800" fontFamily="var(--font-numeric)" fill="var(--ink)">
+                {targetPercent}%
+              </text>
+            </svg>
+            <div>
+              <div className="tabular-nums" style={{ fontSize: 12, fontWeight: 800, color: "var(--ink)", fontFamily: "var(--font-numeric)" }}>
+                {currentKarma.toLocaleString()} / {targetKarma.toLocaleString()}
+              </div>
+              <div style={{ fontSize: 9.5, color: "var(--muted)", fontWeight: 600, textTransform: "uppercase" }}>
+                target
+              </div>
+            </div>
+          </div>
+          <div style={{ fontSize: 9.5, color: "var(--muted)", marginTop: 4 }}>
+            Roster Engagement: {activeMembersCount}/{members.length} active ({rosterPct}%)
+          </div>
+        </div>
+      </div>
+
+      {/* =========================================================================
+          TEAM ROSTER CARD: Compact list with show/hide toggle ("scroll less")
+          ========================================================================= */}
+      <div style={{ ...cardBoxStyle, padding: "20px 22px 14px 22px" }}>
+        {/* Header & Search */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: 12 }}>
+          <div>
+            <h3
+              style={{
+                margin: 0,
+                fontFamily: "var(--font-display)",
+                fontSize: 16,
+                fontWeight: 800,
+                textTransform: "uppercase",
+                letterSpacing: "-0.01em",
+                color: "var(--ink)",
+              }}
+            >
+              TEAM ROSTER
+            </h3>
+            <span
               style={{
                 fontFamily: "var(--font-body)",
-                fontSize: 11,
+                fontSize: 10.5,
                 fontWeight: 600,
                 letterSpacing: "0.06em",
                 textTransform: "uppercase",
                 color: "var(--muted)",
-                marginBottom: 8,
               }}
             >
-              CAMPUS STANDING
-            </div>
-            <div
-              className="tabular-nums"
-              style={{
-                fontFamily: "var(--font-numeric)",
-                fontSize: 38,
-                fontWeight: 800,
-                lineHeight: 1,
-                color: "var(--ink)",
-              }}
-            >
-              #{currentRank}
-            </div>
-            <div
-              style={{
-                fontSize: 12,
-                fontWeight: 500,
-                fontFamily: "var(--font-body)",
-                color: "var(--muted)",
-                marginTop: 6,
-              }}
-            >
-              #{currentRank} of {sameTypeCount} {isOfficial ? "teams" : "groups"}
-            </div>
+              {members.length} WARRIORS ENROLLED • {activeMembersCount} ACTIVE
+            </span>
+          </div>
 
-            {/* Faint misty-mountain watermark in bottom-right at 5.5% opacity */}
-            <img
-              src="/assets/art/empty-state.webp"
-              alt=""
-              aria-hidden="true"
+          <div style={{ position: "relative", minWidth: 160, maxWidth: 220 }}>
+            <Search
+              size={13}
+              color="var(--muted)"
+              style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)" }}
+            />
+            <input
+              type="text"
+              placeholder="Search warrior..."
+              value={memberSearch}
+              onChange={(e) => setMemberSearch(e.target.value)}
               style={{
-                position: "absolute",
-                right: -10,
-                bottom: -10,
-                width: 130,
-                height: 80,
-                objectFit: "contain",
-                opacity: 0.055,
-                mixBlendMode: "multiply",
-                pointerEvents: "none",
-                userSelect: "none",
+                width: "100%",
+                padding: "6px 10px 6px 30px",
+                borderRadius: "var(--radius-pill)",
+                border: "1px solid var(--border)",
+                background: "#FFFFFF",
+                fontSize: 12.5,
+                fontFamily: "var(--font-body)",
+                color: "var(--ink)",
+                outline: "none",
               }}
             />
           </div>
-
-          {/* Stat 2: Lead Margin / Points to Bypass */}
-          <div style={{ ...cardBoxStyle, padding: "20px 22px" }}>
-            <div
-              style={{
-                fontFamily: "var(--font-body)",
-                fontSize: 11,
-                fontWeight: 600,
-                letterSpacing: "0.06em",
-                textTransform: "uppercase",
-                color: "var(--muted)",
-                marginBottom: 8,
-              }}
-            >
-              {currentRank === 1 ? "LEAD MARGIN" : "POINTS TO BYPASS"}
-            </div>
-            <div
-              className="tabular-nums"
-              style={{
-                fontFamily: "var(--font-numeric)",
-                fontSize: 38,
-                fontWeight: 800,
-                lineHeight: 1,
-                color:
-                  currentRank === 1
-                    ? "var(--green)"
-                    : chasingData.pointsNeeded > 0
-                    ? "var(--crimson)"
-                    : "var(--ink)",
-              }}
-            >
-              {currentRank === 1
-                ? `+${(chasingData.gap || 0).toLocaleString()}`
-                : (chasingData.pointsNeeded || 0) === 0
-                ? "0"
-                : `-${(chasingData.pointsNeeded || 0).toLocaleString()}`}
-            </div>
-            <div
-              style={{
-                fontSize: 12,
-                fontWeight: 500,
-                fontFamily: "var(--font-body)",
-                color: "var(--muted)",
-                marginTop: 6,
-              }}
-            >
-              {currentRank === 1
-                ? `Ahead of ${chasingData.rival ? chasingData.rival.name : "runner-up"}`
-                : `Needed to overtake ${chasingData.rival ? chasingData.rival.name : "team ahead"}`}
-            </div>
-          </div>
-
-          {/* Stat 3: Team Target Pace */}
-          <div style={{ ...cardBoxStyle, padding: "20px 22px" }}>
-            <div
-              style={{
-                fontFamily: "var(--font-body)",
-                fontSize: 11,
-                fontWeight: 600,
-                letterSpacing: "0.06em",
-                textTransform: "uppercase",
-                color: "var(--muted)",
-                marginBottom: 8,
-              }}
-            >
-              TEAM TARGET PACE
-            </div>
-            <div
-              className="tabular-nums"
-              style={{
-                fontFamily: "var(--font-numeric)",
-                fontSize: 38,
-                fontWeight: 800,
-                lineHeight: 1,
-                color: "var(--ink)",
-              }}
-            >
-              {targetPercent}%
-            </div>
-            {/* Rounded pace bar: track light gray, fill = --team-accent */}
-            <div
-              style={{
-                width: "100%",
-                height: 6,
-                borderRadius: "var(--radius-pill)",
-                background: "var(--surface-subtle)",
-                overflow: "hidden",
-                marginTop: 10,
-                marginBottom: 8,
-              }}
-            >
-              <div
-                style={{
-                  width: `${targetPercent}%`,
-                  height: "100%",
-                  borderRadius: "var(--radius-pill)",
-                  background: teamAccent,
-                  transition: "width 0.3s ease",
-                }}
-              />
-            </div>
-            <div
-              style={{
-                fontSize: 12,
-                fontWeight: 500,
-                fontFamily: "var(--font-body)",
-                color: "var(--muted)",
-              }}
-            >
-              {currentKarma.toLocaleString()} / {targetKarma.toLocaleString()} target
-            </div>
-          </div>
-
-          {/* Stat 4: Roster Engagement */}
-          <div style={{ ...cardBoxStyle, padding: "20px 22px" }}>
-            <div
-              style={{
-                fontFamily: "var(--font-body)",
-                fontSize: 11,
-                fontWeight: 600,
-                letterSpacing: "0.06em",
-                textTransform: "uppercase",
-                color: "var(--muted)",
-                marginBottom: 8,
-              }}
-            >
-              ROSTER ENGAGEMENT
-            </div>
-            <div
-              className="tabular-nums"
-              style={{
-                fontFamily: "var(--font-numeric)",
-                fontSize: 38,
-                fontWeight: 800,
-                lineHeight: 1,
-                color: "var(--ink)",
-              }}
-            >
-              {activeMembersCount} / {members.length}
-            </div>
-            <div
-              style={{
-                fontSize: 12,
-                fontWeight: 500,
-                fontFamily: "var(--font-body)",
-                color: "var(--muted)",
-                marginTop: 6,
-              }}
-            >
-              {rosterPct}% of warriors active this week
-            </div>
-          </div>
         </div>
 
-        {/* =======================================================================
-            CENTER COLUMN: Team Roster Card
-            ======================================================================= */}
-        <div style={{ ...cardBoxStyle, padding: "24px 24px 16px 24px", display: "flex", flexDirection: "column" }}>
-          {/* Header & Search */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-              gap: 12,
-            }}
-          >
-            <div>
-              <h3
-                style={{
-                  margin: 0,
-                  fontFamily: "var(--font-display)",
-                  fontSize: 18,
-                  fontWeight: 800,
-                  textTransform: "uppercase",
-                  letterSpacing: "-0.01em",
-                  color: "var(--ink)",
-                }}
-              >
-                TEAM ROSTER
-              </h3>
-              <span
-                style={{
-                  fontFamily: "var(--font-body)",
-                  fontSize: 11.5,
-                  fontWeight: 600,
-                  letterSpacing: "0.06em",
-                  textTransform: "uppercase",
-                  color: "var(--muted)",
-                }}
-              >
-                {members.length} WARRIORS ENROLLED • {activeMembersCount} ACTIVE
-              </span>
-            </div>
-
-            {/* Clean White Search Bar */}
-            <div style={{ position: "relative", minWidth: 180, maxWidth: 220 }}>
-              <Search
-                size={14}
-                color="var(--muted)"
-                style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }}
-              />
-              <input
-                type="text"
-                placeholder="Search warrior..."
-                value={memberSearch}
-                onChange={(e) => setMemberSearch(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "6px 12px 6px 34px",
-                  borderRadius: "var(--radius-pill)",
-                  border: "1px solid var(--border)",
-                  background: "#FFFFFF",
-                  fontSize: 12.5,
-                  fontFamily: "var(--font-body)",
-                  color: "var(--ink)",
-                  outline: "none",
-                  transition: "border-color 150ms ease",
-                }}
-                onFocus={(e) => (e.target.style.borderColor = "var(--ink)")}
-                onBlur={(e) => (e.target.style.borderColor = "var(--border)")}
-              />
-            </div>
+        {/* Roster Items */}
+        {filteredMembers.length === 0 ? (
+          <div style={{ padding: "30px 16px", textAlign: "center", color: "var(--muted)", fontSize: 13 }}>
+            No warriors matched "{memberSearch}".
           </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            {visibleMembers.map((mem, idx) => {
+              const rankNum = idx + 1;
+              const isTopRank = rankNum === 1 && (mem.karma || 0) > 0;
+              const sharePct = mem.share || 0;
+              const isMVP = detail.mvp && detail.mvp.id === mem.id && (mem.karma || 0) > 0;
 
-          {/* Thin --team-accent Line Under Header */}
-          <div
-            style={{
-              width: "100%",
-              height: 2,
-              background: teamAccent,
-              marginTop: 14,
-            }}
-          />
-
-          {/* Scrollable Table Area */}
-          <div
-            className="custom-scrollbar team-roster-table-scroll"
-            style={{
-              flex: 1,
-              maxHeight: 540,
-              overflowY: "auto",
-              overflowX: "hidden",
-            }}
-          >
-            {filteredMembers.length === 0 ? (
-              <div style={{ padding: "36px 20px", textAlign: "center", color: "var(--muted)", fontSize: 13, fontFamily: "var(--font-body)" }}>
-                No warriors matched "{memberSearch}".
-              </div>
-            ) : (
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead style={{ position: "sticky", top: 0, zIndex: 2, background: "#FFFFFF" }}>
-                  <tr
-                    style={{
-                      height: 38,
-                      borderBottom: "1px solid var(--border)",
-                      fontSize: 11,
-                      fontWeight: 600,
-                      letterSpacing: "0.06em",
-                      color: "var(--muted)",
-                      textTransform: "uppercase",
-                      textAlign: "left",
-                    }}
-                  >
-                    <th style={{ padding: "8px 14px", width: 44 }}>#</th>
-                    <th style={{ padding: "8px 14px" }}>WARRIOR</th>
-                    <th style={{ padding: "8px 14px", textAlign: "right" }}>KARMA</th>
-                    <th className="team-roster-share-col" style={{ padding: "8px 14px", textAlign: "right", width: 70 }}>
-                      SHARE
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredMembers.map((mem, idx) => {
-                    const isTopRank = idx === 0 && (mem.karma || 0) > 0;
-                    const sharePct = mem.share || 0;
-                    const isMVP = detail.mvp && detail.mvp.id === mem.id && (mem.karma || 0) > 0;
-                    const rankNum = idx + 1;
-                    const rankColor =
-                      rankNum === 1
-                        ? "var(--gold)"
-                        : rankNum === 2
-                        ? "#6B6B72"
-                        : rankNum === 3
-                        ? "#B45309"
-                        : "var(--muted)";
-
-                    return (
-                      <tr
-                        key={mem.id || mem.muid || idx}
-                        style={{
-                          height: 54,
-                          borderBottom: "1px solid var(--border)",
-                          background: isTopRank ? "var(--gold-tint)" : "transparent",
-                          borderLeft: isTopRank ? `3px solid ${teamAccent}` : "3px solid transparent",
-                          transition: "background 150ms ease",
-                        }}
-                        onMouseEnter={(e) => {
-                          if (!isTopRank) e.currentTarget.style.background = "#FAF8F4";
-                        }}
-                        onMouseLeave={(e) => {
-                          if (!isTopRank) e.currentTarget.style.background = "transparent";
-                        }}
-                      >
-                        {/* Rank # (Gold #1, Silver #2, Bronze #3, Muted rest) */}
-                        <td
-                          className="tabular-nums"
-                          style={{
-                            padding: "10px 14px",
-                            fontSize: 13,
-                            fontWeight: 800,
-                            fontFamily: "var(--font-numeric)",
-                            color: rankColor,
-                          }}
-                        >
-                          #{rankNum}
-                        </td>
-
-                        {/* Warrior Cell: Bold Name + Small Muted Email Handle (No dark avatar!) */}
-                        <td style={{ padding: "10px 14px" }}>
-                          <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                              <Link
-                                to={`/u/${encodeURIComponent(mem.muid || mem.id)}`}
-                                style={{
-                                  fontSize: 13.5,
-                                  fontWeight: 700,
-                                  fontFamily: "var(--font-body)",
-                                  color: "var(--ink)",
-                                  textDecoration: "none",
-                                  whiteSpace: "nowrap",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                }}
-                              >
-                                {mem.name}
-                              </Link>
-                              {isMVP && (
-                                <span
-                                  style={{
-                                    fontSize: 9.5,
-                                    fontWeight: 800,
-                                    fontFamily: "var(--font-numeric)",
-                                    color: "var(--gold)",
-                                    background: "var(--gold-tint)",
-                                    padding: "1px 5px",
-                                    borderRadius: 3,
-                                    letterSpacing: "0.06em",
-                                  }}
-                                >
-                                  MVP
-                                </span>
-                              )}
-                            </div>
-                            <span
-                              style={{
-                                fontSize: 11.5,
-                                fontFamily: "var(--font-body)",
-                                color: "var(--muted)",
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                maxWidth: 220,
-                              }}
-                            >
-                              {mem.muid || "mulearn"}
-                            </span>
-                            {/* Mobile only: share percentage underneath */}
-                            <span
-                              className="mobile-only-share tabular-nums"
-                              style={{
-                                display: "none",
-                                fontSize: 11,
-                                fontWeight: 700,
-                                color: teamAccent,
-                                marginTop: 2,
-                              }}
-                            >
-                              {sharePct}% share
-                            </span>
-                          </div>
-                        </td>
-
-                        {/* Karma in Space Grotesk bold ink */}
-                        <td
-                          className="tabular-nums"
-                          style={{
-                            padding: "10px 14px",
-                            textAlign: "right",
-                            fontSize: 14,
-                            fontWeight: 800,
-                            fontFamily: "var(--font-numeric)",
-                            color: "var(--ink)",
-                          }}
-                        >
-                          {(mem.karma || 0).toLocaleString()}
-                        </td>
-
-                        {/* Share Percentage in --team-accent */}
-                        <td
-                          className="team-roster-share-col tabular-nums"
-                          style={{
-                            padding: "10px 14px",
-                            textAlign: "right",
-                            fontSize: 12.5,
-                            fontWeight: 700,
-                            fontFamily: "var(--font-numeric)",
-                            color: teamAccent,
-                          }}
-                        >
-                          {sharePct}%
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            )}
-          </div>
-        </div>
-
-        {/* =======================================================================
-            RIGHT COLUMN: Team MVP, Chasing You, Sleeping Giants
-            ======================================================================= */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          {/* 1. Team MVP Card */}
-          <div style={{ ...cardBoxStyle, padding: "20px" }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: 12,
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: "var(--font-body)",
-                  fontSize: 10.5,
-                  fontWeight: 800,
-                  color: "var(--gold)",
-                  background: "var(--gold-tint)",
-                  padding: "3px 8px",
-                  borderRadius: "var(--radius-pill)",
-                  letterSpacing: "0.06em",
-                  textTransform: "uppercase",
-                }}
-              >
-                TEAM MVP
-              </span>
-              <Crest group={group} size="xs" />
-            </div>
-
-            {detail.mvp && (detail.mvp.karma || 0) > 0 ? (
-              <div>
+              return (
                 <div
-                  style={{
-                    fontSize: 14,
-                    fontWeight: 700,
-                    fontFamily: "var(--font-body)",
-                    color: "var(--ink)",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {detail.mvp.name}
-                </div>
-                <div
-                  style={{
-                    fontSize: 11.5,
-                    fontFamily: "var(--font-body)",
-                    color: "var(--muted)",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {detail.mvp.muid}
-                </div>
-
-                <div
-                  className="tabular-nums"
-                  style={{
-                    fontFamily: "var(--font-numeric)",
-                    fontSize: 18,
-                    fontWeight: 800,
-                    color: "var(--gold)",
-                    marginTop: 8,
-                  }}
-                >
-                  +{(detail.mvp.karma || 0).toLocaleString()} KARMA
-                </div>
-              </div>
-            ) : (
-              <div style={{ fontSize: 13, color: "var(--muted)", padding: "8px 0", fontFamily: "var(--font-body)" }}>
-                No MVP yet
-              </div>
-            )}
-          </div>
-
-          {/* 2. Chasing You / Next Target Card */}
-          <div style={{ ...cardBoxStyle, padding: "20px" }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: 12,
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: "var(--font-body)",
-                  fontSize: 11,
-                  fontWeight: 700,
-                  letterSpacing: "0.06em",
-                  textTransform: "uppercase",
-                  color: "var(--muted)",
-                }}
-              >
-                {chasingData.title}
-              </span>
-
-              {chasingData.threatLabel && (
-                <span
-                  style={{
-                    fontFamily: "var(--font-body)",
-                    fontSize: 10,
-                    fontWeight: 800,
-                    letterSpacing: "0.06em",
-                    textTransform: "uppercase",
-                    padding: "3px 8px",
-                    borderRadius: "var(--radius-pill)",
-                    background:
-                      chasingData.threatLabel === "SAFE"
-                        ? "rgba(46, 158, 91, 0.12)"
-                        : chasingData.threatLabel === "CLOSING IN" || chasingData.threatLabel === "WITHIN REACH"
-                        ? "#FEF3C7"
-                        : "rgba(179, 32, 42, 0.12)",
-                    color:
-                      chasingData.threatLabel === "SAFE"
-                        ? "var(--green)"
-                        : chasingData.threatLabel === "CLOSING IN" || chasingData.threatLabel === "WITHIN REACH"
-                        ? "#D97706"
-                        : "var(--crimson)",
-                  }}
-                >
-                  {chasingData.threatLabel}
-                </span>
-              )}
-            </div>
-
-            {chasingData.rival ? (
-              <>
-                {/* Rival Crest & Name Link */}
-                <Link
-                  to={`/groups/${chasingData.rival.id || chasingData.rival.name}?period=${encodeURIComponent(period)}&offset=${encodeURIComponent(offset)}`}
+                  key={mem.id || mem.muid || idx}
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: 10,
-                    textDecoration: "none",
-                    marginBottom: 12,
+                    justifyContent: "space-between",
+                    gap: 12,
+                    padding: isTopRank ? "10px 12px" : "10px 12px",
+                    background: isTopRank ? "#FFFDF5" : "transparent",
+                    border: isTopRank ? "1px solid rgba(217, 119, 6, 0.16)" : "none",
+                    borderBottom: isTopRank ? "1px solid rgba(217, 119, 6, 0.16)" : "1px solid var(--border)",
+                    borderRadius: isTopRank ? 12 : 0,
+                    marginBottom: isTopRank ? 6 : 0,
+                    transition: "background 150ms ease",
                   }}
                 >
-                  <Crest group={chasingData.rival} size="sm" />
-                  <div>
+                  {/* Left: Rank # + Initials Avatar + Name & MUID */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
                     <div
                       style={{
-                        fontSize: 13.5,
-                        fontWeight: 800,
-                        fontFamily: "var(--font-display)",
-                        textTransform: "uppercase",
-                        color: "var(--ink)",
-                      }}
-                    >
-                      {chasingData.rival.name}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 10.5,
-                        fontFamily: "var(--font-body)",
-                        fontWeight: 700,
-                        letterSpacing: "0.06em",
-                        textTransform: "uppercase",
-                        color: "var(--crimson)",
-                      }}
-                    >
-                      VIEW TEAM →
-                    </div>
-                  </div>
-                </Link>
-
-                {/* Metrics Rows */}
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 8,
-                    fontSize: 11.5,
-                    borderTop: "1px solid var(--border)",
-                    paddingTop: 10,
-                    marginBottom: 10,
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ color: "var(--muted)", textTransform: "uppercase", fontSize: 11, fontWeight: 600 }}>
-                      {currentRank === 1 ? "GAP BEHIND YOU" : "GAP TO CATCH"}
-                    </span>
-                    <span
-                      className="tabular-nums"
-                      style={{
-                        fontFamily: "var(--font-numeric)",
-                        fontWeight: 800,
-                        color: "var(--gold)",
-                      }}
-                    >
-                      {chasingData.gap.toLocaleString()} PTS
-                    </span>
-                  </div>
-
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ color: "var(--muted)", textTransform: "uppercase", fontSize: 11, fontWeight: 600 }}>
-                      GAINED THIS WEEK
-                    </span>
-                    <span
-                      className="tabular-nums"
-                      style={{
-                        fontFamily: "var(--font-numeric)",
-                        fontWeight: 700,
-                        color: "var(--ink)",
-                      }}
-                    >
-                      {(chasingData.gainedThisWeek || 0).toLocaleString()} PTS
-                    </span>
-                  </div>
-
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ color: "var(--muted)", textTransform: "uppercase", fontSize: 11, fontWeight: 600 }}>
-                      TREND
-                    </span>
-                    <span
-                      style={{
-                        display: "inline-flex",
+                        width: 22,
+                        height: 22,
+                        borderRadius: "50%",
+                        display: "flex",
                         alignItems: "center",
-                        gap: 3,
+                        justifyContent: "center",
+                        fontSize: 11,
+                        fontWeight: 800,
                         fontFamily: "var(--font-numeric)",
-                        fontWeight: 700,
+                        flexShrink: 0,
+                        background:
+                          rankNum === 1
+                            ? "#FDE68A"
+                            : rankNum === 2
+                            ? "#E2E8F0"
+                            : rankNum === 3
+                            ? "#FED7AA"
+                            : "#F1F5F9",
                         color:
-                          chasingData.trend === "up"
-                            ? "var(--green)"
-                            : chasingData.trend === "down"
-                            ? "var(--crimson)"
+                          rankNum === 1
+                            ? "#78350F"
+                            : rankNum === 2
+                            ? "#334155"
+                            : rankNum === 3
+                            ? "#7C2D12"
                             : "var(--muted)",
                       }}
                     >
-                      {chasingData.trend === "up" && <TrendingUp size={12} strokeWidth={2.2} />}
-                      {chasingData.trend === "down" && <TrendingDown size={12} strokeWidth={2.2} />}
-                      {chasingData.trend === "flat" && <Minus size={12} strokeWidth={2.2} />}
-                      <span>
-                        {chasingData.trend === "up"
-                          ? `+${chasingData.trendDiff}`
-                          : chasingData.trend === "down"
-                          ? `-${chasingData.trendDiff}`
-                          : "0"}
-                      </span>
-                    </span>
-                  </div>
-                </div>
+                      {rankNum}
+                    </div>
 
-                {/* Reset & Points Needed Text */}
-                <div
-                  style={{
-                    fontSize: 11,
-                    color: "var(--muted)",
-                    lineHeight: 1.4,
-                  }}
-                >
-                  {countdownText}. {currentRank === 1
-                    ? `They need ${chasingData.pointsNeeded} to pass you.`
-                    : `You need ${chasingData.pointsNeeded} to pass them.`}
-                </div>
-              </>
-            ) : (
-              <div style={{ fontSize: 12.5, color: "var(--muted)", padding: "8px 0" }}>
-                {chasingData.statusMessage || "No rival team ranked yet"}
-              </div>
-            )}
-          </div>
-
-          {/* 3. Sleeping Giants Card */}
-          <div style={{ ...cardBoxStyle, padding: "20px" }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: 12,
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: "var(--font-body)",
-                  fontSize: 11,
-                  fontWeight: 700,
-                  letterSpacing: "0.06em",
-                  textTransform: "uppercase",
-                  color: "var(--muted)",
-                }}
-              >
-                SLEEPING GIANTS
-              </span>
-
-              {sleepingGiantsData.giants.length > 0 && (
-                <span
-                  style={{
-                    fontFamily: "var(--font-body)",
-                    fontSize: 10,
-                    fontWeight: 800,
-                    letterSpacing: "0.06em",
-                    textTransform: "uppercase",
-                    color: "var(--gold)",
-                    background: "var(--gold-tint)",
-                    padding: "3px 8px",
-                    borderRadius: "var(--radius-pill)",
-                  }}
-                >
-                  {sleepingGiantsData.giants.length} READY TO RETURN
-                </span>
-              )}
-            </div>
-
-            {!sleepingGiantsData.hasEnoughHistory ? (
-              <div style={{ fontSize: 12, color: "var(--muted)", padding: "8px 0" }}>
-                Not enough history yet
-              </div>
-            ) : sleepingGiantsData.giants.length === 0 ? (
-              <div style={{ fontSize: 12, color: "var(--muted)", padding: "8px 0" }}>
-                Everyone has scored this week
-              </div>
-            ) : (
-              <>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 12 }}>
-                  {sleepingGiantsData.giants.map((g) => (
                     <div
-                      key={g.id || g.muid}
                       style={{
+                        width: 30,
+                        height: 30,
+                        borderRadius: "50%",
+                        background: "#16161A",
+                        color: "#FFFFFF",
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "space-between",
-                        padding: "6px 0",
-                        borderBottom: "1px solid var(--border)",
+                        justifyContent: "center",
+                        fontSize: 10.5,
+                        fontWeight: 700,
+                        fontFamily: "var(--font-body)",
+                        flexShrink: 0,
                       }}
                     >
-                      <div style={{ minWidth: 0 }}>
-                        <div
+                      {getInitials(mem.name)}
+                    </div>
+
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                        <Link
+                          to={`/u/${encodeURIComponent(mem.muid || mem.id)}`}
                           style={{
                             fontSize: 13,
                             fontWeight: 700,
                             fontFamily: "var(--font-body)",
                             color: "var(--ink)",
+                            textDecoration: "none",
                             whiteSpace: "nowrap",
                             overflow: "hidden",
                             textOverflow: "ellipsis",
                           }}
                         >
-                          {g.name}
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 10.5,
-                            fontFamily: "var(--font-body)",
-                            fontWeight: 600,
-                            color: "var(--muted)",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.06em",
-                          }}
-                        >
-                          LAST SCORED {g.daysAgo}D AGO
-                        </div>
+                          {mem.name}
+                        </Link>
+                        {isMVP && (
+                          <span
+                            style={{
+                              fontSize: 9,
+                              fontWeight: 800,
+                              fontFamily: "var(--font-numeric)",
+                              color: "var(--gold)",
+                              background: "var(--gold-tint)",
+                              padding: "1px 5px",
+                              borderRadius: 3,
+                            }}
+                          >
+                            MVP
+                          </span>
+                        )}
                       </div>
-
-                      <div style={{ textAlign: "right", flexShrink: 0 }}>
-                        <span
-                          className="tabular-nums"
-                          style={{
-                            fontFamily: "var(--font-numeric)",
-                            fontSize: 11.5,
-                            fontWeight: 800,
-                            color: "var(--gold)",
-                          }}
-                        >
-                          AVG {g.avg} / WK
-                        </span>
+                      <div
+                        style={{
+                          fontSize: 11,
+                          fontFamily: "var(--font-body)",
+                          color: "var(--muted)",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {mem.muid || "mulearn"}
                       </div>
                     </div>
-                  ))}
-                </div>
+                  </div>
 
-                {/* Encouraging Plain-Text Copy Button (No emojis) */}
-                <button
-                  type="button"
-                  onClick={handleCopyNudgeMessage}
-                  style={{
-                    width: "100%",
-                    padding: "7px 12px",
-                    borderRadius: "var(--radius-pill)",
-                    background: "#FFFFFF",
-                    border: "1px solid var(--border)",
-                    color: "var(--ink)",
-                    fontFamily: "var(--font-body)",
-                    fontSize: 11.5,
-                    fontWeight: 700,
-                    letterSpacing: "0.04em",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 6,
-                    transition: "all 150ms ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = "var(--ink)";
-                    e.currentTarget.style.background = "#FAF8F4";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = "var(--border)";
-                    e.currentTarget.style.background = "#FFFFFF";
-                  }}
-                >
-                  {copiedKey === "nudge" ? (
-                    <>
-                      <Check size={13} color="var(--green)" />
-                      <span style={{ color: "var(--green)" }}>Copied</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy size={13} />
-                      <span>Copy Nudge Message</span>
-                    </>
-                  )}
-                </button>
-              </>
+                  {/* Right: Progress Share Bar + Karma */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <div
+                        style={{
+                          width: 48,
+                          height: 4,
+                          borderRadius: 9999,
+                          background: "#E2E8F0",
+                          overflow: "hidden",
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: `${sharePct}%`,
+                            height: "100%",
+                            borderRadius: 9999,
+                            background: isTopRank ? "var(--gold)" : "#94A3B8",
+                          }}
+                        />
+                      </div>
+                      <span
+                        className="tabular-nums"
+                        style={{
+                          fontSize: 11,
+                          fontWeight: 600,
+                          fontFamily: "var(--font-numeric)",
+                          color: "var(--muted)",
+                          width: 26,
+                        }}
+                      >
+                        {sharePct}%
+                      </span>
+                    </div>
+
+                    <div
+                      className="tabular-nums"
+                      style={{
+                        fontSize: 12.5,
+                        fontWeight: 800,
+                        fontFamily: "var(--font-numeric)",
+                        color: isTopRank ? "var(--gold)" : "var(--ink)",
+                        whiteSpace: "nowrap",
+                        minWidth: 80,
+                        textAlign: "right",
+                      }}
+                    >
+                      {(mem.karma || 0).toLocaleString()} KARMA
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Show All / Show Less Expander */}
+            {filteredMembers.length > 3 && !isSearching && (
+              <button
+                type="button"
+                onClick={() => setShowAllMembers((prev) => !prev)}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "var(--ink)",
+                  fontSize: 12,
+                  fontWeight: 700,
+                  fontFamily: "var(--font-body)",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 6,
+                  width: "100%",
+                  padding: "12px 0 4px 0",
+                  transition: "opacity 150ms ease",
+                }}
+              >
+                <span>
+                  {showAllMembers
+                    ? "Show less warriors"
+                    : `Show all ${filteredMembers.length} warriors`}
+                </span>
+                {showAllMembers ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+              </button>
             )}
           </div>
+        )}
+      </div>
+
+      {/* =========================================================================
+          SUB-GRID: Team MVP (Left) | Next Target (Right)
+          ========================================================================= */}
+      <div className="team-sub-grid">
+        {/* Card 1: Team MVP */}
+        <div style={{ ...cardBoxStyle, padding: "18px 20px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+            <span
+              style={{
+                fontFamily: "var(--font-body)",
+                fontSize: 10,
+                fontWeight: 800,
+                color: "var(--gold)",
+                background: "var(--gold-tint)",
+                padding: "3px 8px",
+                borderRadius: "var(--radius-pill)",
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 5,
+              }}
+            >
+              <Crown size={12} fill="currentColor" />
+              <span>TEAM MVP</span>
+            </span>
+            <Crest group={group} size="xs" />
+          </div>
+
+          {detail.mvp && (detail.mvp.karma || 0) > 0 ? (
+            <div>
+              <div style={{ fontSize: 14.5, fontWeight: 800, fontFamily: "var(--font-body)", color: "var(--ink)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {detail.mvp.name}
+              </div>
+              <div style={{ fontSize: 11, fontFamily: "var(--font-body)", color: "var(--muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {detail.mvp.muid}
+              </div>
+              <div className="tabular-nums" style={{ fontFamily: "var(--font-numeric)", fontSize: 20, fontWeight: 800, color: "var(--gold)", marginTop: 6 }}>
+                +{(detail.mvp.karma || 0).toLocaleString()} KARMA
+              </div>
+            </div>
+          ) : (
+            <div style={{ fontSize: 12.5, color: "var(--muted)", padding: "6px 0" }}>
+              No MVP this period
+            </div>
+          )}
+
+          <img
+            src="/assets/art/empty-state.webp"
+            alt=""
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              right: -8,
+              bottom: -8,
+              width: 100,
+              height: 60,
+              objectFit: "contain",
+              opacity: 0.05,
+              mixBlendMode: "multiply",
+              pointerEvents: "none",
+            }}
+          />
         </div>
+
+        {/* Card 2: Next Target */}
+        <div style={{ ...cardBoxStyle, padding: "18px 20px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+            <span style={{ fontFamily: "var(--font-body)", fontSize: 10.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--muted)" }}>
+              {chasingData.title}
+            </span>
+
+            {chasingData.threatLabel && (
+              <span
+                style={{
+                  fontFamily: "var(--font-body)",
+                  fontSize: 9.5,
+                  fontWeight: 800,
+                  letterSpacing: "0.06em",
+                  textTransform: "uppercase",
+                  padding: "2px 7px",
+                  borderRadius: "var(--radius-pill)",
+                  background:
+                    chasingData.threatLabel === "SAFE"
+                      ? "rgba(46, 158, 91, 0.12)"
+                      : chasingData.threatLabel === "CLOSING IN" || chasingData.threatLabel === "WITHIN REACH"
+                      ? "#FEF3C7"
+                      : "rgba(179, 32, 42, 0.12)",
+                  color:
+                    chasingData.threatLabel === "SAFE"
+                      ? "var(--green)"
+                      : chasingData.threatLabel === "CLOSING IN" || chasingData.threatLabel === "WITHIN REACH"
+                      ? "#D97706"
+                      : "var(--crimson)",
+                }}
+              >
+                {chasingData.threatLabel}
+              </span>
+            )}
+          </div>
+
+          {chasingData.rival ? (
+            <>
+              <Link
+                to={`/groups/${chasingData.rival.id || chasingData.rival.name}?period=${encodeURIComponent(period)}&offset=${encodeURIComponent(offset)}`}
+                style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", marginBottom: 10 }}
+              >
+                <Crest group={chasingData.rival} size="sm" />
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 800, fontFamily: "var(--font-display)", textTransform: "uppercase", color: "var(--ink)" }}>
+                    {chasingData.rival.name}
+                  </div>
+                  <div style={{ fontSize: 10, fontFamily: "var(--font-body)", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--crimson)" }}>
+                    VIEW TEAM →
+                  </div>
+                </div>
+              </Link>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 11, borderTop: "1px solid var(--border)", paddingTop: 8, marginBottom: 8 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ color: "var(--muted)", textTransform: "uppercase", fontSize: 10, fontWeight: 600 }}>
+                    {currentRank === 1 ? "GAP BEHIND YOU" : "GAP TO CATCH"}
+                  </span>
+                  <span className="tabular-nums" style={{ fontFamily: "var(--font-numeric)", fontWeight: 800, color: "var(--gold)" }}>
+                    {chasingData.gap.toLocaleString()} PTS
+                  </span>
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ color: "var(--muted)", textTransform: "uppercase", fontSize: 10, fontWeight: 600 }}>
+                    GAINED THIS WEEK
+                  </span>
+                  <span className="tabular-nums" style={{ fontFamily: "var(--font-numeric)", fontWeight: 700, color: "var(--ink)" }}>
+                    {(chasingData.gainedThisWeek || 0).toLocaleString()} PTS
+                  </span>
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ color: "var(--muted)", textTransform: "uppercase", fontSize: 10, fontWeight: 600 }}>
+                    TREND
+                  </span>
+                  <span
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 3,
+                      fontFamily: "var(--font-numeric)",
+                      fontWeight: 700,
+                      color:
+                        chasingData.trend === "up"
+                          ? "var(--green)"
+                          : chasingData.trend === "down"
+                          ? "var(--crimson)"
+                          : "var(--muted)",
+                    }}
+                  >
+                    {chasingData.trend === "up" && <TrendingUp size={12} strokeWidth={2.2} />}
+                    {chasingData.trend === "down" && <TrendingDown size={12} strokeWidth={2.2} />}
+                    {chasingData.trend === "flat" && <Minus size={12} strokeWidth={2.2} />}
+                    <span>
+                      {chasingData.trend === "up"
+                        ? `+${chasingData.trendDiff}`
+                        : chasingData.trend === "down"
+                        ? `-${chasingData.trendDiff}`
+                        : "0"}
+                    </span>
+                  </span>
+                </div>
+              </div>
+
+              <div style={{ fontSize: 10.5, color: "var(--muted)", lineHeight: 1.3 }}>
+                {countdownText}. {currentRank === 1
+                  ? `They need ${chasingData.pointsNeeded} to pass you.`
+                  : `You need ${chasingData.pointsNeeded} to pass them.`}
+              </div>
+            </>
+          ) : (
+            <div style={{ fontSize: 12, color: "var(--muted)", padding: "6px 0" }}>
+              {chasingData.statusMessage || "No rival team ranked yet"}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* =========================================================================
+          SLEEPING GIANTS CARD: Full width at the bottom with Red Copy Nudge Button
+          ========================================================================= */}
+      <div style={{ ...cardBoxStyle, padding: "20px 22px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+          <span style={{ fontFamily: "var(--font-body)", fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--muted)" }}>
+            SLEEPING GIANTS
+          </span>
+
+          {sleepingGiantsData.giants.length > 0 && (
+            <span
+              style={{
+                fontFamily: "var(--font-body)",
+                fontSize: 10,
+                fontWeight: 800,
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+                color: "var(--gold)",
+                background: "var(--gold-tint)",
+                padding: "3px 8px",
+                borderRadius: "var(--radius-pill)",
+              }}
+            >
+              {sleepingGiantsData.giants.length} READY TO RETURN
+            </span>
+          )}
+        </div>
+
+        {!sleepingGiantsData.hasEnoughHistory ? (
+          <div style={{ fontSize: 12, color: "var(--muted)", padding: "8px 0" }}>
+            Not enough history yet
+          </div>
+        ) : sleepingGiantsData.giants.length === 0 ? (
+          <div style={{ fontSize: 12, color: "var(--muted)", padding: "8px 0" }}>
+            Everyone has scored this week
+          </div>
+        ) : (
+          <div className="sleeping-giants-body">
+            {/* Left: Sleeping Warriors List */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, flex: 1, minWidth: 240 }}>
+              {sleepingGiantsData.giants.slice(0, 3).map((g) => (
+                <div
+                  key={g.id || g.muid}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "6px 0",
+                    borderBottom: "1px solid var(--border)",
+                  }}
+                >
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, fontFamily: "var(--font-body)", color: "var(--ink)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {g.name}
+                    </div>
+                    <div style={{ fontSize: 10, fontFamily: "var(--font-body)", fontWeight: 600, color: "var(--muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                      LAST SCORED {g.daysAgo}D AGO
+                    </div>
+                  </div>
+
+                  <div style={{ textAlign: "right", flexShrink: 0 }}>
+                    <span className="tabular-nums" style={{ fontFamily: "var(--font-numeric)", fontSize: 11, fontWeight: 800, color: "var(--gold)" }}>
+                      AVG {g.avg} / WK
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Right: Bold Red Nudge Button matching the screenshot */}
+            <button
+              type="button"
+              className="sleeping-giants-btn"
+              onClick={handleCopyNudgeMessage}
+              style={{
+                background: "var(--crimson)",
+                color: "#FFFFFF",
+                border: "none",
+                borderRadius: 12,
+                padding: "12px 20px",
+                fontFamily: "var(--font-body)",
+                fontSize: 12.5,
+                fontWeight: 700,
+                letterSpacing: "0.04em",
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                flexShrink: 0,
+                boxShadow: "0 4px 14px rgba(179, 32, 42, 0.25)",
+                transition: "all 150ms ease",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.92")}
+              onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+            >
+              {copiedKey === "nudge" ? (
+                <>
+                  <Check size={15} color="#FFFFFF" />
+                  <span>Copied Nudge!</span>
+                </>
+              ) : (
+                <>
+                  <Copy size={15} color="#FFFFFF" />
+                  <span>Copy Nudge Message</span>
+                </>
+              )}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
