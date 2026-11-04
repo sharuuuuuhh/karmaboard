@@ -35,3 +35,4 @@ Japanese ink-wash sumi-e painting on solid warm cream background (#F6F4F0). One 
 ### 5. m-empty-state (1200 x 600)
 **Prompt**:
 Japanese ink-wash sumi-e vignette painting on solid warm cream background (#F6F4F0). Centered: a classic dark ink torii gate standing serenely in front of soft pale grey misty mountains and rolling fog. Low contrast, contemplative, tranquil. All edges fade smoothly to solid cream (#F6F4F0). No text, no watermark, 1200x600.
+

@@ -59,7 +59,15 @@ export default function PeriodCalendarPopover({
   }, [period, offset]);
 
   return (
-    <div ref={containerRef} className="period-calendar-popover-root" style={{ position: "relative", display: "inline-block" }}>
+    <div
+      ref={containerRef}
+      className="period-calendar-popover-root"
+      style={{
+        position: "relative",
+        display: "inline-block",
+        zIndex: isOpen ? 1000 : 1,
+      }}
+    >
       <style>{`
         .period-calendar-popover-dropdown {
           position: absolute;

@@ -52,6 +52,7 @@ export default function PageHeader({
           gap: 16px;
           margin-bottom: 24px;
           position: relative;
+          z-index: 60;
           min-height: 140px;
         }
         .page-header-title-col {
@@ -66,7 +67,7 @@ export default function PageHeader({
           align-items: center;
           justify-content: center;
           position: relative;
-          z-index: 2;
+          z-index: 60;
           flex: 1;
           margin: 0 16px;
         }
@@ -75,7 +76,7 @@ export default function PageHeader({
           align-items: center;
           gap: 12px;
           position: relative;
-          z-index: 2;
+          z-index: 60;
           flex-shrink: 0;
         }
 
@@ -119,6 +120,7 @@ export default function PageHeader({
             margin-bottom: 20px !important;
             padding-top: 10px !important;
             position: relative;
+            z-index: 60;
             width: 100%;
           }
           .page-header-art-layer {
@@ -181,7 +183,7 @@ export default function PageHeader({
             gap: 10px;
             width: 100%;
             position: relative;
-            z-index: 2;
+            z-index: 60;
             margin-top: 2px;
           }
           .page-header-center-col {
