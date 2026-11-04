@@ -1,16 +1,144 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import {
   Home,
   Trophy,
   Users,
-  Clock,
+  Activity,
   RotateCw,
 } from "lucide-react";
+
+function DockItem({ mouseX, item, active, onNavigate }) {
+  const ref = useRef(null);
+
+  // Proximity magnification inspired by FloatingDock
+  const distance = useTransform(mouseX, (val) => {
+    const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
+    return val - bounds.x - bounds.width / 2;
+  });
+
+  const scaleTransform = useTransform(distance, [-90, 0, 90], [1, 1.22, 1]);
+  const yTransform = useTransform(distance, [-90, 0, 90], [0, -5, 0]);
+
+  const scale = useSpring(scaleTransform, {
+    mass: 0.1,
+    stiffness: 220,
+    damping: 16,
+  });
+  const y = useSpring(yTransform, {
+    mass: 0.1,
+    stiffness: 220,
+    damping: 16,
+  });
+
+  const Icon = item.icon;
+
+  return (
+    <motion.button
+      ref={ref}
+      type="button"
+      whileTap={{ scale: 0.88 }}
+      onClick={() => onNavigate(item.path)}
+      className="mobile-dock-btn"
+      title={item.label}
+      aria-label={item.label}
+      aria-current={active ? "page" : undefined}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 3,
+        background: "transparent",
+        border: "none",
+        cursor: "pointer",
+        padding: "4px 8px",
+        flex: 1,
+        minWidth: 0,
+        outline: "none",
+        position: "relative",
+        userSelect: "none",
+        y,
+        scale,
+      }}
+    >
+      {/* Icon Circle with Animated Sliding Active Bubble */}
+      <div
+        style={{
+          position: "relative",
+          width: 38,
+          height: 38,
+          borderRadius: "50%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+        }}
+      >
+        {active && (
+          <motion.div
+            layoutId="activeDockBubble"
+            transition={{
+              type: "spring",
+              stiffness: 420,
+              damping: 30,
+            }}
+            style={{
+              position: "absolute",
+              inset: 0,
+              borderRadius: "50%",
+              background: "var(--crimson)",
+              boxShadow: "0 2px 10px rgba(179, 32, 42, 0.45)",
+            }}
+          />
+        )}
+
+        <motion.div
+          style={{ position: "relative", zIndex: 1, display: "flex" }}
+          animate={{ scale: active ? [0.92, 1.12, 1] : 1 }}
+          transition={{ duration: 0.22, ease: "easeOut" }}
+        >
+          <Icon
+            size={19}
+            strokeWidth={active ? 2.2 : 1.7}
+            color={active ? "#FFFFFF" : "rgba(255, 255, 255, 0.55)"}
+          />
+        </motion.div>
+      </div>
+
+      {/* Label with Smooth Opacity/Weight Transition */}
+      <motion.span
+        animate={{
+          color: active ? "#FFFFFF" : "rgba(255, 255, 255, 0.5)",
+          fontWeight: active ? 700 : 500,
+        }}
+        transition={{ duration: 0.18 }}
+        style={{
+          fontSize: 10.5,
+          fontFamily: "var(--font-body)",
+          lineHeight: 1,
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          letterSpacing: "-0.01em",
+        }}
+      >
+        {item.label}
+      </motion.span>
+    </motion.button>
+  );
+}
 
 export default function MobileDock({ isSyncing, onSync }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const mouseX = useMotionValue(Infinity);
 
   const navItems = [
     {
@@ -38,7 +166,7 @@ export default function MobileDock({ isSyncing, onSync }) {
       id: "activity",
       label: "Activity",
       path: "/activity",
-      icon: Clock,
+      icon: Activity,
       isActive: location.pathname.startsWith("/activity"),
     },
   ];
@@ -54,21 +182,6 @@ export default function MobileDock({ isSyncing, onSync }) {
             display: flex !important;
           }
         }
-        .mobile-dock-btn {
-          transition: transform 0.15s ease, opacity 0.15s ease;
-        }
-        .mobile-dock-btn:active {
-          transform: scale(0.92);
-        }
-        .mobile-dock-sync-btn:active {
-          transform: scale(0.92);
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .mobile-dock-btn, .mobile-dock-sync-btn {
-            transition: none !important;
-            transform: none !important;
-          }
-        }
         @keyframes spinSync {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
@@ -78,6 +191,14 @@ export default function MobileDock({ isSyncing, onSync }) {
       <nav
         className="mobile-dock-container"
         aria-label="Mobile Navigation Dock"
+        onMouseMove={(e) => mouseX.set(e.pageX)}
+        onMouseLeave={() => mouseX.set(Infinity)}
+        onTouchMove={(e) => {
+          if (e.touches && e.touches[0]) {
+            mouseX.set(e.touches[0].clientX);
+          }
+        }}
+        onTouchEnd={() => mouseX.set(Infinity)}
         style={{
           position: "fixed",
           bottom: 0,
@@ -107,7 +228,7 @@ export default function MobileDock({ isSyncing, onSync }) {
             gap: 6,
           }}
         >
-          {/* 4 Navigation Items */}
+          {/* Navigation Items with Proximity Spring & Sliding Bubble */}
           <div
             style={{
               display: "flex",
@@ -117,73 +238,15 @@ export default function MobileDock({ isSyncing, onSync }) {
               minWidth: 0,
             }}
           >
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const active = item.isActive;
-
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => navigate(item.path)}
-                  className="mobile-dock-btn"
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 3,
-                    background: "transparent",
-                    border: "none",
-                    cursor: "pointer",
-                    padding: "4px 8px",
-                    flex: 1,
-                    minWidth: 0,
-                    outline: "none",
-                  }}
-                  title={item.label}
-                  aria-label={item.label}
-                  aria-current={active ? "page" : undefined}
-                >
-                  {/* Icon Circle (Crimson Red filled circle for active) */}
-                  <div
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: "50%",
-                      background: active ? "var(--crimson)" : "transparent",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: active ? "#FFFFFF" : "rgba(255, 255, 255, 0.55)",
-                      boxShadow: active ? "0 2px 8px rgba(179, 32, 42, 0.4)" : "none",
-                      transition: "background 0.18s ease, color 0.18s ease",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <Icon size={19} strokeWidth={active ? 2 : 1.7} />
-                  </div>
-
-                  {/* Label */}
-                  <span
-                    style={{
-                      fontSize: 10.5,
-                      fontWeight: active ? 700 : 500,
-                      fontFamily: "var(--font-body)",
-                      color: active ? "#FFFFFF" : "rgba(255, 255, 255, 0.5)",
-                      lineHeight: 1,
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      letterSpacing: "-0.01em",
-                      transition: "color 0.18s ease",
-                    }}
-                  >
-                    {item.label}
-                  </span>
-                </button>
-              );
-            })}
+            {navItems.map((item) => (
+              <DockItem
+                key={item.id}
+                mouseX={mouseX}
+                item={item}
+                active={item.isActive}
+                onNavigate={navigate}
+              />
+            ))}
           </div>
 
           {/* Thin Divider */}
@@ -197,11 +260,12 @@ export default function MobileDock({ isSyncing, onSync }) {
             }}
           />
 
-          {/* Refresh Action in Rounded Dark Square */}
-          <button
+          {/* Refresh Action with Spring Tap & Rotation */}
+          <motion.button
             type="button"
             onClick={onSync}
             disabled={isSyncing}
+            whileTap={{ scale: 0.86, rotate: 90 }}
             title="Refresh Data"
             aria-label="Refresh Data"
             className="mobile-dock-sync-btn"
@@ -216,7 +280,6 @@ export default function MobileDock({ isSyncing, onSync }) {
               alignItems: "center",
               justifyContent: "center",
               color: isSyncing ? "var(--crimson)" : "rgba(255, 255, 255, 0.8)",
-              transition: "background 0.15s ease, transform 0.15s ease",
               outline: "none",
               flexShrink: 0,
             }}
@@ -228,7 +291,7 @@ export default function MobileDock({ isSyncing, onSync }) {
                 animation: isSyncing ? "spinSync 0.8s linear infinite" : "none",
               }}
             />
-          </button>
+          </motion.button>
         </div>
       </nav>
     </>
