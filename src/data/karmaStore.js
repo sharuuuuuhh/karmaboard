@@ -228,9 +228,9 @@ class KarmaStore {
         supabase.from("campus_details").select("*").order("id", { ascending: false }).limit(1),
         supabase.from("students").select("*").order("karma", { ascending: false }),
         fetchMonthlyRpc(),
-        supabase.from("karma_history").select("*").order("recorded_at", { ascending: true }).range(0, 999),
-        supabase.from("karma_history").select("*").order("recorded_at", { ascending: true }).range(1000, 1999),
-        supabase.from("karma_history").select("*").order("recorded_at", { ascending: true }).range(2000, 2999),
+        supabase.from("karma_history").select("*").order("recorded_at", { ascending: false }).range(0, 999),
+        supabase.from("karma_history").select("*").order("recorded_at", { ascending: false }).range(1000, 1999),
+        supabase.from("karma_history").select("*").order("recorded_at", { ascending: false }).range(2000, 2999),
       ]);
 
       if (campusRes.data && campusRes.data.length > 0) {
@@ -285,7 +285,10 @@ class KarmaStore {
             color: "#5E5CE6",
           };
 
-          const mKarma = monthlyKarmaMap.get(s.user_id) || monthlyKarmaMap.get(s.muid) || s.monthly_karma || 0;
+          const rpcKarma = monthlyRpcRes?.data
+            ? (monthlyKarmaMap.get(s.user_id) ?? monthlyKarmaMap.get(s.muid))
+            : undefined;
+          const mKarma = rpcKarma !== undefined ? rpcKarma : (s.monthly_karma || 0);
           const isCap = group.captain_member_id === s.user_id;
 
           return {
@@ -469,6 +472,11 @@ class KarmaStore {
 
       currentRanked.sort((a, b) => {
         if (b.karma !== a.karma) return b.karma - a.karma;
+        if (period !== "all") {
+          const aTotal = this.members.find((m) => m.id === a.id)?.karma || 0;
+          const bTotal = this.members.find((m) => m.id === b.id)?.karma || 0;
+          if (bTotal !== aTotal) return bTotal - aTotal;
+        }
         return a.lastTime - b.lastTime;
       });
 
@@ -1217,6 +1225,17 @@ class KarmaStore {
 
   async syncKarma() {
     this.lastSyncedAt = new Date().toISOString();
+
+    try {
+      const syncUrl =
+        typeof window !== "undefined" && window.location.hostname === "localhost"
+          ? "https://karmaboard-delta.vercel.app/api/sync-karma"
+          : "/api/sync-karma";
+
+      await fetch(syncUrl, { method: "POST" }).catch(() => {});
+    } catch (e) {
+      // non-blocking
+    }
 
     if (isSupabaseConfigured && supabase) {
       try {

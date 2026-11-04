@@ -8,10 +8,7 @@ const { createClient } = require("@supabase/supabase-js");
 const MULEARN_API =
   "https://mulearn.org/api/v1/dashboard/profile/user-profile/";
 
-// Server-side Supabase client — uses the service key when available so RLS
-// doesn't block writes; falls back to the anon key if only that is set.
 function getSupabase() {
-  // Try multiple env var names — Vercel exposes all dashboard vars to serverless
   const url =
     process.env.SUPABASE_URL ||
     process.env.REACT_APP_SUPABASE_URL;
@@ -23,17 +20,12 @@ function getSupabase() {
 
   if (!url || !key) {
     throw new Error(
-      `Supabase env vars missing. Got url=${!!url}, key=${!!key}. ` +
-      `Set SUPABASE_URL and SUPABASE_ANON_KEY in Vercel environment variables.`
+      `Supabase env vars missing. Set REACT_APP_SUPABASE_URL and REACT_APP_SUPABASE_ANON_KEY.`
     );
   }
   return createClient(url, key);
 }
 
-/**
- * Extract karma/name/rank from the muLearn user-profile API response.
- * Adjust the key paths here if muLearn ever changes their response shape.
- */
 function extract(data) {
   const r = data?.response ?? data ?? {};
   return {
@@ -45,57 +37,53 @@ function extract(data) {
 
 async function fetchOne(muid) {
   try {
+    // 1. Primary: muLearn user search API is fast, reliable, and supports both public & private profiles
+    const searchRes = await fetch(
+      `https://mulearn.org/api/v1/dashboard/user/search/?search=${encodeURIComponent(muid)}`,
+      {
+        headers: { Accept: "application/json" },
+        signal: AbortSignal.timeout(6000),
+      }
+    );
+    if (searchRes.ok) {
+      const searchJson = await searchRes.json();
+      const results = searchJson?.response?.data ?? [];
+      const found = results.find(
+        (r) => r.muid?.toLowerCase() === muid.toLowerCase()
+      );
+      if (found) {
+        const karma =
+          found.karma !== undefined && found.karma !== null
+            ? parseInt(found.karma, 10)
+            : null;
+        return {
+          muid,
+          ok: karma !== null,
+          karma,
+          rank: null,
+          full_name: found.full_name ?? null,
+          error: null,
+        };
+      }
+    }
+
+    // 2. Fallback: profile API in case search didn't index them
     const res = await fetch(`${MULEARN_API}${encodeURIComponent(muid)}/`, {
       headers: { Accept: "application/json" },
-      signal: AbortSignal.timeout(12_000),
+      signal: AbortSignal.timeout(6000),
     });
-    if (!res.ok) {
-      if (res.status === 400 || res.status === 403) {
-        try {
-          const searchRes = await fetch(
-            `https://mulearn.org/api/v1/dashboard/user/search/?search=${encodeURIComponent(muid)}`,
-            {
-              headers: { Accept: "application/json" },
-              signal: AbortSignal.timeout(12_000),
-            }
-          );
-          if (searchRes.ok) {
-            const searchJson = await searchRes.json();
-            const results = searchJson?.response?.data ?? [];
-            const found = results.find(
-              (r) => r.muid?.toLowerCase() === muid.toLowerCase()
-            );
-            if (found) {
-              const karma =
-                found.karma !== undefined && found.karma !== null
-                  ? parseInt(found.karma, 10)
-                  : null;
-              return {
-                muid,
-                ok: karma !== null,
-                karma,
-                rank: null,
-                full_name: found.full_name ?? null,
-                error: null,
-              };
-            }
-          }
-        } catch (searchErr) {
-          // Fall back to original HTTP error reporting
-        }
-      }
-      return { muid, ok: false, error: `HTTP ${res.status}` };
+    if (res.ok) {
+      const json = await res.json();
+      const { karma, rank, full_name } = extract(json);
+      return { muid, ok: karma !== null, karma, rank, full_name, error: null };
     }
-    const json = await res.json();
-    const { karma, rank, full_name } = extract(json);
-    return { muid, ok: karma !== null, karma, rank, full_name, error: null };
+    return { muid, ok: false, error: `Student not found: ${muid}` };
   } catch (err) {
     return { muid, ok: false, karma: null, rank: null, full_name: null, error: String(err) };
   }
 }
 
 module.exports = async function handler(req, res) {
-  // Allow CORS from the same Vercel deployment
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -120,8 +108,8 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ message: "No students to sync", updated: [] });
     }
 
-    // 2. Hit muLearn API concurrently (batched to avoid rate limits)
-    const BATCH = 5;
+    // 2. Hit muLearn API concurrently in efficient batches of 25
+    const BATCH = 25;
     const results = [];
     for (let i = 0; i < students.length; i += BATCH) {
       const batch = students.slice(i, i + BATCH);
@@ -129,45 +117,58 @@ module.exports = async function handler(req, res) {
       results.push(...batchResults);
     }
 
-    // 3. Write successful results back to Supabase
-    const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+    // 3. Determine month start baseline for monthly_karma calculation
+    const now = new Date();
+    const today = now.toISOString().split("T")[0]; // YYYY-MM-DD
+    const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
+
+    const successfulResults = results.filter((r) => r.ok);
+
+    // Fetch earliest snapshot in current month for each student
+    const { data: monthSnapshots } = await supabase
+      .from("karma_history")
+      .select("muid, karma, recorded_at")
+      .gte("recorded_at", monthStart)
+      .order("recorded_at", { ascending: true });
+
+    const baselineMap = new Map();
+    (monthSnapshots || []).forEach((row) => {
+      if (!baselineMap.has(row.muid)) {
+        baselineMap.set(row.muid, row.karma);
+      }
+    });
+
+    // 4. Write successful results back to Supabase (including monthly_karma)
     const updates = await Promise.all(
-      results
-        .filter((r) => r.ok)
-        .map(async ({ muid, karma, rank, full_name }) => {
-          const update = { karma };
-          if (rank !== null) update.rank = rank;
-          if (full_name) update.full_name = full_name;
+      successfulResults.map(async ({ muid, karma, rank, full_name }) => {
+        const baseline = baselineMap.get(muid);
+        const monthlyKarma = baseline !== undefined ? Math.max(0, karma - baseline) : 0;
 
-          const { error } = await supabase
-            .from("students")
-            .update(update)
-            .eq("muid", muid);
+        const update = { karma, monthly_karma: monthlyKarma };
+        if (rank !== null) update.rank = rank;
+        if (full_name) update.full_name = full_name;
 
-          return { muid, success: !error, error: error?.message ?? null };
-        })
+        const { error } = await supabase
+          .from("students")
+          .update(update)
+          .eq("muid", muid);
+
+        return { muid, success: !error, error: error?.message ?? null };
+      })
     );
 
-    // 3b. Snapshot today's karma into karma_history so the monthly RPC has a
-    //     baseline. We only record the FIRST snapshot of each day — if a row
-    //     for (muid, today) already exists we leave it alone so the baseline
-    //     stays at the start-of-day value, not the latest sync value.
+    // 5. Snapshot today's karma into karma_history (only first snapshot of the day)
     try {
-      const successfulResults = results.filter((r) => r.ok);
       if (successfulResults.length > 0) {
-        // Check which (muid, today) pairs already have a snapshot
-        const muids = successfulResults.map((r) => r.muid);
-        const { data: existingSnapshots } = await supabase
+        const { data: existingToday } = await supabase
           .from("karma_history")
           .select("muid")
-          .in("muid", muids)
           .eq("recorded_at", today);
 
         const alreadySnapped = new Set(
-          (existingSnapshots ?? []).map((row) => row.muid)
+          (existingToday ?? []).map((row) => row.muid)
         );
 
-        // Only insert rows that don't have a snapshot yet today
         const newSnapshots = successfulResults
           .filter((r) => !alreadySnapped.has(r.muid))
           .map((r) => ({ muid: r.muid, karma: r.karma, recorded_at: today }));
@@ -185,25 +186,24 @@ module.exports = async function handler(req, res) {
       console.warn("Failed to snapshot karma_history:", histErr.message);
     }
 
-    // 4. Update Campus Details — uses public leaderboard API (single fast request)
+    // 6. Update Campus Details (non-blocking with short timeout)
     try {
       const CAMPUS_CODE = process.env.CAMPUS_CODE || "TLY";
       const leaderboardRes = await fetch(
         "https://mulearn.org/api/v1/leaderboard/college/",
-        { signal: AbortSignal.timeout(8000) }
+        { signal: AbortSignal.timeout(4000) }
       );
       if (leaderboardRes.ok) {
         const leaderboardJson = await leaderboardRes.json();
         const colleges = leaderboardJson?.response ?? [];
-        const campusIndex = colleges.findIndex(c => c.code === CAMPUS_CODE);
-        
+        const campusIndex = colleges.findIndex((c) => c.code === CAMPUS_CODE);
+
         if (campusIndex !== -1) {
           const campusData = colleges[campusIndex];
           const campusRank = campusIndex + 1;
           const campusKarma = campusData.total_karma ?? 0;
           const campusTotalMembers = campusData.total_students ?? 0;
 
-          // Count active members locally (tracked students with karma > 0)
           const { count: localActiveCount } = await supabase
             .from("students")
             .select("*", { count: "exact", head: true })
@@ -220,7 +220,7 @@ module.exports = async function handler(req, res) {
             karma: campusKarma,
             active_members: localActiveCount ?? 0,
             total_members: campusTotalMembers,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
           };
 
           if (existingDetails && existingDetails.length > 0) {
@@ -229,14 +229,12 @@ module.exports = async function handler(req, res) {
               .update(updatePayload)
               .eq("id", existingDetails[0].id);
           } else {
-            await supabase
-              .from("campus_details")
-              .insert(updatePayload);
+            await supabase.from("campus_details").insert(updatePayload);
           }
         }
       }
     } catch (campusErr) {
-      console.warn("Failed to sync campus details:", campusErr.message);
+      // Non-critical, ignore timeout
     }
 
     return res.status(200).json({
