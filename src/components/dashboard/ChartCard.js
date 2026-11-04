@@ -98,6 +98,7 @@ export default function ChartCard({
 
   return (
     <div
+      className="chart-card-root"
       style={{
         background: "var(--card)",
         border: "1px solid var(--border)",
@@ -113,8 +114,48 @@ export default function ChartCard({
         overflow: "hidden",
       }}
     >
-      {/* Background Japanese Crossed Katanas Sumi-e Art */}
+      <style>{`
+        .mobile-samurai-bg {
+          display: none;
+        }
+        @media (min-width: 769px) {
+          .chart-trend-pill {
+            display: none !important;
+          }
+        }
+        @media (max-width: 768px) {
+          .chart-card-root {
+            border-radius: 24px !important;
+            padding: 20px !important;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06) !important;
+          }
+          .chart-trend-pill {
+            display: inline-flex !important;
+          }
+          .desktop-katana-bg {
+            display: none !important;
+          }
+          .mobile-samurai-bg {
+            display: block !important;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 65%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            mix-blend-mode: multiply;
+            opacity: 0.85;
+            mask-image: linear-gradient(to right, transparent 0%, #000 35%, #000 100%);
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 35%, #000 100%);
+          }
+        }
+      `}</style>
+
+      {/* Desktop Background Japanese Crossed Katanas Sumi-e Art */}
       <div
+        className="desktop-katana-bg"
         aria-hidden="true"
         style={{
           position: "absolute",
@@ -141,6 +182,37 @@ export default function ChartCard({
             display: "block",
           }}
         />
+      </div>
+
+      {/* Mobile Background Japanese Samurai Art */}
+      <div className="mobile-samurai-bg" aria-hidden="true">
+        <picture>
+          <source
+            type="image/avif"
+            srcSet="/assets/art/mobile/m-karma-samurai@1x.avif 400w, /assets/art/mobile/m-karma-samurai@2x.avif 800w, /assets/art/mobile/m-karma-samurai@3x.avif 1200w"
+            sizes="(max-width: 768px) 65vw, 360px"
+          />
+          <source
+            type="image/webp"
+            srcSet="/assets/art/mobile/m-karma-samurai@1x.webp 400w, /assets/art/mobile/m-karma-samurai@2x.webp 800w, /assets/art/mobile/m-karma-samurai@3x.webp 1200w"
+            sizes="(max-width: 768px) 65vw, 360px"
+          />
+          <img
+            src="/assets/art/mobile/m-karma-samurai.webp"
+            alt=""
+            aria-hidden="true"
+            width={1200}
+            height={896}
+            loading="lazy"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              objectPosition: "right center",
+              display: "block",
+            }}
+          />
+        </picture>
       </div>
 
       {/* Top Row: Title & Total Karma Metric */}
@@ -179,7 +251,7 @@ export default function ChartCard({
           </span>
           {percentageChange && (
             <span
-              className="tabular-nums"
+              className="chart-trend-pill tabular-nums"
               style={{
                 display: "inline-flex",
                 alignItems: "center",

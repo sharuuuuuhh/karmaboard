@@ -81,8 +81,8 @@ export default function AppShell({ children }) {
           }
           @media (max-width: 768px) {
             .app-main-panel {
-              padding: 16px 16px calc(96px + env(safe-area-inset-bottom, 0px)) 16px !important;
-              height: calc(100vh - 54px) !important;
+              padding: 16px 16px calc(110px + env(safe-area-inset-bottom, 0px)) 16px !important;
+              height: 100vh !important;
               overflow-x: hidden;
             }
           }

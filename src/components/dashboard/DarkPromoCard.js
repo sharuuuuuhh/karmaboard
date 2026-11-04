@@ -34,6 +34,7 @@ export default function DarkPromoCard({
 
   return (
     <div
+      className="dark-promo-card-root"
       style={{
         background: "var(--ink)",
         borderRadius: "var(--radius-card)",
@@ -50,6 +51,13 @@ export default function DarkPromoCard({
         boxShadow: "var(--shadow-soft)",
       }}
     >
+      <style>{`
+        @media (max-width: 768px) {
+          .dark-promo-card-root {
+            display: none !important;
+          }
+        }
+      `}</style>
       {/* Background Japanese Sumi-e Art Layer */}
       <div
         aria-hidden="true"

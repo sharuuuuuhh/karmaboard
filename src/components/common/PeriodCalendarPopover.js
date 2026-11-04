@@ -59,7 +59,7 @@ export default function PeriodCalendarPopover({
   }, [period, offset]);
 
   return (
-    <div ref={containerRef} style={{ position: "relative", display: "inline-block" }}>
+    <div ref={containerRef} className="period-calendar-popover-root" style={{ position: "relative", display: "inline-block" }}>
       <style>{`
         .period-calendar-popover-dropdown {
           position: absolute;
@@ -69,6 +69,14 @@ export default function PeriodCalendarPopover({
           animation: fadeIn 0.18s ease-out;
         }
         @media (max-width: 768px) {
+          .period-calendar-popover-root {
+            display: block !important;
+            width: 100% !important;
+          }
+          .period-calendar-popover-pill {
+            width: 100% !important;
+            justify-content: space-between !important;
+          }
           .period-calendar-popover-dropdown {
             position: fixed !important;
             top: 70px !important;
@@ -82,6 +90,7 @@ export default function PeriodCalendarPopover({
       `}</style>
       {/* Trigger Bar - Refined Japanese Theme Pill */}
       <div
+        className="period-calendar-popover-pill"
         style={{
           display: "flex",
           alignItems: "center",

@@ -52,6 +52,7 @@ export default function LeaderboardTableCard({
 
   return (
     <div
+      className="leaderboard-table-card-root"
       style={{
         background: "var(--card)",
         border: "1px solid var(--border)",
@@ -65,6 +66,26 @@ export default function LeaderboardTableCard({
         justifyContent: "space-between",
       }}
     >
+      <style>{`
+        .mobile-empty-state-art {
+          display: none;
+        }
+        @media (max-width: 768px) {
+          .leaderboard-table-card-root {
+            border-radius: 24px !important;
+            padding: 20px !important;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06) !important;
+          }
+          .desktop-empty-state-art {
+            display: none !important;
+          }
+          .mobile-empty-state-art {
+            display: flex !important;
+            justify-content: center;
+            width: 100%;
+          }
+        }
+      `}</style>
       <div>
         {/* Top Header: Headline Sentence + Period Pills */}
         <div
@@ -193,8 +214,9 @@ export default function LeaderboardTableCard({
               gap: 12,
             }}
           >
-            {/* Sumi-e Torii Gate and Misty Mountains (Transparent, Scaled Up) */}
+            {/* Desktop Sumi-e Torii Gate and Misty Mountains */}
             <div
+              className="desktop-empty-state-art"
               aria-hidden="true"
               style={{
                 width: "100%",
@@ -220,6 +242,47 @@ export default function LeaderboardTableCard({
                   display: "block",
                 }}
               />
+            </div>
+
+            {/* Mobile Sumi-e Torii Gate Art (Max-width 320px, multiply, soft mask) */}
+            <div
+              className="mobile-empty-state-art"
+              aria-hidden="true"
+              style={{
+                width: "100%",
+                pointerEvents: "none",
+                margin: "12px 0 8px",
+              }}
+            >
+              <picture style={{ width: "100%", maxWidth: 320, display: "flex", justifyContent: "center" }}>
+                <source
+                  type="image/avif"
+                  srcSet="/assets/art/mobile/m-empty-state@1x.avif 458w, /assets/art/mobile/m-empty-state@2x.avif 917w, /assets/art/mobile/m-empty-state@3x.avif 1376w"
+                  sizes="(max-width: 768px) 320px, 560px"
+                />
+                <source
+                  type="image/webp"
+                  srcSet="/assets/art/mobile/m-empty-state@1x.webp 458w, /assets/art/mobile/m-empty-state@2x.webp 917w, /assets/art/mobile/m-empty-state@3x.webp 1376w"
+                  sizes="(max-width: 768px) 320px, 560px"
+                />
+                <img
+                  src="/assets/art/mobile/m-empty-state.webp"
+                  alt=""
+                  aria-hidden="true"
+                  width={1376}
+                  height={768}
+                  loading="lazy"
+                  style={{
+                    width: "100%",
+                    maxWidth: 320,
+                    height: "auto",
+                    mixBlendMode: "multiply",
+                    maskImage: "radial-gradient(ellipse 90% 75% at 50% 50%, black 50%, transparent 100%)",
+                    WebkitMaskImage: "radial-gradient(ellipse 90% 75% at 50% 50%, black 50%, transparent 100%)",
+                    display: "block",
+                  }}
+                />
+              </picture>
             </div>
 
             <span

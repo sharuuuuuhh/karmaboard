@@ -145,7 +145,135 @@ export default function HomePage() {
   }, [period, offset, weekInfo]);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 24, position: "relative" }}>
+      <style>{`
+        .mobile-bg-wash-left,
+        .mobile-bg-wash-right,
+        .mobile-petal-bottom {
+          display: none;
+        }
+        @media (max-width: 768px) {
+          .mobile-bg-wash-left {
+            display: block !important;
+            position: fixed;
+            top: 140px;
+            left: 0;
+            width: 130px;
+            height: 480px;
+            z-index: 0;
+            pointer-events: none;
+            mix-blend-mode: multiply;
+            opacity: 0.6;
+          }
+          .mobile-bg-wash-right {
+            display: block !important;
+            position: fixed;
+            top: 280px;
+            right: 0;
+            width: 130px;
+            height: 480px;
+            z-index: 0;
+            pointer-events: none;
+            mix-blend-mode: multiply;
+            opacity: 0.6;
+          }
+          .mobile-petal-bottom {
+            display: block !important;
+            position: fixed;
+            bottom: 80px;
+            left: -10px;
+            width: 120px;
+            height: 120px;
+            z-index: 0;
+            pointer-events: none;
+            mix-blend-mode: multiply;
+            opacity: 0.5;
+          }
+          .home-activity-col {
+            order: -1;
+          }
+        }
+        @media (max-width: 360px) {
+          .mobile-bg-wash-left,
+          .mobile-bg-wash-right {
+            display: none !important;
+          }
+        }
+      `}</style>
+
+      {/* Mobile Background Japanese Ink Washes & Floating Petal */}
+      <div className="mobile-bg-wash-left" aria-hidden="true">
+        <picture>
+          <source
+            type="image/avif"
+            srcSet="/assets/art/mobile/m-bg-wash-left@1x.avif 298w, /assets/art/mobile/m-bg-wash-left@2x.avif 597w, /assets/art/mobile/m-bg-wash-left@3x.avif 896w"
+            sizes="130px"
+          />
+          <source
+            type="image/webp"
+            srcSet="/assets/art/mobile/m-bg-wash-left@1x.webp 298w, /assets/art/mobile/m-bg-wash-left@2x.webp 597w, /assets/art/mobile/m-bg-wash-left@3x.webp 896w"
+            sizes="130px"
+          />
+          <img
+            src="/assets/art/mobile/m-bg-wash-left.webp"
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            width={896}
+            height={1200}
+            style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "left top" }}
+          />
+        </picture>
+      </div>
+
+      <div className="mobile-bg-wash-right" aria-hidden="true">
+        <picture>
+          <source
+            type="image/avif"
+            srcSet="/assets/art/mobile/m-bg-wash-right@1x.avif 298w, /assets/art/mobile/m-bg-wash-right@2x.avif 597w, /assets/art/mobile/m-bg-wash-right@3x.avif 896w"
+            sizes="130px"
+          />
+          <source
+            type="image/webp"
+            srcSet="/assets/art/mobile/m-bg-wash-right@1x.webp 298w, /assets/art/mobile/m-bg-wash-right@2x.webp 597w, /assets/art/mobile/m-bg-wash-right@3x.webp 896w"
+            sizes="130px"
+          />
+          <img
+            src="/assets/art/mobile/m-bg-wash-right.webp"
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            width={896}
+            height={1200}
+            style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "right top" }}
+          />
+        </picture>
+      </div>
+
+      <div className="mobile-petal-bottom" aria-hidden="true">
+        <picture>
+          <source
+            type="image/avif"
+            srcSet="/assets/art/mobile/m-petal-bottom@1x.avif 341w, /assets/art/mobile/m-petal-bottom@2x.avif 682w, /assets/art/mobile/m-petal-bottom@3x.avif 1024w"
+            sizes="120px"
+          />
+          <source
+            type="image/webp"
+            srcSet="/assets/art/mobile/m-petal-bottom@1x.webp 341w, /assets/art/mobile/m-petal-bottom@2x.webp 682w, /assets/art/mobile/m-petal-bottom@3x.webp 1024w"
+            sizes="120px"
+          />
+          <img
+            src="/assets/art/mobile/m-petal-bottom.webp"
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            width={1024}
+            height={1024}
+            style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "left bottom" }}
+          />
+        </picture>
+      </div>
+
       {/* Page Header: Title + Subtitle + Single Prominent Period Popover Selector (Centered) */}
       <PageHeader
         title="Overview"
@@ -174,6 +302,7 @@ export default function HomePage() {
           <ChartCard
             events={allEvents}
             totalKarma={totalWeeklyKarma}
+            percentageChange="-14.2%"
             range={period}
             baseDate={chartBaseDate}
           />
@@ -205,7 +334,7 @@ export default function HomePage() {
           />
         </PageCol>
 
-        <PageCol span={5} spanLg={5} spanMd={2} spanSm={1}>
+        <PageCol span={5} spanLg={5} spanMd={2} spanSm={1} className="home-activity-col">
           <RecentActivityCard activities={displayedActivities} maxRows={6} />
         </PageCol>
       </PageGrid>

@@ -1,5 +1,6 @@
 import React from "react";
 import SearchExpand from "./SearchExpand";
+import Logo from "../brand/Logo";
 
 export default function PageHeader({
   title,
@@ -96,40 +97,111 @@ export default function PageHeader({
             height: 200px;
           }
         }
-        /* Mobile (<= 768px): center actions below title, hide art banner */
+
+        /* Mobile (<= 768px): clean transparent top-to-bottom layout */
+        .mobile-brand-container {
+          display: none;
+        }
+        .mobile-header-art-layer {
+          display: none;
+        }
+        .page-header-actions-wrap {
+          display: contents;
+        }
+
         @media (max-width: 768px) {
           .page-header-root {
             min-height: auto;
-            gap: 14px;
-            flex-wrap: wrap;
+            gap: 0;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            margin-bottom: 20px !important;
+            padding-top: 10px !important;
+            position: relative;
+            width: 100%;
           }
           .page-header-art-layer {
             display: none !important;
           }
+
+          /* Mobile Brand Logo at Top-Left */
+          .mobile-brand-container {
+            display: flex !important;
+            align-items: center;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 2;
+          }
+
+          /* Mobile Header Art (top-right anchored, 300px, dual gradient mask) */
+          .mobile-header-art-layer {
+            display: block !important;
+            position: absolute;
+            top: -16px;
+            right: -16px;
+            left: -16px;
+            height: 300px;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+            mix-blend-mode: multiply;
+            mask-image: linear-gradient(to bottom, #000 60%, transparent 100%), linear-gradient(to right, transparent 0%, #000 55%);
+            -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent 100%), linear-gradient(to right, transparent 0%, #000 55%);
+            mask-composite: intersect;
+            -webkit-mask-composite: source-in;
+          }
+
           .page-header-title-col {
-            flex: 1;
-            min-width: 0;
+            width: 100%;
+            position: relative;
+            z-index: 2;
+          }
+          .page-header-title {
+            font-size: 38px !important;
+            font-weight: 800 !important;
+            letter-spacing: -0.03em !important;
+            line-height: 1.08 !important;
+            margin: 0 0 6px 0 !important;
+            color: var(--ink) !important;
+            font-family: var(--font-display) !important;
+          }
+          .page-header-subtitle {
+            font-size: 13px !important;
+            color: var(--muted) !important;
+            margin: 0 0 16px 0 !important;
+            line-height: 1.4 !important;
+            font-family: var(--font-body) !important;
+          }
+
+          /* Mobile Controls Row (Month selector + search button in one row) */
+          .page-header-actions-wrap {
+            display: flex !important;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            position: relative;
+            z-index: 2;
+            margin-top: 2px;
           }
           .page-header-center-col {
-            width: 100% !important;
+            flex: 1 !important;
+            min-width: 0 !important;
             display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            margin: 6px auto 0 auto !important;
-            order: 3;
+            justify-content: flex-start !important;
+          }
+          .page-header-center-col > * {
+            width: 100%;
           }
           .page-header-right-col {
-            flex-shrink: 0;
+            flex-shrink: 0 !important;
           }
         }
       `}</style>
 
-      {/* Japanese Sumi-e Landscape Banner (Transparent RGBA, Full Bleed to Top/Right Edge) */}
+      {/* Desktop Japanese Sumi-e Landscape Banner */}
       {isOverview && (
-        <div
-          className="page-header-art-layer"
-          aria-hidden="true"
-        >
+        <div className="page-header-art-layer" aria-hidden="true">
           <img
             src="/assets/art/header-banner.webp"
             alt=""
@@ -148,10 +220,48 @@ export default function PageHeader({
         </div>
       )}
 
-      {/* Column 1: Title & Subtitle */}
+      {/* Mobile Japanese Sumi-e Landscape Art (Portrait-ish crop, anchored top-right) */}
+      {isOverview && (
+        <div className="mobile-header-art-layer" aria-hidden="true">
+          <picture>
+            <source
+              type="image/avif"
+              srcSet="/assets/art/mobile/m-header-art@1x.avif 458w, /assets/art/mobile/m-header-art@2x.avif 917w, /assets/art/mobile/m-header-art@3x.avif 1376w"
+              sizes="(max-width: 768px) 100vw, 460px"
+            />
+            <source
+              type="image/webp"
+              srcSet="/assets/art/mobile/m-header-art@1x.webp 458w, /assets/art/mobile/m-header-art@2x.webp 917w, /assets/art/mobile/m-header-art@3x.webp 1376w"
+              sizes="(max-width: 768px) 100vw, 460px"
+            />
+            <img
+              src="/assets/art/mobile/m-header-art.webp"
+              alt=""
+              aria-hidden="true"
+              width={1376}
+              height={768}
+              loading="eager"
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                objectPosition: "top right",
+                display: "block",
+              }}
+            />
+          </picture>
+        </div>
+      )}
+
+      {/* Mobile Top Brand Row (Preserves existing app logo and KARMAYODHA wordmark) */}
+      <div className="mobile-brand-container">
+        <Logo variant="horizontal" size="sm" tone="dark" href="/" />
+      </div>
+
+      {/* Title & Subtitle Column */}
       <div className="page-header-title-col">
         <h1
-          className="type-display"
+          className="page-header-title"
           style={{
             margin: 0,
             fontSize: 32,
@@ -166,6 +276,7 @@ export default function PageHeader({
         </h1>
         {subtitle && (
           <p
+            className="page-header-subtitle"
             style={{
               margin: "6px 0 0",
               fontSize: 13,
@@ -179,20 +290,22 @@ export default function PageHeader({
         )}
       </div>
 
-      {/* Column 2: Center Actions (e.g. Date Range / Period Popover almost in the middle) */}
-      {centerContent && (
-        <div className="page-header-center-col">
-          {centerContent}
-        </div>
-      )}
-
-      {/* Column 3: Right Actions & Search */}
-      {(rightContent || !hideSearch) && (
-        <div className="page-header-right-col">
-          {rightContent}
-          {!hideSearch && (
-            <div className="page-header-search-slot">
-              <SearchExpand />
+      {/* Header Actions (Desktop: split between center & right; Mobile: single row via flex) */}
+      {(centerContent || rightContent || !hideSearch) && (
+        <div className="page-header-actions-wrap">
+          {centerContent && (
+            <div className="page-header-center-col">
+              {centerContent}
+            </div>
+          )}
+          {(rightContent || !hideSearch) && (
+            <div className="page-header-right-col">
+              {rightContent}
+              {!hideSearch && (
+                <div className="page-header-search-slot">
+                  <SearchExpand />
+                </div>
+              )}
             </div>
           )}
         </div>

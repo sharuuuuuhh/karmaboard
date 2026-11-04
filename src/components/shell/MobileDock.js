@@ -1,13 +1,12 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard,
+  Home,
   Trophy,
   Users,
   Clock,
   RotateCw,
 } from "lucide-react";
-import { motion } from "framer-motion";
 
 export default function MobileDock({ isSyncing, onSync }) {
   const location = useLocation();
@@ -18,7 +17,7 @@ export default function MobileDock({ isSyncing, onSync }) {
       id: "overview",
       label: "Home",
       path: "/",
-      icon: LayoutDashboard,
+      icon: Home,
       isActive: location.pathname === "/",
     },
     {
@@ -56,13 +55,23 @@ export default function MobileDock({ isSyncing, onSync }) {
           }
         }
         .mobile-dock-btn {
-          transition: color 0.15s ease, transform 0.1s ease;
+          transition: transform 0.15s ease, opacity 0.15s ease;
         }
         .mobile-dock-btn:active {
           transform: scale(0.92);
         }
         .mobile-dock-sync-btn:active {
-          transform: scale(0.90);
+          transform: scale(0.92);
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .mobile-dock-btn, .mobile-dock-sync-btn {
+            transition: none !important;
+            transform: none !important;
+          }
+        }
+        @keyframes spinSync {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
         }
       `}</style>
 
@@ -71,35 +80,35 @@ export default function MobileDock({ isSyncing, onSync }) {
         aria-label="Mobile Navigation Dock"
         style={{
           position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
+          bottom: 12,
+          left: 12,
+          right: 12,
           zIndex: 9999,
-          width: "100%",
-          borderRadius: 0,
-          background: "rgba(18, 20, 26, 0.98)",
+          maxWidth: 480,
+          margin: "0 auto",
+          borderRadius: 28,
+          background: "rgba(255, 255, 255, 0.92)",
           backdropFilter: "blur(20px) saturate(180%)",
           WebkitBackdropFilter: "blur(20px) saturate(180%)",
-          border: "none",
-          borderTop: "1px solid rgba(255, 255, 255, 0.12)",
-          boxShadow: "0 -4px 20px rgba(0, 0, 0, 0.35)",
-          padding: "6px 12px calc(6px + env(safe-area-inset-bottom, 0px)) 12px",
+          border: "1px solid var(--border)",
+          boxShadow: "0 8px 32px rgba(22, 22, 26, 0.08)",
+          padding: "6px 10px calc(6px + env(safe-area-inset-bottom, 0px)) 10px",
           userSelect: "none",
           boxSizing: "border-box",
+          alignItems: "center",
+          justifyContent: "space-between",
         }}
       >
         <div
           style={{
             width: "100%",
-            maxWidth: 540,
-            margin: "0 auto",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            gap: 8,
+            gap: 6,
           }}
         >
-          {/* Navigation Items */}
+          {/* 4 Navigation Items */}
           <div
             style={{
               display: "flex",
@@ -107,7 +116,6 @@ export default function MobileDock({ isSyncing, onSync }) {
               justifyContent: "space-around",
               flex: 1,
               minWidth: 0,
-              gap: 4,
             }}
           >
             {navItems.map((item) => {
@@ -121,117 +129,103 @@ export default function MobileDock({ isSyncing, onSync }) {
                   onClick={() => navigate(item.path)}
                   className="mobile-dock-btn"
                   style={{
-                    position: "relative",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
                     justifyContent: "center",
-                    flex: 1,
-                    minWidth: 0,
-                    height: 48,
+                    gap: 3,
                     background: "transparent",
                     border: "none",
                     cursor: "pointer",
-                    color: active ? "#FFFFFF" : "rgba(255, 255, 255, 0.6)",
-                    transition: "color 0.15s ease",
-                    padding: 0,
+                    padding: "4px 8px",
+                    flex: 1,
+                    minWidth: 0,
                     outline: "none",
                   }}
+                  title={item.label}
+                  aria-label={item.label}
+                  aria-current={active ? "page" : undefined}
                 >
-                  {/* Active Indicator Background Pill */}
-                  {active && (
-                    <motion.div
-                      layoutId="activeDockPill"
-                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                      style={{
-                        position: "absolute",
-                        inset: "2px 4px",
-                        borderRadius: 10,
-                        background: "rgba(255, 255, 255, 0.14)",
-                        border: "1px solid rgba(255, 255, 255, 0.12)",
-                      }}
-                    />
-                  )}
-
+                  {/* Icon Circle (Pine filled circle for active) */}
                   <div
                     style={{
-                      position: "relative",
-                      zIndex: 1,
+                      width: 36,
+                      height: 36,
+                      borderRadius: "50%",
+                      background: active ? "var(--pine, #1F4A38)" : "transparent",
                       display: "flex",
-                      flexDirection: "column",
                       alignItems: "center",
-                      gap: 3,
+                      justifyContent: "center",
+                      color: active ? "#FFFFFF" : "var(--muted)",
+                      transition: "background 0.18s ease, color 0.18s ease",
+                      flexShrink: 0,
                     }}
                   >
-                    <Icon
-                      size={19}
-                      strokeWidth={active ? 2.4 : 1.9}
-                      style={{
-                        transform: active ? "scale(1.08)" : "scale(1)",
-                        transition: "transform 0.15s ease",
-                      }}
-                    />
-                    <span
-                      style={{
-                        fontSize: 10,
-                        fontWeight: active ? 700 : 500,
-                        letterSpacing: "0.01em",
-                        lineHeight: 1,
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        maxWidth: "100%",
-                      }}
-                    >
-                      {item.label}
-                    </span>
+                    <Icon size={19} strokeWidth={1.5} />
                   </div>
+
+                  {/* Label */}
+                  <span
+                    style={{
+                      fontSize: 10.5,
+                      fontWeight: active ? 700 : 500,
+                      fontFamily: "var(--font-body)",
+                      color: active ? "var(--pine, #1F4A38)" : "var(--muted)",
+                      lineHeight: 1,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      letterSpacing: "-0.01em",
+                      transition: "color 0.18s ease",
+                    }}
+                  >
+                    {item.label}
+                  </span>
                 </button>
               );
             })}
           </div>
 
-          {/* Vertical Divider */}
+          {/* Thin Divider */}
           <div
             style={{
               width: 1,
-              height: 28,
-              backgroundColor: "rgba(255, 255, 255, 0.12)",
+              height: 32,
+              background: "var(--border)",
+              margin: "0 4px",
               flexShrink: 0,
             }}
           />
 
-          {/* Sync Button Action */}
+          {/* Refresh Action in Rounded Light Gray Square */}
           <button
             type="button"
             onClick={onSync}
             disabled={isSyncing}
-            title="Sync Karma"
-            aria-label="Sync Karma"
+            title="Refresh Data"
+            aria-label="Refresh Data"
             className="mobile-dock-sync-btn"
             style={{
-              position: "relative",
               width: 42,
               height: 42,
-              borderRadius: 10,
-              background: isSyncing
-                ? "rgba(255, 255, 255, 0.2)"
-                : "rgba(255, 255, 255, 0.08)",
-              border: "1px solid rgba(255, 255, 255, 0.12)",
-              cursor: isSyncing ? "default" : "pointer",
+              borderRadius: 14,
+              background: "#FAF8F4",
+              border: "1px solid var(--border)",
+              cursor: isSyncing ? "wait" : "pointer",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              color: "#FFFFFF",
-              transition: "all 0.15s ease",
+              color: "var(--ink)",
+              transition: "background 0.15s ease, transform 0.15s ease",
               outline: "none",
               flexShrink: 0,
             }}
           >
             <RotateCw
-              size={18}
+              size={17}
+              strokeWidth={1.5}
               style={{
-                animation: isSyncing ? "spin 0.8s linear infinite" : "none",
+                animation: isSyncing ? "spinSync 0.8s linear infinite" : "none",
               }}
             />
           </button>
@@ -240,4 +234,3 @@ export default function MobileDock({ isSyncing, onSync }) {
     </>
   );
 }
-

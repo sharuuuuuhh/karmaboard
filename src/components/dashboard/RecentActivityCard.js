@@ -54,6 +54,7 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
 
   return (
     <div
+      className="recent-activity-card-root"
       style={{
         background: "var(--card)",
         border: "1px solid var(--border)",
@@ -66,6 +67,19 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
         justifyContent: "flex-start",
       }}
     >
+      <style>{`
+        @media (max-width: 768px) {
+          .recent-activity-card-root {
+            border-radius: 24px !important;
+            padding: 20px !important;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06) !important;
+          }
+          .recent-activity-name-col {
+            max-width: 100px !important;
+            width: auto !important;
+          }
+        }
+      `}</style>
       {/* Header: Title + See all */}
       <div
         style={{
@@ -160,7 +174,7 @@ export default function RecentActivityCard({ activities = [], maxRows = 6 }) {
                 {/* Left: Name | Original Crest | "earned +X karma" */}
                 <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0, flex: 1 }}>
                   {/* Name */}
-                  <div style={{ width: 120, flexShrink: 0 }}>
+                  <div className="recent-activity-name-col" style={{ width: 120, flexShrink: 0 }}>
                     {act.muid ? (
                       <Link
                         to={`/u/${encodeURIComponent(act.muid)}`}

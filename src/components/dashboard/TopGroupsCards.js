@@ -11,16 +11,17 @@ export default function TopGroupsCards({ groups = [] }) {
     const norm = String(teamName || "").toLowerCase();
     if (norm.includes("tech")) return "var(--gold)";
     if (norm.includes("market")) return "var(--green)";
-    if (norm.includes("operat")) return "#4F46E5";
+    if (norm.includes("operat")) return "#64748B"; // slate
     if (norm.includes("lead")) return "var(--crimson)";
     if (rank === 1) return "var(--gold)";
     if (rank === 2) return "var(--green)";
-    if (rank === 3) return "#4F46E5";
+    if (rank === 3) return "#64748B";
     return "var(--crimson)";
   };
 
   return (
     <div
+      className="top-groups-card-root"
       style={{
         background: "var(--card)",
         border: "1px solid var(--border)",
@@ -36,6 +37,37 @@ export default function TopGroupsCards({ groups = [] }) {
         overflow: "hidden",
       }}
     >
+      <style>{`
+        @media (max-width: 768px) {
+          .top-groups-card-root {
+            border-radius: 24px !important;
+            padding: 20px !important;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06) !important;
+          }
+          .top-teams-row-left {
+            gap: 6px !important;
+          }
+          .top-teams-crest-slot {
+            width: 32px !important;
+            height: 32px !important;
+          }
+          .top-teams-rank-slot {
+            width: 22px !important;
+            font-size: 13px !important;
+          }
+          .top-teams-name-text {
+            font-size: 13.5px !important;
+          }
+          .top-teams-warriors-text {
+            font-size: 10px !important;
+          }
+          .top-teams-pts-pill {
+            padding: 3px 8px !important;
+            font-size: 11.5px !important;
+            margin-left: 6px !important;
+          }
+        }
+      `}</style>
       {/* Background Japanese Samurai Kabuto Helmet Art */}
       <div
         aria-hidden="true"
@@ -141,7 +173,7 @@ export default function TopGroupsCards({ groups = [] }) {
                 padding: "10px 14px 10px 12px",
                 borderRadius: 10,
                 background: isRank1 ? "var(--gold-tint)" : "#FAF9F6",
-                borderLeft: `4px solid ${borderColor}`,
+                borderLeft: `3px solid ${borderColor}`,
                 textDecoration: "none",
                 flex: 1,
                 minHeight: 52,
@@ -157,10 +189,10 @@ export default function TopGroupsCards({ groups = [] }) {
               }}
             >
               {/* Left Zone: Rank # + Original Crest + Name + Warriors */}
-              <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0, flex: 1 }}>
+              <div className="top-teams-row-left" style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0, flex: 1 }}>
                 {/* Rank */}
                 <span
-                  className="tabular-nums"
+                  className="top-teams-rank-slot tabular-nums"
                   style={{
                     fontSize: 14,
                     fontWeight: 800,
@@ -174,12 +206,13 @@ export default function TopGroupsCards({ groups = [] }) {
                 </span>
 
                 {/* Original Crest */}
-                <div style={{ width: 38, height: 38, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <div className="top-teams-crest-slot" style={{ width: 38, height: 38, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <Crest group={grp} size="sm" />
                 </div>
 
                 {/* Team Name */}
                 <span
+                  className="top-teams-name-text"
                   style={{
                     fontFamily: "var(--font-display)",
                     fontWeight: 800,
@@ -196,6 +229,7 @@ export default function TopGroupsCards({ groups = [] }) {
 
                 {/* Warriors Label */}
                 <span
+                  className="top-teams-warriors-text"
                   style={{
                     fontFamily: "var(--font-body)",
                     fontSize: 11,
@@ -212,16 +246,20 @@ export default function TopGroupsCards({ groups = [] }) {
                 </span>
               </div>
 
-              {/* Right Zone: Points in Gold */}
+              {/* Right Zone: Points in Soft Gold Pill */}
               <div
-                className="tabular-nums"
+                className="top-teams-pts-pill tabular-nums"
                 style={{
                   fontFamily: "var(--font-numeric)",
                   fontVariantNumeric: "tabular-nums",
-                  fontSize: 15,
+                  fontSize: 12.5,
                   fontWeight: 700,
                   color: "var(--gold)",
-                  textAlign: "right",
+                  background: "var(--gold-tint)",
+                  padding: "4px 10px",
+                  borderRadius: "var(--radius-pill)",
+                  textAlign: "center",
+                  whiteSpace: "nowrap",
                   flexShrink: 0,
                   marginLeft: 10,
                 }}
