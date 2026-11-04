@@ -100,12 +100,14 @@ export function getMonthBoundaries(monthOffset = 0, baseDate = new Date()) {
 
   const targetYear = startIST.getUTCFullYear();
   const targetMonthIndex = startIST.getUTCMonth();
-  const label = `${monthNames[targetMonthIndex]} ${targetYear}`;
+  const monthName = monthNames[targetMonthIndex];
+  const label = `${monthName} ${targetYear}`;
   const key = `${targetYear}-${String(targetMonthIndex + 1).padStart(2, "0")}`;
 
   return {
     start: startUtc,
     end: endUtc,
+    monthName,
     label,
     key,
   };

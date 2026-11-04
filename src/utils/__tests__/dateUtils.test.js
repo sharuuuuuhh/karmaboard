@@ -37,7 +37,7 @@ describe("dateUtils - Asia/Kolkata Season Boundaries", () => {
 
   test("getMonthBoundaries starts on 1st and ends on last day of month in IST", () => {
     const testDate = new Date("2026-10-15T12:00:00.000Z");
-    const { start, end, label, key } = getMonthBoundaries(0, testDate);
+    const { start, end, label, monthName, key } = getMonthBoundaries(0, testDate);
 
     const istStart = getISTDate(start);
     const istEnd = getISTDate(end);
@@ -45,6 +45,7 @@ describe("dateUtils - Asia/Kolkata Season Boundaries", () => {
     expect(istStart.getUTCDate()).toBe(1);
     expect(istStart.getUTCMonth()).toBe(9); // October
     expect(istEnd.getUTCDate()).toBe(31);
+    expect(monthName).toBe("October");
     expect(label).toBe("October 2026");
     expect(key).toBe("2026-10");
   });

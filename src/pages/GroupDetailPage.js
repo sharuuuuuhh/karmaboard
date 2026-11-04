@@ -227,17 +227,11 @@ export default function GroupDetailPage() {
     }
     // Month
     const b = getMonthBoundaries(offset);
-    const months = [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-    ];
-    const startIST = getISTDate(b.start);
-    const endIST = getISTDate(b.end);
-    const dateRangeStr = `${startIST.getUTCDate()} ${months[startIST.getUTCMonth()]} - ${endIST.getUTCDate()} ${months[endIST.getUTCMonth()]}`;
     return {
-      label: `${b.label} • ${dateRangeStr}`,
-      sublabel: `${dateRangeStr} (${b.label})`,
-      cardLabel: `in ${b.label}`,
+      label: b.monthName,
+      fullLabel: b.label,
+      sublabel: b.label,
+      cardLabel: `in ${b.monthName}`,
     };
   }, [period, offset]);
 

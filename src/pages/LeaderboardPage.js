@@ -86,6 +86,16 @@ export default function LeaderboardPage() {
     return b.label;
   }, [period, offset]);
 
+  const dateLabel = useMemo(() => {
+    if (period === "all") return "All Time";
+    if (period === "week") {
+      const b = getWeekBoundaries(offset);
+      return b.label;
+    }
+    const b = getMonthBoundaries(offset);
+    return b.monthName;
+  }, [period, offset]);
+
   const standings = useMemo(() => {
     return karmaStore.getLeaderboard
       ? karmaStore.getLeaderboard({
@@ -224,7 +234,7 @@ export default function LeaderboardPage() {
           <PeriodCalendarPopover
             period={period}
             offset={offset}
-            dateLabel={periodLabel}
+            dateLabel={dateLabel}
             onPeriodChange={handlePeriodChange}
             onOffsetChange={(newOffset) => setOffset(newOffset)}
             onDateSelect={(selectedDate) => {

@@ -54,17 +54,11 @@ export default function HomePage() {
     }
     // Month
     const b = getMonthBoundaries(offset);
-    const months = [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-    ];
-    const startIST = getISTDate(b.start);
-    const endIST = getISTDate(b.end);
-    const dateRangeStr = `${startIST.getUTCDate()} ${months[startIST.getUTCMonth()]} - ${endIST.getUTCDate()} ${months[endIST.getUTCMonth()]}`;
     return {
-      label: `${b.label} • ${dateRangeStr}`,
-      sublabel: `${dateRangeStr} (${b.label})`,
-      cardLabel: `in ${b.label}`,
+      label: b.monthName,
+      fullLabel: b.label,
+      sublabel: b.label,
+      cardLabel: `in ${b.monthName}`,
     };
   }, [period, offset]);
 
@@ -130,8 +124,8 @@ export default function HomePage() {
     }
     if (period === "month") {
       return offset === 0
-        ? `${dateRangeInfo.label} • ${countdown}`
-        : `${dateRangeInfo.label} • Past month`;
+        ? `${dateRangeInfo.fullLabel || dateRangeInfo.label} • ${countdown}`
+        : `${dateRangeInfo.fullLabel || dateRangeInfo.label} • Past month`;
     }
     return offset === 0
       ? `${weekInfo.label} • ${countdown}`

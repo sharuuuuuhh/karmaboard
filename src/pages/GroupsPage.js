@@ -131,17 +131,11 @@ export default function GroupsPage() {
     }
     // Month
     const b = getMonthBoundaries(offset);
-    const months = [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-    ];
-    const startIST = getISTDate(b.start);
-    const endIST = getISTDate(b.end);
-    const dateRangeStr = `${startIST.getUTCDate()} ${months[startIST.getUTCMonth()]} - ${endIST.getUTCDate()} ${months[endIST.getUTCMonth()]}`;
     return {
-      label: `${b.label} • ${dateRangeStr}`,
-      sublabel: `${dateRangeStr} (${b.label})`,
-      cardLabel: `in ${b.label}`,
+      label: b.monthName,
+      fullLabel: b.label,
+      sublabel: b.label,
+      cardLabel: `in ${b.monthName}`,
     };
   }, [period, offset]);
 
@@ -206,14 +200,15 @@ export default function GroupsPage() {
   ];
 
   const subtitle = useMemo(() => {
+    const periodText = dateRangeInfo.fullLabel || dateRangeInfo.label;
     if (filter === "teams") {
-      return `Official campus skill teams (${teamsList.length}) • ${dateRangeInfo.label}`;
+      return `Official campus skill teams (${teamsList.length}) • ${periodText}`;
     }
     if (filter === "groups") {
-      return `Campus interest groups & skill guilds (${groupsList.length}) • ${dateRangeInfo.label}`;
+      return `Campus interest groups & skill guilds (${groupsList.length}) • ${periodText}`;
     }
-    return `All ${rankedGroups.length} campus teams and groups • ${dateRangeInfo.label}`;
-  }, [filter, teamsList.length, groupsList.length, rankedGroups.length, dateRangeInfo.label]);
+    return `All ${rankedGroups.length} campus teams and groups • ${periodText}`;
+  }, [filter, teamsList.length, groupsList.length, rankedGroups.length, dateRangeInfo.fullLabel, dateRangeInfo.label]);
 
   // Campus summary stats
   const totalCampusKarma = useMemo(() => {
