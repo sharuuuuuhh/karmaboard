@@ -79,5 +79,25 @@ describe("GroupsPage Filter Tabs", () => {
     fireEvent.click(allTab);
     expect(allTab).toHaveAttribute("aria-selected", "true");
   });
+
+  test("toggles reverse sort order when clicking the Sort button", () => {
+    render(
+      <MemoryRouter>
+        <GroupsPage />
+      </MemoryRouter>
+    );
+
+    const sortBtn = screen.getByRole("button", { name: /reverse sort/i });
+    expect(sortBtn).toBeInTheDocument();
+    expect(sortBtn).toHaveTextContent("Sort:");
+
+    // Click to reverse
+    fireEvent.click(sortBtn);
+    expect(sortBtn).toHaveTextContent(/Reverse/i);
+
+    // Click again to un-reverse
+    fireEvent.click(sortBtn);
+    expect(sortBtn).toHaveTextContent("Sort:");
+  });
 });
 

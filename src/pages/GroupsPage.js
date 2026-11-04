@@ -47,6 +47,7 @@ export default function GroupsPage() {
   );
   const [filter, setFilter] = useState("all"); // 'all' | 'teams' | 'groups'
   const [sortBy, setSortBy] = useState("rank"); // 'rank' | 'name' | 'members'
+  const [sortReverse, setSortReverse] = useState(false);
 
   useEffect(() => {
     const unsub = karmaStore.subscribe(() => {
@@ -176,23 +177,27 @@ export default function GroupsPage() {
     if (filter === "teams") list = teamsList;
     else if (filter === "groups") list = groupsList;
 
+    let sorted = [...list];
     if (sortBy === "name") {
-      return [...list].sort((a, b) => {
+      sorted.sort((a, b) => {
         const nameA = (a.name || a.id || "").toLowerCase();
         const nameB = (b.name || b.id || "").toLowerCase();
-        return nameA.localeCompare(nameB);
+        return sortReverse ? nameB.localeCompare(nameA) : nameA.localeCompare(nameB);
       });
-    }
-    if (sortBy === "members") {
-      return [...list].sort((a, b) => {
+    } else if (sortBy === "members") {
+      sorted.sort((a, b) => {
         const countA = a.member_count || a.members_count || 6;
         const countB = b.member_count || b.members_count || 6;
-        return countB - countA;
+        return sortReverse ? countA - countB : countB - countA;
       });
+    } else {
+      // Default: 'rank' (preserves karma ranking order, rank 1, 2, 3...)
+      if (sortReverse) {
+        sorted.reverse();
+      }
     }
-    // Default: 'rank' (preserves karma ranking order)
-    return list;
-  }, [rankedGroups, filter, teamsList, groupsList, sortBy]);
+    return sorted;
+  }, [rankedGroups, filter, teamsList, groupsList, sortBy, sortReverse]);
 
   const filterOptions = [
     { id: "all", label: "All", count: rankedGroups.length },
@@ -342,7 +347,7 @@ export default function GroupsPage() {
           />
         </div>
 
-        {/* Sort by Dropdown */}
+        {/* Sort by Dropdown & Reverse Toggle */}
         <div
           style={{
             display: "inline-flex",
@@ -353,11 +358,67 @@ export default function GroupsPage() {
             fontWeight: 600,
           }}
         >
-          <ArrowUpDown size={14} color="var(--text-muted)" />
-          <span>Sort:</span>
+          <button
+            type="button"
+            onClick={() => setSortReverse((r) => !r)}
+            title={sortReverse ? "Reverse order active (click to restore normal)" : "Click to reverse sort order"}
+            aria-label="Toggle reverse sort"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 5,
+              padding: "6px 12px",
+              borderRadius: "var(--radius-pill)",
+              border: sortReverse ? "1.5px solid var(--crimson)" : "1px solid var(--border)",
+              background: sortReverse ? "rgba(179, 32, 42, 0.08)" : "#FFFFFF",
+              color: sortReverse ? "var(--crimson)" : "var(--text-primary)",
+              cursor: "pointer",
+              fontSize: 12.5,
+              fontWeight: 700,
+              transition: "all 0.15s ease",
+              boxShadow: sortReverse ? "0 1px 4px rgba(179, 32, 42, 0.15)" : "none",
+            }}
+          >
+            <ArrowUpDown size={14} color={sortReverse ? "var(--crimson)" : "var(--text-muted)"} />
+            <span>Sort{sortReverse ? " (Reverse)" : ""}:</span>
+          </button>
+
           <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
+            value={
+              sortBy === "rank"
+                ? sortReverse
+                  ? "rank:asc"
+                  : "rank:desc"
+                : sortBy === "name"
+                ? sortReverse
+                  ? "name:desc"
+                  : "name:asc"
+                : sortReverse
+                ? "members:asc"
+                : "members:desc"
+            }
+            onChange={(e) => {
+              const val = e.target.value;
+              if (val === "rank:desc") {
+                setSortBy("rank");
+                setSortReverse(false);
+              } else if (val === "rank:asc") {
+                setSortBy("rank");
+                setSortReverse(true);
+              } else if (val === "name:asc") {
+                setSortBy("name");
+                setSortReverse(false);
+              } else if (val === "name:desc") {
+                setSortBy("name");
+                setSortReverse(true);
+              } else if (val === "members:desc") {
+                setSortBy("members");
+                setSortReverse(false);
+              } else if (val === "members:asc") {
+                setSortBy("members");
+                setSortReverse(true);
+              }
+            }}
             style={{
               padding: "6px 14px",
               borderRadius: "var(--radius-pill)",
@@ -370,9 +431,12 @@ export default function GroupsPage() {
               outline: "none",
             }}
           >
-            <option value="rank">Rank (Highest Karma)</option>
-            <option value="name">Name (A-Z)</option>
-            <option value="members">Warriors Count</option>
+            <option value="rank:desc">Rank (Highest Karma)</option>
+            <option value="rank:asc">Rank (Lowest Karma / Reverse)</option>
+            <option value="name:asc">Name (A-Z)</option>
+            <option value="name:desc">Name (Z-A / Reverse)</option>
+            <option value="members:desc">Warriors (Most first)</option>
+            <option value="members:asc">Warriors (Least first / Reverse)</option>
           </select>
         </div>
       </div>
