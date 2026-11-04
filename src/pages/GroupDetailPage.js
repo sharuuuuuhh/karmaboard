@@ -422,6 +422,10 @@ export default function GroupDetailPage() {
           .mobile-only-share {
             display: block !important;
           }
+          .team-roster-table-scroll {
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+          }
         }
       `}</style>
 
@@ -1055,7 +1059,7 @@ export default function GroupDetailPage() {
 
           {/* Scrollable Table Area */}
           <div
-            className="custom-scrollbar"
+            className="custom-scrollbar team-roster-table-scroll"
             style={{
               flex: 1,
               maxHeight: 540,

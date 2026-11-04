@@ -80,7 +80,7 @@ export default function MobileDock({ isSyncing, onSync }) {
         aria-label="Mobile Navigation Dock"
         style={{
           position: "fixed",
-          bottom: 12,
+          bottom: "calc(12px + env(safe-area-inset-bottom, 0px))",
           left: 12,
           right: 12,
           zIndex: 9999,
@@ -92,7 +92,7 @@ export default function MobileDock({ isSyncing, onSync }) {
           WebkitBackdropFilter: "blur(20px) saturate(180%)",
           border: "1px solid var(--border)",
           boxShadow: "0 8px 32px rgba(22, 22, 26, 0.08)",
-          padding: "6px 10px calc(6px + env(safe-area-inset-bottom, 0px)) 10px",
+          padding: "6px 10px",
           userSelect: "none",
           boxSizing: "border-box",
           alignItems: "center",

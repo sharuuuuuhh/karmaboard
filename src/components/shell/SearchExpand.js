@@ -71,7 +71,19 @@ export default function SearchExpand() {
 
   return (
     <div ref={containerRef} style={{ position: "relative" }}>
+      <style>{`
+        @media (max-width: 480px) {
+          .search-expand-bar-open {
+            width: min(240px, calc(100vw - 80px)) !important;
+          }
+          .search-expand-dropdown-responsive {
+            width: min(280px, calc(100vw - 32px)) !important;
+            right: 0 !important;
+          }
+        }
+      `}</style>
       <div
+        className={isOpen ? "search-expand-bar-open" : ""}
         style={{
           display: "flex",
           alignItems: "center",
@@ -144,6 +156,7 @@ export default function SearchExpand() {
       {/* Live Results Dropdown */}
       {isOpen && query.trim().length > 0 && (
         <div
+          className="search-expand-dropdown-responsive"
           style={{
             position: "absolute",
             top: 44,

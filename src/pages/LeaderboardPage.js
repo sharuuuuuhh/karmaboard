@@ -188,10 +188,13 @@ export default function LeaderboardPage() {
           .leaderboard-controls-wrap {
             flex-direction: column !important;
             align-items: stretch !important;
+            padding: 12px 14px !important;
+            gap: 10px !important;
           }
           .leaderboard-search-input-wrap {
             max-width: 100% !important;
             width: 100% !important;
+            min-width: 0 !important;
           }
           .hide-on-mobile {
             display: none !important;

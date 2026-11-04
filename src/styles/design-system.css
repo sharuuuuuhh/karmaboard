@@ -291,6 +291,17 @@ button {
   border-bottom: none;
 }
 
+@media (max-width: 768px) {
+  .clean-table th {
+    padding: 8px 10px;
+    font-size: 10.5px;
+  }
+  .clean-table td {
+    padding: 10px 10px;
+    font-size: 13px;
+  }
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;

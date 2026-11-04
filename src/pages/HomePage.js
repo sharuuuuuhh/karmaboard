@@ -153,61 +153,11 @@ export default function HomePage() {
     <div style={{ display: "flex", flexDirection: "column", gap: 24, position: "relative" }}>
       <style>{`
         .mobile-bg-wash-container {
-          display: none;
+          display: none !important;
         }
         @media (max-width: 768px) {
-          .mobile-bg-wash-container {
-            display: block !important;
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            overflow: hidden;
-            z-index: 0;
-          }
-          .mobile-bg-wash-left {
-            position: absolute;
-            top: 80px;
-            left: -40px;
-            width: 120px;
-            height: 480px;
-            pointer-events: none;
-            mix-blend-mode: multiply;
-            opacity: 0.25;
-            mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 25%, rgba(0,0,0,0) 75%);
-            -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 25%, rgba(0,0,0,0) 75%);
-          }
-          .mobile-bg-wash-right {
-            position: absolute;
-            top: 260px;
-            right: -40px;
-            width: 120px;
-            height: 480px;
-            pointer-events: none;
-            mix-blend-mode: multiply;
-            opacity: 0.25;
-            mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 25%, rgba(0,0,0,0) 75%);
-            -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 25%, rgba(0,0,0,0) 75%);
-          }
-          .mobile-petal-bottom {
-            position: absolute;
-            bottom: 20px;
-            left: -10px;
-            width: 90px;
-            height: 90px;
-            pointer-events: none;
-            mix-blend-mode: multiply;
-            opacity: 0.25;
-            mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 80%);
-            -webkit-mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 80%);
-          }
           .home-activity-col {
             order: -1;
-          }
-        }
-        @media (max-width: 480px) {
-          .mobile-bg-wash-left,
-          .mobile-bg-wash-right {
-            display: none !important;
           }
         }
       `}</style>

@@ -12,8 +12,25 @@ html {
   -webkit-tap-highlight-color: transparent;
 }
 
-button, a, select, input {
+button, a, select, input, textarea, [role="button"], [role="tab"] {
   touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ========================================================
+   iOS / Mobile Viewport & Zoom Protection
+   - Safari on iOS automatically zooms into inputs/selects/textareas
+     whose font-size is < 16px upon tap or focus.
+   - Forcing 16px on mobile (max-width: 768px) completely eliminates
+     the auto-zoom behavior without affecting desktop UI (which keeps
+     its crisp 12.5px / 13px styling).
+   ======================================================== */
+@media screen and (max-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
 }
 
 button:active, a:active {
