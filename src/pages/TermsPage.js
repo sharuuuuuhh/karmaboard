@@ -6,7 +6,11 @@ import { LEGAL_CONFIG, TERMS_SECTIONS } from "../data/legalContent";
 export default function TermsPage() {
   useEffect(() => {
     document.title = "Terms & Conditions | Karmayodha";
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    try {
+      if (typeof window !== "undefined" && typeof window.scrollTo === "function") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    } catch (_) {}
   }, []);
 
   return (

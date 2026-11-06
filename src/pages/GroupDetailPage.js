@@ -307,80 +307,156 @@ export default function GroupDetailPage() {
   return (
     <div
       className="team-detail-page-container"
-      style={{
-        width: "100%",
-        maxWidth: 820,
-        margin: "0 auto",
-        display: "flex",
-        flexDirection: "column",
-        gap: 16,
-        padding: "16px 16px 120px 16px",
-        position: "relative",
-        boxSizing: "border-box",
-      }}
     >
       <style>{`
-        /* Page Background Art Layer */
+        /* Full width page container on desktop up to 1600px */
+        .team-detail-page-container {
+          width: 100%;
+          max-width: 1600px;
+          margin: 0 auto;
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+          padding: 0 0 120px 0;
+          position: relative;
+          box-sizing: border-box;
+        }
+
+        @media (min-width: 1024px) {
+          .team-detail-page-container {
+            gap: 22px;
+            padding: 0 4px 140px 4px;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .team-detail-page-container {
+            gap: 14px;
+            padding: 0 0 120px 0;
+          }
+        }
+
+        /* Page Background Art Layer: Spans smoothly across top right of viewport */
         .team-detail-bg-art {
           position: absolute;
-          top: -20px;
-          right: 0;
-          width: clamp(340px, 50vw, 750px);
-          height: 280px;
+          top: -24px;
+          right: -24px;
+          width: min(calc(100% + 48px), 1250px);
+          height: 250px;
           pointer-events: none;
           z-index: 0;
           overflow: hidden;
-          opacity: 0.95;
+          opacity: 0.92;
+          -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.35) 20%, rgba(0, 0, 0, 1) 45%, rgba(0, 0, 0, 1) 100%);
+          mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.35) 20%, rgba(0, 0, 0, 1) 45%, rgba(0, 0, 0, 1) 100%);
         }
 
+        @media (min-width: 1600px) {
+          .team-detail-bg-art {
+            top: -32px;
+            right: -32px;
+            width: min(calc(100% + 64px), 1450px);
+            height: 280px;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .team-detail-bg-art {
+            top: -16px;
+            right: -16px;
+            width: clamp(280px, 85vw, 550px);
+            height: 190px;
+          }
+        }
+
+        /* Cherry blossom branch: Anchored to top right */
         .team-detail-sakura-branch {
           position: absolute;
-          top: -10px;
-          right: 0;
-          width: clamp(260px, 35vw, 480px);
+          top: -24px;
+          right: -24px;
+          width: clamp(220px, 25vw, 420px);
           pointer-events: none;
-          z-index: 0;
+          z-index: 1;
           user-select: none;
+          opacity: 0.92;
         }
 
+        @media (min-width: 1600px) {
+          .team-detail-sakura-branch {
+            top: -32px;
+            right: -32px;
+            width: clamp(280px, 24vw, 460px);
+          }
+        }
+
+        @media (max-width: 768px) {
+          .team-detail-sakura-branch {
+            top: -16px;
+            right: -16px;
+            width: 200px;
+          }
+        }
+
+        /* Drifting petals: Confined to branch area near top-right */
         .team-detail-petals {
           position: absolute;
-          top: 0;
-          right: 0;
-          width: 100%;
-          height: 100%;
+          top: -24px;
+          right: -24px;
+          width: clamp(220px, 26vw, 380px);
+          height: 220px;
           pointer-events: none;
-          z-index: 0;
+          z-index: 1;
           user-select: none;
+          overflow: hidden;
         }
 
-        .team-detail-bottom-waves {
-          position: absolute;
-          bottom: 20px;
-          right: 0;
-          width: clamp(240px, 35vw, 420px);
-          height: 140px;
-          pointer-events: none;
-          z-index: 0;
-          opacity: 0.12;
-          color: var(--crimson);
+        @media (min-width: 1600px) {
+          .team-detail-petals {
+            top: -32px;
+            right: -32px;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .team-detail-petals {
+            top: -16px;
+            right: -16px;
+            width: 200px;
+            height: 180px;
+          }
         }
 
         /* Responsive Stat Cards Row */
         .team-detail-stats-row {
           display: grid;
           grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: 12px;
+          gap: 16px;
           width: 100%;
         }
 
-        @media (max-width: 640px) {
+        .team-stat-card-box {
+          background: #FFFFFF;
+          border-radius: 22px;
+          border: 1px solid rgba(0, 0, 0, 0.06);
+          border-left: 4px solid var(--crimson);
+          box-shadow: 0 2px 14px rgba(22, 22, 26, 0.04);
+          padding: 20px 22px 18px 22px;
+          position: relative;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          justifyContent: space-between;
+          min-height: 120px;
+        }
+
+        @media (max-width: 768px) {
           .team-detail-stats-row {
             gap: 8px !important;
           }
           .team-stat-card-box {
             padding: 14px 12px !important;
             border-radius: 16px !important;
+            min-height: 105px !important;
           }
           .team-stat-main-num {
             font-size: 26px !important;
@@ -391,8 +467,59 @@ export default function GroupDetailPage() {
           .team-banner-crest-img {
             height: 64px !important;
           }
+          .team-roster-header-row {
+            display: none !important;
+          }
+          .roster-col-progress {
+            display: none !important;
+          }
+          .team-roster-member-row {
+            padding: 10px 10px !important;
+            gap: 10px !important;
+          }
         }
       `}</style>
+
+      {/* Shared SVG Defs for crisp Seigaiha wave pattern */}
+      <svg
+        style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }}
+        aria-hidden="true"
+        focusable="false"
+      >
+        <defs>
+          <pattern
+            id="team-seigaiha-pattern"
+            width="60"
+            height="30"
+            patternUnits="userSpaceOnUse"
+          >
+            <g fill="none" stroke="#8A3B43" strokeWidth="1" strokeLinecap="round" opacity="0.32">
+              {/* y = -15 */}
+              <path d="M -60 -15 A 30 30 0 0 1 0 -15 M -54 -15 A 24 24 0 0 1 -6 -15 M -48 -15 A 18 18 0 0 1 -12 -15 M -42 -15 A 12 12 0 0 1 -18 -15 M -36 -15 A 6 6 0 0 1 -24 -15" />
+              <path d="M 0 -15 A 30 30 0 0 1 60 -15 M 6 -15 A 24 24 0 0 1 54 -15 M 12 -15 A 18 18 0 0 1 48 -15 M 18 -15 A 12 12 0 0 1 42 -15 M 24 -15 A 6 6 0 0 1 36 -15" />
+              <path d="M 60 -15 A 30 30 0 0 1 120 -15 M 66 -15 A 24 24 0 0 1 114 -15 M 72 -15 A 18 18 0 0 1 108 -15 M 78 -15 A 12 12 0 0 1 102 -15 M 84 -15 A 6 6 0 0 1 96 -15" />
+
+              {/* y = 0 */}
+              <path d="M -30 0 A 30 30 0 0 1 30 0 M -24 0 A 24 24 0 0 1 24 0 M -18 0 A 18 18 0 0 1 18 0 M -12 0 A 12 12 0 0 1 12 0 M -6 0 A 6 6 0 0 1 6 0" />
+              <path d="M 30 0 A 30 30 0 0 1 90 0 M 36 0 A 24 24 0 0 1 84 0 M 42 0 A 18 18 0 0 1 78 0 M 48 0 A 12 12 0 0 1 72 0 M 54 0 A 6 6 0 0 1 66 0" />
+
+              {/* y = 15 */}
+              <path d="M -60 15 A 30 30 0 0 1 0 15 M -54 15 A 24 24 0 0 1 -6 15 M -48 15 A 18 18 0 0 1 -12 15 M -42 15 A 12 12 0 0 1 -18 15 M -36 15 A 6 6 0 0 1 -24 15" />
+              <path d="M 0 15 A 30 30 0 0 1 60 15 M 6 15 A 24 24 0 0 1 54 15 M 12 15 A 18 18 0 0 1 48 15 M 18 15 A 12 12 0 0 1 42 15 M 24 15 A 6 6 0 0 1 36 15" />
+              <path d="M 60 15 A 30 30 0 0 1 120 15 M 66 15 A 24 24 0 0 1 114 15 M 72 15 A 18 18 0 0 1 108 15 M 78 15 A 12 12 0 0 1 102 15 M 84 15 A 6 6 0 0 1 96 15" />
+
+              {/* y = 30 */}
+              <path d="M -30 30 A 30 30 0 0 1 30 30 M -24 30 A 24 24 0 0 1 24 30 M -18 30 A 18 18 0 0 1 18 30 M -12 30 A 12 12 0 0 1 12 30 M -6 30 A 6 6 0 0 1 6 30" />
+              <path d="M 30 30 A 30 30 0 0 1 90 30 M 36 30 A 24 24 0 0 1 84 30 M 42 30 A 18 18 0 0 1 78 30 M 48 30 A 12 12 0 0 1 72 30 M 54 30 A 6 6 0 0 1 66 30" />
+
+              {/* y = 45 */}
+              <path d="M -60 45 A 30 30 0 0 1 0 45 M -54 45 A 24 24 0 0 1 -6 45 M -48 45 A 18 18 0 0 1 -12 45 M -42 45 A 12 12 0 0 1 -18 45 M -36 45 A 6 6 0 0 1 -24 45" />
+              <path d="M 0 45 A 30 30 0 0 1 60 45 M 6 45 A 24 24 0 0 1 54 45 M 12 45 A 18 18 0 0 1 48 45 M 18 45 A 12 12 0 0 1 42 45 M 24 45 A 6 6 0 0 1 36 45" />
+              <path d="M 60 45 A 30 30 0 0 1 120 45 M 66 45 A 24 24 0 0 1 114 45 M 72 45 A 18 18 0 0 1 108 45 M 78 45 A 12 12 0 0 1 102 45 M 84 45 A 6 6 0 0 1 96 45" />
+            </g>
+          </pattern>
+        </defs>
+      </svg>
 
       {/* =========================================================================
           BACKGROUND ARTWORK: Pagoda + Red Sun + Sakura Branch + Drifting Petals
@@ -422,7 +549,7 @@ export default function GroupDetailPage() {
         className="team-detail-sakura-branch"
       />
 
-      {/* Falling sakura petals overlay */}
+      {/* Falling sakura petals overlay (confined strictly to top-right branch area) */}
       <img
         src="/assets/art/falling-petals.svg"
         alt=""
@@ -430,13 +557,28 @@ export default function GroupDetailPage() {
         className="team-detail-petals"
       />
 
-      {/* Seigaiha wave pattern fading in along bottom */}
-      <img
-        src="/assets/art/seigaiha.svg"
-        alt=""
+      {/* Seigaiha wave pattern fading in as a full-width strip along bottom */}
+      <div
+        className="team-detail-bottom-seigaiha-strip"
         aria-hidden="true"
-        className="team-detail-bottom-waves"
-      />
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: "100%",
+          height: 100,
+          pointerEvents: "none",
+          overflow: "hidden",
+          zIndex: 0,
+          WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.4) 40%, rgba(0, 0, 0, 0.9) 100%)",
+          maskImage: "linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.4) 40%, rgba(0, 0, 0, 0.9) 100%)",
+        }}
+      >
+        <svg width="100%" height="100%" aria-hidden="true">
+          <rect width="100%" height="100%" fill="url(#team-seigaiha-pattern)" />
+        </svg>
+      </div>
 
       {/* =========================================================================
           1. BACK LINK: "<- Back to all teams"
@@ -473,7 +615,7 @@ export default function GroupDetailPage() {
           background: "#141416",
           borderRadius: 28,
           overflow: "hidden",
-          padding: "20px 24px",
+          padding: "22px 28px",
           border: "1px solid rgba(179, 32, 42, 0.45)",
           boxShadow: "0 4px 24px rgba(0, 0, 0, 0.28), 0 0 24px rgba(179, 32, 42, 0.12)",
           zIndex: 2,
@@ -496,12 +638,13 @@ export default function GroupDetailPage() {
             style={{
               position: "absolute",
               right: 0,
+              top: 0,
               bottom: 0,
               width: "100%",
               height: "100%",
               objectFit: "cover",
               objectPosition: "right center",
-              opacity: 0.88,
+              opacity: 0.92,
             }}
           />
           {/* Subtle gradient vignette to keep text on left ultra crisp */}
@@ -510,7 +653,7 @@ export default function GroupDetailPage() {
               position: "absolute",
               inset: 0,
               background:
-                "linear-gradient(to right, #141416 38%, rgba(20, 20, 22, 0.78) 65%, rgba(20, 20, 22, 0.15) 100%)",
+                "linear-gradient(to right, #141416 0%, #141416 28%, rgba(20, 20, 22, 0.85) 48%, rgba(20, 20, 22, 0.25) 75%, rgba(20, 20, 22, 0.05) 100%)",
             }}
           />
         </div>
@@ -581,7 +724,7 @@ export default function GroupDetailPage() {
               style={{
                 margin: 0,
                 fontFamily: "var(--font-display)",
-                fontSize: "clamp(22px, 3.4vw, 28px)",
+                fontSize: "clamp(22px, 3.4vw, 30px)",
                 fontWeight: 800,
                 lineHeight: 1.1,
                 textTransform: "uppercase",
@@ -616,7 +759,7 @@ export default function GroupDetailPage() {
                 className="tabular-nums"
                 style={{
                   fontFamily: "var(--font-numeric)",
-                  fontSize: "clamp(30px, 4.2vw, 38px)",
+                  fontSize: "clamp(30px, 4.2vw, 40px)",
                   fontWeight: 800,
                   lineHeight: 1,
                   color: "#FFFFFF",
@@ -664,43 +807,33 @@ export default function GroupDetailPage() {
         <div
           className="team-stat-card-box"
           style={{
-            background: "#FFFFFF",
-            borderRadius: 20,
-            border: "1px solid rgba(0, 0, 0, 0.06)",
             borderLeft: "4px solid var(--crimson)",
-            boxShadow: "0 2px 12px rgba(22, 22, 26, 0.04)",
-            padding: "16px 16px 14px 16px",
-            position: "relative",
-            overflow: "hidden",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
           }}
         >
-          <div>
+          <div style={{ position: "relative", zIndex: 1 }}>
             <div
               style={{
                 display: "flex",
                 alignItems: "center",
                 gap: 6,
                 fontFamily: "var(--font-body)",
-                fontSize: 10.5,
+                fontSize: "clamp(10px, 0.9vw, 11.5px)",
                 fontWeight: 700,
                 letterSpacing: "0.04em",
                 textTransform: "uppercase",
                 color: "#5A5A62",
-                whiteSpace: "nowrap",
+                lineHeight: 1.25,
               }}
               className="team-stat-lbl-text"
             >
-              <Users size={14} color="#5A5A62" strokeWidth={2.2} />
+              <Users size={14} color="#5A5A62" strokeWidth={2.2} style={{ flexShrink: 0 }} />
               <span>CAMPUS STANDING</span>
             </div>
             <div
               className="team-stat-main-num tabular-nums"
               style={{
                 fontFamily: "var(--font-numeric)",
-                fontSize: 32,
+                fontSize: "clamp(28px, 3.2vw, 40px)",
                 fontWeight: 800,
                 lineHeight: 1.1,
                 color: "var(--ink)",
@@ -712,7 +845,9 @@ export default function GroupDetailPage() {
           </div>
           <div
             style={{
-              fontSize: 11.5,
+              position: "relative",
+              zIndex: 1,
+              fontSize: "clamp(11.5px, 0.95vw, 13px)",
               fontWeight: 500,
               fontFamily: "var(--font-body)",
               color: "var(--muted)",
@@ -722,58 +857,55 @@ export default function GroupDetailPage() {
             of {sameTypeCount} {isOfficial ? "teams" : "groups"}
           </div>
 
-          {/* Faint Seigaiha wave pattern in bottom-right corner */}
-          <img
-            src="/assets/art/seigaiha.svg"
-            alt=""
+          {/* Crisp, subtle Seigaiha wave pattern in bottom-right corner with smooth gradient fade */}
+          <div
+            className="team-stat-seigaiha-corner"
             aria-hidden="true"
             style={{
               position: "absolute",
-              right: -8,
-              bottom: -8,
-              width: 75,
-              height: 44,
-              objectFit: "contain",
-              opacity: 0.08,
+              right: 0,
+              bottom: 0,
+              width: "55%",
+              height: "70%",
+              maxWidth: 160,
+              maxHeight: 90,
               pointerEvents: "none",
+              overflow: "hidden",
+              WebkitMaskImage: "linear-gradient(135deg, transparent 20%, rgba(0, 0, 0, 0.35) 60%, rgba(0, 0, 0, 0.95) 100%)",
+              maskImage: "linear-gradient(135deg, transparent 20%, rgba(0, 0, 0, 0.35) 60%, rgba(0, 0, 0, 0.95) 100%)",
+              zIndex: 0,
             }}
-          />
+          >
+            <svg width="100%" height="100%" aria-hidden="true">
+              <rect width="100%" height="100%" fill="url(#team-seigaiha-pattern)" />
+            </svg>
+          </div>
         </div>
 
         {/* Stat Card 2: Points to Overtake / Lead Margin */}
         <div
           className="team-stat-card-box"
           style={{
-            background: "#FFFFFF",
-            borderRadius: 20,
-            border: "1px solid rgba(0, 0, 0, 0.06)",
             borderLeft: "4px solid var(--crimson)",
-            boxShadow: "0 2px 12px rgba(22, 22, 26, 0.04)",
-            padding: "16px 16px 14px 16px",
-            position: "relative",
-            overflow: "hidden",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
           }}
         >
-          <div>
+          <div style={{ position: "relative", zIndex: 1 }}>
             <div
               style={{
                 display: "flex",
                 alignItems: "center",
                 gap: 6,
                 fontFamily: "var(--font-body)",
-                fontSize: 10,
+                fontSize: "clamp(9.5px, 0.85vw, 11px)",
                 fontWeight: 700,
-                letterSpacing: "0.01em",
+                letterSpacing: "0.02em",
                 textTransform: "uppercase",
                 color: "#5A5A62",
-                whiteSpace: "nowrap",
+                lineHeight: 1.25,
               }}
               className="team-stat-lbl-text"
             >
-              <Trophy size={14} color="#5A5A62" strokeWidth={2.2} />
+              <Trophy size={14} color="#5A5A62" strokeWidth={2.2} style={{ flexShrink: 0 }} />
               <span>
                 {currentRank === 1
                   ? "LEAD MARGIN"
@@ -784,7 +916,7 @@ export default function GroupDetailPage() {
               className="team-stat-main-num tabular-nums"
               style={{
                 fontFamily: "var(--font-numeric)",
-                fontSize: 32,
+                fontSize: "clamp(28px, 3.2vw, 40px)",
                 fontWeight: 800,
                 lineHeight: 1.1,
                 color: currentRank === 1 ? "var(--green)" : "var(--crimson)",
@@ -805,65 +937,62 @@ export default function GroupDetailPage() {
             />
           </div>
 
-          {/* Faint Seigaiha wave pattern in bottom-right corner */}
-          <img
-            src="/assets/art/seigaiha.svg"
-            alt=""
+          {/* Crisp, subtle Seigaiha wave pattern in bottom-right corner with smooth gradient fade */}
+          <div
+            className="team-stat-seigaiha-corner"
             aria-hidden="true"
             style={{
               position: "absolute",
-              right: -8,
-              bottom: -8,
-              width: 75,
-              height: 44,
-              objectFit: "contain",
-              opacity: 0.08,
+              right: 0,
+              bottom: 0,
+              width: "55%",
+              height: "70%",
+              maxWidth: 160,
+              maxHeight: 90,
               pointerEvents: "none",
+              overflow: "hidden",
+              WebkitMaskImage: "linear-gradient(135deg, transparent 20%, rgba(0, 0, 0, 0.35) 60%, rgba(0, 0, 0, 0.95) 100%)",
+              maskImage: "linear-gradient(135deg, transparent 20%, rgba(0, 0, 0, 0.35) 60%, rgba(0, 0, 0, 0.95) 100%)",
+              zIndex: 0,
             }}
-          />
+          >
+            <svg width="100%" height="100%" aria-hidden="true">
+              <rect width="100%" height="100%" fill="url(#team-seigaiha-pattern)" />
+            </svg>
+          </div>
         </div>
 
         {/* Stat Card 3: Roster Engagement */}
         <div
           className="team-stat-card-box"
           style={{
-            background: "#FFFFFF",
-            borderRadius: 20,
-            border: "1px solid rgba(0, 0, 0, 0.06)",
             borderLeft: "4px solid var(--crimson)",
-            boxShadow: "0 2px 12px rgba(22, 22, 26, 0.04)",
-            padding: "16px 16px 14px 16px",
-            position: "relative",
-            overflow: "hidden",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
           }}
         >
-          <div>
+          <div style={{ position: "relative", zIndex: 1 }}>
             <div
               style={{
                 display: "flex",
                 alignItems: "center",
                 gap: 6,
                 fontFamily: "var(--font-body)",
-                fontSize: 10.5,
+                fontSize: "clamp(10px, 0.9vw, 11.5px)",
                 fontWeight: 700,
                 letterSpacing: "0.04em",
                 textTransform: "uppercase",
                 color: "#5A5A62",
-                whiteSpace: "nowrap",
+                lineHeight: 1.25,
               }}
               className="team-stat-lbl-text"
             >
-              <TrendingUp size={14} color="#5A5A62" strokeWidth={2.2} />
+              <TrendingUp size={14} color="#5A5A62" strokeWidth={2.2} style={{ flexShrink: 0 }} />
               <span>ROSTER ENGAGEMENT</span>
             </div>
             <div
               className="team-stat-main-num tabular-nums"
               style={{
                 fontFamily: "var(--font-numeric)",
-                fontSize: 32,
+                fontSize: "clamp(28px, 3.2vw, 40px)",
                 fontWeight: 800,
                 lineHeight: 1.1,
                 color: "var(--ink)",
@@ -875,7 +1004,9 @@ export default function GroupDetailPage() {
           </div>
           <div
             style={{
-              fontSize: 11.5,
+              position: "relative",
+              zIndex: 1,
+              fontSize: "clamp(11.5px, 0.95vw, 13px)",
               fontWeight: 500,
               fontFamily: "var(--font-body)",
               color: "var(--muted)",
@@ -885,22 +1016,29 @@ export default function GroupDetailPage() {
             {rosterPct}% active this week
           </div>
 
-          {/* Faint Seigaiha wave pattern in bottom-right corner */}
-          <img
-            src="/assets/art/seigaiha.svg"
-            alt=""
+          {/* Crisp, subtle Seigaiha wave pattern in bottom-right corner with smooth gradient fade */}
+          <div
+            className="team-stat-seigaiha-corner"
             aria-hidden="true"
             style={{
               position: "absolute",
-              right: -8,
-              bottom: -8,
-              width: 75,
-              height: 44,
-              objectFit: "contain",
-              opacity: 0.08,
+              right: 0,
+              bottom: 0,
+              width: "55%",
+              height: "70%",
+              maxWidth: 160,
+              maxHeight: 90,
               pointerEvents: "none",
+              overflow: "hidden",
+              WebkitMaskImage: "linear-gradient(135deg, transparent 20%, rgba(0, 0, 0, 0.35) 60%, rgba(0, 0, 0, 0.95) 100%)",
+              maskImage: "linear-gradient(135deg, transparent 20%, rgba(0, 0, 0, 0.35) 60%, rgba(0, 0, 0, 0.95) 100%)",
+              zIndex: 0,
             }}
-          />
+          >
+            <svg width="100%" height="100%" aria-hidden="true">
+              <rect width="100%" height="100%" fill="url(#team-seigaiha-pattern)" />
+            </svg>
+          </div>
         </div>
       </div>
 
@@ -914,7 +1052,7 @@ export default function GroupDetailPage() {
           borderRadius: 24,
           border: "1px solid rgba(0, 0, 0, 0.06)",
           boxShadow: "0 4px 20px rgba(22, 22, 26, 0.05)",
-          padding: "20px 22px 16px 22px",
+          padding: "22px 24px 18px 24px",
           position: "relative",
           zIndex: 2,
         }}
@@ -927,7 +1065,7 @@ export default function GroupDetailPage() {
             justifyContent: "space-between",
             flexWrap: "wrap",
             gap: 12,
-            marginBottom: 16,
+            marginBottom: 18,
           }}
         >
           {/* Left: Red Team Icon + Title */}
@@ -1009,6 +1147,37 @@ export default function GroupDetailPage() {
           </div>
         </div>
 
+        {/* Desktop Table Column Headers */}
+        <div
+          className="team-roster-header-row"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "0 16px 10px 16px",
+            borderBottom: "1px solid rgba(0, 0, 0, 0.06)",
+            marginBottom: 6,
+            fontFamily: "var(--font-body)",
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+            color: "var(--muted)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+            <span style={{ width: 28, textAlign: "center" }}>#</span>
+            <span style={{ marginLeft: 38 }}>WARRIOR</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+            <span className="roster-col-progress" style={{ width: 110, textAlign: "left" }}>
+              PROGRESS
+            </span>
+            <span style={{ width: 44, textAlign: "right" }}>SHARE</span>
+            <span style={{ width: 115, textAlign: "right" }}>KARMA</span>
+          </div>
+        </div>
+
         {/* Member Rows */}
         {filteredMembers.length === 0 ? (
           <div style={{ padding: "28px 0", textAlign: "center", color: "var(--muted)", fontSize: 13 }}>
@@ -1026,12 +1195,13 @@ export default function GroupDetailPage() {
               return (
                 <div
                   key={mem.id || mem.muid || index}
+                  className={`team-roster-member-row ${isFirst ? "is-first-rank" : ""}`}
                   style={{
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    gap: 12,
-                    padding: isFirst ? "12px 14px" : "10px 14px",
+                    gap: 16,
+                    padding: isFirst ? "14px 16px" : "12px 16px",
                     borderRadius: isFirst ? 16 : 10,
                     background: isFirst
                       ? "linear-gradient(90deg, #FFF9E6 0%, #FFFDF5 100%)"
@@ -1048,7 +1218,7 @@ export default function GroupDetailPage() {
                   }}
                 >
                   {/* Left: Rank Badge + Dark Avatar + Name & Email */}
-                  <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 14, minWidth: 0, flex: 1 }}>
                     {/* Rank Badge Circle */}
                     <div
                       style={{
@@ -1101,29 +1271,27 @@ export default function GroupDetailPage() {
                       {getInitials(mem.name)}
                     </div>
 
-                    {/* Name & Email */}
-                    <div style={{ minWidth: 0 }}>
+                    {/* Name & Email (No truncation on desktop, clean wrapping without cutoff) */}
+                    <div style={{ minWidth: 0, flex: 1, paddingRight: 8 }}>
                       <div
                         style={{
-                          fontSize: 13.5,
+                          fontSize: "clamp(13px, 1.05vw, 15px)",
                           fontWeight: 700,
                           fontFamily: "var(--font-body)",
                           color: "var(--ink)",
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
+                          wordBreak: "break-word",
+                          lineHeight: 1.25,
                         }}
                       >
                         {mem.name}
                       </div>
                       <div
                         style={{
-                          fontSize: 11.5,
+                          fontSize: "clamp(11px, 0.85vw, 12px)",
                           color: "var(--muted)",
                           fontFamily: "var(--font-body)",
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
+                          wordBreak: "break-word",
+                          marginTop: 2,
                         }}
                       >
                         {mem.muid || `${mem.name.toLowerCase().replace(/\s+/g, "")}@mulearn`}
@@ -1131,54 +1299,64 @@ export default function GroupDetailPage() {
                     </div>
                   </div>
 
-                  {/* Right: Progress Bar + Percentage + Karma */}
-                  <div style={{ display: "flex", alignItems: "center", gap: 16, flexShrink: 0 }}>
-                    {/* Thin Progress Bar + Percentage */}
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  {/* Right: Progress Bar + Percentage + Karma with strict column alignment */}
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 20,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {/* Progress Bar (Hidden on mobile < 640px) */}
+                    <div
+                      className="roster-col-progress"
+                      style={{
+                        width: 110,
+                        height: 6,
+                        borderRadius: 9999,
+                        background: "#E2E8F0",
+                        overflow: "hidden",
+                        flexShrink: 0,
+                      }}
+                    >
                       <div
                         style={{
-                          width: 48,
-                          height: 5,
+                          width: `${Math.min(100, sharePct)}%`,
+                          height: "100%",
                           borderRadius: 9999,
-                          background: "#E2E8F0",
-                          overflow: "hidden",
+                          background: isFirst ? "var(--gold)" : "#94A3B8",
                         }}
-                      >
-                        <div
-                          style={{
-                            width: `${Math.min(100, sharePct)}%`,
-                            height: "100%",
-                            borderRadius: 9999,
-                            background: isFirst ? "var(--gold)" : "#94A3B8",
-                          }}
-                        />
-                      </div>
-                      <span
-                        className="tabular-nums"
-                        style={{
-                          fontSize: 11.5,
-                          fontWeight: 600,
-                          fontFamily: "var(--font-numeric)",
-                          color: "var(--muted)",
-                          width: 28,
-                          textAlign: "right",
-                        }}
-                      >
-                        {sharePct}%
-                      </span>
+                      />
                     </div>
+
+                    {/* Percentage Column */}
+                    <span
+                      className="tabular-nums"
+                      style={{
+                        fontSize: "clamp(11.5px, 0.9vw, 13px)",
+                        fontWeight: 600,
+                        fontFamily: "var(--font-numeric)",
+                        color: isFirst ? "var(--gold)" : "var(--muted)",
+                        width: 44,
+                        textAlign: "right",
+                        flexShrink: 0,
+                      }}
+                    >
+                      {sharePct}%
+                    </span>
 
                     {/* Bold Karma Value */}
                     <div
                       className="tabular-nums"
                       style={{
-                        fontSize: 13,
+                        fontSize: "clamp(12.5px, 0.95vw, 14.5px)",
                         fontWeight: 800,
                         fontFamily: "var(--font-numeric)",
                         color: isFirst ? "var(--gold)" : "var(--ink)",
-                        whiteSpace: "nowrap",
-                        minWidth: 85,
+                        width: 115,
                         textAlign: "right",
+                        flexShrink: 0,
                       }}
                     >
                       {(mem.karma || 0).toLocaleString()} KARMA

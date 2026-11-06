@@ -1,16 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800" fill="none">
-  <!-- Soft crimson & rose petals drifting in the wind -->
-  <g opacity="0.85">
-    <!-- Petal 1 (top center) -->
-    <path d="M280 40 C285 25, 295 28, 298 38 C302 48, 290 60, 282 58 C276 56, 275 48, 280 40 Z" fill="#D32F2F" opacity="0.7" transform="rotate(15 288 45)" />
-    <!-- Petal 2 (near sun) -->
-    <path d="M420 130 C428 118, 436 122, 437 132 C438 142, 428 150, 421 147 C415 144, 414 138, 420 130 Z" fill="#B71C1C" opacity="0.6" transform="rotate(-25 425 135)" />
-    <!-- Petal 3 (right edge) -->
-    <path d="M540 190 C548 180, 555 184, 556 192 C557 200, 549 206, 543 203 C538 200, 537 195, 540 190 Z" fill="#E53935" opacity="0.75" transform="rotate(40 545 195)" />
-    <!-- Petal 4 (mid page) -->
-    <path d="M575 800 C582 788, 590 792, 592 802 C594 812, 582 820, 574 816 C568 812, 568 806, 575 800 Z" fill="#C62828" opacity="0.8" transform="rotate(18 580 805)" />
-    <!-- Petal 5 (bottom right) -->
-    <path d="M560 760 C570 745, 582 750, 585 762 C588 775, 572 786, 563 781 C556 777, 554 769, 560 760 Z" fill="#D32F2F" opacity="0.75" transform="rotate(-30 570 765)" />
+<svg xmlns="http://www.w3.org/2000/svg" width="380" height="220" viewBox="0 0 380 220" fill="none">
+  <!-- Delicate falling cherry blossom petals near branch (soft pinks, varied rotation, low opacity) -->
+  <defs>
+    <g id="sakura-petal">
+      <path d="M 0 -10 C 5 -10, 8 -3, 6 5 C 4 10, 1 11, 0 9 C -1 11, -4 10, -6 5 C -8 -3, -5 -10, 0 -10 Z" />
+    </g>
+  </defs>
+
+  <g opacity="0.65">
+    <!-- Petal 1: drifting upper-right -->
+    <use href="#sakura-petal" x="320" y="45" transform="rotate(25 320 45) scale(1.1)" fill="#F48FB1" opacity="0.55" />
+
+    <!-- Petal 2: drifting near sun edge -->
+    <use href="#sakura-petal" x="220" y="70" transform="rotate(-35 220 70) scale(0.9)" fill="#E57373" opacity="0.45" />
+
+    <!-- Petal 3: floating near branch mid -->
+    <use href="#sakura-petal" x="280" y="115" transform="rotate(15 280 115) scale(1.0)" fill="#F06292" opacity="0.5" />
+
+    <!-- Petal 4: small fluttering petal -->
+    <use href="#sakura-petal" x="180" y="145" transform="rotate(50 180 145) scale(0.75)" fill="#EF5350" opacity="0.4" />
+
+    <!-- Petal 5: gentle breeze near bottom of branch -->
+    <use href="#sakura-petal" x="250" y="175" transform="rotate(-20 250 175) scale(0.85)" fill="#F48FB1" opacity="0.45" />
   </g>
 </svg>
-

@@ -1,47 +1,84 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="120" height="60" viewBox="0 0 120 60">
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
   <defs>
-    <style>
-      .arc { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; }
-    </style>
+    <pattern id="seigaiha-pattern" width="60" height="30" patternUnits="userSpaceOnUse">
+      <g fill="none" stroke="#8A3B43" stroke-width="1" stroke-linecap="round" opacity="0.35">
+      <path d="M -36 -15 A 6 6 0 0 1 -24 -15" />
+      <path d="M -42 -15 A 12 12 0 0 1 -18 -15" />
+      <path d="M -48 -15 A 18 18 0 0 1 -12 -15" />
+      <path d="M -54 -15 A 24 24 0 0 1 -6 -15" />
+      <path d="M -60 -15 A 30 30 0 0 1 0 -15" />
+      <path d="M 24 -15 A 6 6 0 0 1 36 -15" />
+      <path d="M 18 -15 A 12 12 0 0 1 42 -15" />
+      <path d="M 12 -15 A 18 18 0 0 1 48 -15" />
+      <path d="M 6 -15 A 24 24 0 0 1 54 -15" />
+      <path d="M 0 -15 A 30 30 0 0 1 60 -15" />
+      <path d="M 84 -15 A 6 6 0 0 1 96 -15" />
+      <path d="M 78 -15 A 12 12 0 0 1 102 -15" />
+      <path d="M 72 -15 A 18 18 0 0 1 108 -15" />
+      <path d="M 66 -15 A 24 24 0 0 1 114 -15" />
+      <path d="M 60 -15 A 30 30 0 0 1 120 -15" />
+      <path d="M -6 0 A 6 6 0 0 1 6 0" />
+      <path d="M -12 0 A 12 12 0 0 1 12 0" />
+      <path d="M -18 0 A 18 18 0 0 1 18 0" />
+      <path d="M -24 0 A 24 24 0 0 1 24 0" />
+      <path d="M -30 0 A 30 30 0 0 1 30 0" />
+      <path d="M 54 0 A 6 6 0 0 1 66 0" />
+      <path d="M 48 0 A 12 12 0 0 1 72 0" />
+      <path d="M 42 0 A 18 18 0 0 1 78 0" />
+      <path d="M 36 0 A 24 24 0 0 1 84 0" />
+      <path d="M 30 0 A 30 30 0 0 1 90 0" />
+      <path d="M -36 15 A 6 6 0 0 1 -24 15" />
+      <path d="M -42 15 A 12 12 0 0 1 -18 15" />
+      <path d="M -48 15 A 18 18 0 0 1 -12 15" />
+      <path d="M -54 15 A 24 24 0 0 1 -6 15" />
+      <path d="M -60 15 A 30 30 0 0 1 0 15" />
+      <path d="M 24 15 A 6 6 0 0 1 36 15" />
+      <path d="M 18 15 A 12 12 0 0 1 42 15" />
+      <path d="M 12 15 A 18 18 0 0 1 48 15" />
+      <path d="M 6 15 A 24 24 0 0 1 54 15" />
+      <path d="M 0 15 A 30 30 0 0 1 60 15" />
+      <path d="M 84 15 A 6 6 0 0 1 96 15" />
+      <path d="M 78 15 A 12 12 0 0 1 102 15" />
+      <path d="M 72 15 A 18 18 0 0 1 108 15" />
+      <path d="M 66 15 A 24 24 0 0 1 114 15" />
+      <path d="M 60 15 A 30 30 0 0 1 120 15" />
+      <path d="M -6 30 A 6 6 0 0 1 6 30" />
+      <path d="M -12 30 A 12 12 0 0 1 12 30" />
+      <path d="M -18 30 A 18 18 0 0 1 18 30" />
+      <path d="M -24 30 A 24 24 0 0 1 24 30" />
+      <path d="M -30 30 A 30 30 0 0 1 30 30" />
+      <path d="M 54 30 A 6 6 0 0 1 66 30" />
+      <path d="M 48 30 A 12 12 0 0 1 72 30" />
+      <path d="M 42 30 A 18 18 0 0 1 78 30" />
+      <path d="M 36 30 A 24 24 0 0 1 84 30" />
+      <path d="M 30 30 A 30 30 0 0 1 90 30" />
+      <path d="M -36 45 A 6 6 0 0 1 -24 45" />
+      <path d="M -42 45 A 12 12 0 0 1 -18 45" />
+      <path d="M -48 45 A 18 18 0 0 1 -12 45" />
+      <path d="M -54 45 A 24 24 0 0 1 -6 45" />
+      <path d="M -60 45 A 30 30 0 0 1 0 45" />
+      <path d="M 24 45 A 6 6 0 0 1 36 45" />
+      <path d="M 18 45 A 12 12 0 0 1 42 45" />
+      <path d="M 12 45 A 18 18 0 0 1 48 45" />
+      <path d="M 6 45 A 24 24 0 0 1 54 45" />
+      <path d="M 0 45 A 30 30 0 0 1 60 45" />
+      <path d="M 84 45 A 6 6 0 0 1 96 45" />
+      <path d="M 78 45 A 12 12 0 0 1 102 45" />
+      <path d="M 72 45 A 18 18 0 0 1 108 45" />
+      <path d="M 66 45 A 24 24 0 0 1 114 45" />
+      <path d="M 60 45 A 30 30 0 0 1 120 45" />
+      <path d="M -6 60 A 6 6 0 0 1 6 60" />
+      <path d="M -12 60 A 12 12 0 0 1 12 60" />
+      <path d="M -18 60 A 18 18 0 0 1 18 60" />
+      <path d="M -24 60 A 24 24 0 0 1 24 60" />
+      <path d="M -30 60 A 30 30 0 0 1 30 60" />
+      <path d="M 54 60 A 6 6 0 0 1 66 60" />
+      <path d="M 48 60 A 12 12 0 0 1 72 60" />
+      <path d="M 42 60 A 18 18 0 0 1 78 60" />
+      <path d="M 36 60 A 24 24 0 0 1 84 60" />
+      <path d="M 30 60 A 30 30 0 0 1 90 60" />
+      </g>
+    </pattern>
   </defs>
-  <!-- Center circle at (60, 60) -->
-  <circle cx="60" cy="60" r="10" class="arc" />
-  <circle cx="60" cy="60" r="20" class="arc" />
-  <circle cx="60" cy="60" r="30" class="arc" />
-  <circle cx="60" cy="60" r="40" class="arc" />
-  <circle cx="60" cy="60" r="50" class="arc" />
-  <circle cx="60" cy="60" r="60" class="arc" />
-
-  <!-- Top left circle at (0, 0) -->
-  <circle cx="0" cy="0" r="10" class="arc" />
-  <circle cx="0" cy="0" r="20" class="arc" />
-  <circle cx="0" cy="0" r="30" class="arc" />
-  <circle cx="0" cy="0" r="40" class="arc" />
-  <circle cx="0" cy="0" r="50" class="arc" />
-  <circle cx="0" cy="0" r="60" class="arc" />
-
-  <!-- Top right circle at (120, 0) -->
-  <circle cx="120" cy="0" r="10" class="arc" />
-  <circle cx="120" cy="0" r="20" class="arc" />
-  <circle cx="120" cy="0" r="30" class="arc" />
-  <circle cx="120" cy="0" r="40" class="arc" />
-  <circle cx="120" cy="0" r="50" class="arc" />
-  <circle cx="120" cy="0" r="60" class="arc" />
-
-  <!-- Bottom left circle at (0, 60) -->
-  <circle cx="0" cy="60" r="10" class="arc" />
-  <circle cx="0" cy="60" r="20" class="arc" />
-  <circle cx="0" cy="60" r="30" class="arc" />
-  <circle cx="0" cy="60" r="40" class="arc" />
-  <circle cx="0" cy="60" r="50" class="arc" />
-  <circle cx="0" cy="60" r="60" class="arc" />
-
-  <!-- Bottom right circle at (120, 60) -->
-  <circle cx="120" cy="60" r="10" class="arc" />
-  <circle cx="120" cy="60" r="20" class="arc" />
-  <circle cx="120" cy="60" r="30" class="arc" />
-  <circle cx="120" cy="60" r="40" class="arc" />
-  <circle cx="120" cy="60" r="50" class="arc" />
-  <circle cx="120" cy="60" r="60" class="arc" />
+  <rect width="100%" height="100%" fill="url(#seigaiha-pattern)" />
 </svg>
-

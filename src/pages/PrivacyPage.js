@@ -6,7 +6,11 @@ import { LEGAL_CONFIG, PRIVACY_SECTIONS } from "../data/legalContent";
 export default function PrivacyPage() {
   useEffect(() => {
     document.title = "Privacy Policy | Karmayodha";
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    try {
+      if (typeof window !== "undefined" && typeof window.scrollTo === "function") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    } catch (_) {}
   }, []);
 
   return (

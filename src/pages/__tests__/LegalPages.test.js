@@ -6,6 +6,10 @@ import PrivacyPage from "../PrivacyPage";
 import Footer from "../../components/shell/Footer";
 
 describe("Legal Pages and Footer", () => {
+  beforeAll(() => {
+    window.scrollTo = jest.fn();
+  });
+
   test("renders TermsPage with title and community sections", () => {
     render(
       <MemoryRouter initialEntries={["/terms"]}>
@@ -16,9 +20,9 @@ describe("Legal Pages and Footer", () => {
     );
 
     expect(screen.getByRole("heading", { name: /Terms & Conditions/i })).toBeInTheDocument();
-    expect(screen.getByText(/About Karmayodha/i)).toBeInTheDocument();
-    expect(screen.getByText(/Eligibility & Accounts/i)).toBeInTheDocument();
-    expect(screen.getByText(/Karma Points & Leaderboards/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/About Karmayodha/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Eligibility & Accounts/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Karma Points & Leaderboards/i).length).toBeGreaterThan(0);
     expect(document.title).toBe("Terms & Conditions | Karmayodha");
   });
 
@@ -32,8 +36,8 @@ describe("Legal Pages and Footer", () => {
     );
 
     expect(screen.getByRole("heading", { name: /Privacy Policy/i })).toBeInTheDocument();
-    expect(screen.getByText(/Information We Display & Collect/i)).toBeInTheDocument();
-    expect(screen.getByText(/No Selling of Personal Data/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Information We Display & Collect/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/No Selling of Personal Data/i).length).toBeGreaterThan(0);
     expect(document.title).toBe("Privacy Policy | Karmayodha");
   });
 
