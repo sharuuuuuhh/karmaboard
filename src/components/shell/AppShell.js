@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import AppSidebar from "./Sidebar";
 import MobileHeader from "./MobileHeader";
 import MobileDock from "./MobileDock";
-import Logo from "../brand/Logo";
+import Footer from "./Footer";
 import { karmaStore } from "../../data/karmaStore";
 
 export default function AppShell({ children }) {
@@ -104,24 +104,8 @@ export default function AppShell({ children }) {
         <div className="app-content-container">
           <div style={{ flex: 1, minWidth: 0 }}>{children}</div>
 
-          {/* Footer with Logo */}
-          <footer
-            style={{
-              marginTop: 36,
-              paddingTop: 18,
-              borderTop: "1px solid var(--border)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-              gap: 16,
-              color: "var(--text-muted)",
-              fontSize: 12,
-            }}
-          >
-            <Logo variant="horizontal" size="sm" tone="dark" href="/" />
-            <div>MuLearn TLY Campus League • Real-time Karma Tracking</div>
-          </footer>
+          {/* Minimal Clean Footer */}
+          <Footer />
         </div>
       </main>
 
