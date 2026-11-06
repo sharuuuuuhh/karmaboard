@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800" fill="none">
+  <!-- Soft crimson & rose petals drifting in the wind -->
+  <g opacity="0.85">
+    <!-- Petal 1 (top center) -->
+    <path d="M280 40 C285 25, 295 28, 298 38 C302 48, 290 60, 282 58 C276 56, 275 48, 280 40 Z" fill="#D32F2F" opacity="0.7" transform="rotate(15 288 45)" />
+    <!-- Petal 2 (near sun) -->
+    <path d="M420 130 C428 118, 436 122, 437 132 C438 142, 428 150, 421 147 C415 144, 414 138, 420 130 Z" fill="#B71C1C" opacity="0.6" transform="rotate(-25 425 135)" />
+    <!-- Petal 3 (right edge) -->
+    <path d="M540 190 C548 180, 555 184, 556 192 C557 200, 549 206, 543 203 C538 200, 537 195, 540 190 Z" fill="#E53935" opacity="0.75" transform="rotate(40 545 195)" />
+    <!-- Petal 4 (mid page) -->
+    <path d="M575 800 C582 788, 590 792, 592 802 C594 812, 582 820, 574 816 C568 812, 568 806, 575 800 Z" fill="#C62828" opacity="0.8" transform="rotate(18 580 805)" />
+    <!-- Petal 5 (bottom right) -->
+    <path d="M560 760 C570 745, 582 750, 585 762 C588 775, 572 786, 563 781 C556 777, 554 769, 560 760 Z" fill="#D32F2F" opacity="0.75" transform="rotate(-30 570 765)" />
+  </g>
+</svg>

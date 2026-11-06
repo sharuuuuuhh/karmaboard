@@ -10,6 +10,7 @@ export default function PeriodCalendarPopover({
   onPeriodChange,
   onOffsetChange,
   onDateSelect,
+  fullWidth = false,
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
@@ -61,10 +62,11 @@ export default function PeriodCalendarPopover({
   return (
     <div
       ref={containerRef}
-      className="period-calendar-popover-root"
+      className={`period-calendar-popover-root ${fullWidth ? "full-width" : ""}`}
       style={{
         position: "relative",
-        display: "inline-block",
+        display: fullWidth ? "block" : "inline-block",
+        width: fullWidth ? "100%" : "auto",
         zIndex: isOpen ? 10000 : 1,
       }}
     >
@@ -104,13 +106,15 @@ export default function PeriodCalendarPopover({
         style={{
           display: "flex",
           alignItems: "center",
+          justifyContent: fullWidth ? "space-between" : "flex-start",
+          width: fullWidth ? "100%" : "auto",
           gap: 4,
           background: "#FFFFFF",
           border: "1px solid var(--border)",
           borderRadius: "var(--radius-pill)",
-          padding: "3px 8px 3px 6px",
+          padding: fullWidth ? "4px 12px" : "3px 8px 3px 6px",
           boxShadow: "0 1px 2px rgba(22, 22, 26, 0.04), 0 4px 16px rgba(22, 22, 26, 0.04)",
-          height: 40,
+          height: fullWidth ? 48 : 40,
           boxSizing: "border-box",
         }}
       >

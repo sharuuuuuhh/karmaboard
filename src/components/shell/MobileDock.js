@@ -72,13 +72,15 @@ function DockItem({ mouseX, item, active, onNavigate }) {
       <div
         style={{
           position: "relative",
-          width: 38,
-          height: 38,
+          width: active ? 42 : 36,
+          height: active ? 42 : 36,
           borderRadius: "50%",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           flexShrink: 0,
+          marginTop: active ? -6 : 0,
+          transition: "margin-top 0.2s ease, width 0.2s ease, height 0.2s ease",
         }}
       >
         {active && (
@@ -94,19 +96,19 @@ function DockItem({ mouseX, item, active, onNavigate }) {
               inset: 0,
               borderRadius: "50%",
               background: "var(--crimson)",
-              boxShadow: "0 2px 10px rgba(179, 32, 42, 0.45)",
+              boxShadow: "0 4px 16px rgba(179, 32, 42, 0.65), 0 0 12px rgba(179, 32, 42, 0.45)",
             }}
           />
         )}
 
         <motion.div
           style={{ position: "relative", zIndex: 1, display: "flex" }}
-          animate={{ scale: active ? [0.92, 1.12, 1] : 1 }}
+          animate={{ scale: active ? [0.92, 1.1, 1] : 1 }}
           transition={{ duration: 0.22, ease: "easeOut" }}
         >
           <Icon
-            size={19}
-            strokeWidth={active ? 2.2 : 1.7}
+            size={active ? 20 : 18}
+            strokeWidth={active ? 2.2 : 1.8}
             color={active ? "#FFFFFF" : "rgba(255, 255, 255, 0.55)"}
           />
         </motion.div>
@@ -131,6 +133,25 @@ function DockItem({ mouseX, item, active, onNavigate }) {
       >
         {item.label}
       </motion.span>
+
+      {/* Red underline bar under active item label */}
+      {active && (
+        <motion.div
+          layoutId="activeDockUnderline"
+          transition={{
+            type: "spring",
+            stiffness: 420,
+            damping: 30,
+          }}
+          style={{
+            width: 28,
+            height: 2.5,
+            background: "var(--crimson)",
+            borderRadius: 9999,
+            marginTop: 2,
+          }}
+        />
+      )}
     </motion.button>
   );
 }
@@ -207,6 +228,8 @@ export default function MobileDock({ isSyncing, onSync }) {
           width: "100%",
           zIndex: 9999,
           borderRadius: 0,
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
           background: "#16161A",
           borderTop: "2px solid var(--crimson)",
           boxShadow: "0 -4px 24px rgba(0, 0, 0, 0.4)",
