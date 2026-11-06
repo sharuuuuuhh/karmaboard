@@ -317,7 +317,7 @@ export default function GroupDetailPage() {
           display: flex;
           flex-direction: column;
           gap: 18px;
-          padding: 0 0 120px 0;
+          padding: 0 0 20px 0;
           position: relative;
           box-sizing: border-box;
         }
@@ -325,14 +325,14 @@ export default function GroupDetailPage() {
         @media (min-width: 1024px) {
           .team-detail-page-container {
             gap: 22px;
-            padding: 0 4px 140px 4px;
+            padding: 0 4px 28px 4px;
           }
         }
 
         @media (max-width: 640px) {
           .team-detail-page-container {
             gap: 14px;
-            padding: 0 0 120px 0;
+            padding: 0 0 16px 0;
           }
         }
 
@@ -556,29 +556,6 @@ export default function GroupDetailPage() {
         aria-hidden="true"
         className="team-detail-petals"
       />
-
-      {/* Seigaiha wave pattern fading in as a full-width strip along bottom */}
-      <div
-        className="team-detail-bottom-seigaiha-strip"
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: "100%",
-          height: 100,
-          pointerEvents: "none",
-          overflow: "hidden",
-          zIndex: 0,
-          WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.4) 40%, rgba(0, 0, 0, 0.9) 100%)",
-          maskImage: "linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.4) 40%, rgba(0, 0, 0, 0.9) 100%)",
-        }}
-      >
-        <svg width="100%" height="100%" aria-hidden="true">
-          <rect width="100%" height="100%" fill="url(#team-seigaiha-pattern)" />
-        </svg>
-      </div>
 
       {/* =========================================================================
           1. BACK LINK: "<- Back to all teams"

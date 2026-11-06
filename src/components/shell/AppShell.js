@@ -64,7 +64,7 @@ export default function AppShell({ children }) {
           height: "100%",
           overflowY: "auto",
           overflowX: "hidden",
-          padding: "24px",
+          padding: "24px 24px 0 24px",
           backgroundColor: "var(--bg)",
           minWidth: 0,
         }}
@@ -72,16 +72,16 @@ export default function AppShell({ children }) {
       >
         <style>{`
           .app-main-panel {
-            padding: 24px;
+            padding: 24px 24px 0 24px;
           }
           @media (min-width: 1600px) {
             .app-main-panel {
-              padding: 32px !important;
+              padding: 32px 32px 0 32px !important;
             }
           }
           @media (max-width: 768px) {
             .app-main-panel {
-              padding: 16px 16px calc(110px + env(safe-area-inset-bottom, 0px)) 16px !important;
+              padding: 16px 16px 0 16px !important;
               height: 100% !important;
               min-height: 100dvh !important;
               overflow-x: hidden;
@@ -102,9 +102,9 @@ export default function AppShell({ children }) {
         `}</style>
 
         <div className="app-content-container">
-          <div style={{ flex: 1, minWidth: 0 }}>{children}</div>
+          <div style={{ flex: 1, minWidth: 0, paddingBottom: 24 }}>{children}</div>
 
-          {/* Minimal Clean Footer */}
+          {/* Seamless Full-Bleed Footer */}
           <Footer />
         </div>
       </main>
