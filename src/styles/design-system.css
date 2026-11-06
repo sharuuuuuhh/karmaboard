@@ -9,8 +9,8 @@
   /* --------------------------------------------------------------------------
      1. Surfaces & Frames (Warm Minimal Off-White & Crisp White Cards)
      -------------------------------------------------------------------------- */
-  --bg: #F6F4F0;
-  --page-backdrop: #F6F4F0;
+  --bg: #F4EADB;
+  --page-backdrop: #F4EADB;
   --card: #FFFFFF;
   --app-frame: #18181B;
   --content-panel: #FFFFFF;
@@ -20,7 +20,7 @@
   /* Global alias mappings */
   --canvas: var(--bg);
   --surface: #FFFFFF;
-  --surface-subtle: #F6F4F0;
+  --surface-subtle: #F4EADB;
   --surface-solid: #FFFFFF;
 
   /* --------------------------------------------------------------------------

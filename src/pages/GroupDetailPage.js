@@ -336,93 +336,32 @@ export default function GroupDetailPage() {
           }
         }
 
-        /* Page Background Art Layer: Spans smoothly across top right of viewport */
-        .team-detail-bg-art {
+        /* Page Background Art Layer: Top-right sumi-e artwork (Sun + Branch + Petals) */
+        .team-top-art-wrap {
           position: absolute;
           top: -24px;
           right: -24px;
-          width: min(calc(100% + 48px), 1250px);
-          height: 250px;
-          pointer-events: none;
-          z-index: 0;
-          overflow: hidden;
-          opacity: 0.92;
-          -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.35) 20%, rgba(0, 0, 0, 1) 45%, rgba(0, 0, 0, 1) 100%);
-          mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.35) 20%, rgba(0, 0, 0, 1) 45%, rgba(0, 0, 0, 1) 100%);
-        }
-
-        @media (min-width: 1600px) {
-          .team-detail-bg-art {
-            top: -32px;
-            right: -32px;
-            width: min(calc(100% + 64px), 1450px);
-            height: 280px;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .team-detail-bg-art {
-            top: -16px;
-            right: -16px;
-            width: clamp(280px, 85vw, 550px);
-            height: 190px;
-          }
-        }
-
-        /* Cherry blossom branch: Anchored to top right */
-        .team-detail-sakura-branch {
-          position: absolute;
-          top: -24px;
-          right: -24px;
-          width: clamp(220px, 25vw, 420px);
+          width: clamp(520px, 48vw, 860px);
           pointer-events: none;
           z-index: 1;
           user-select: none;
-          opacity: 0.92;
+          overflow: visible;
         }
 
         @media (min-width: 1600px) {
-          .team-detail-sakura-branch {
+          .team-top-art-wrap {
             top: -32px;
             right: -32px;
-            width: clamp(280px, 24vw, 460px);
+            width: clamp(660px, 46vw, 1000px);
           }
         }
 
         @media (max-width: 768px) {
-          .team-detail-sakura-branch {
+          .team-top-art-wrap {
             top: -16px;
             right: -16px;
-            width: 200px;
-          }
-        }
-
-        /* Drifting petals: Confined to branch area near top-right */
-        .team-detail-petals {
-          position: absolute;
-          top: -24px;
-          right: -24px;
-          width: clamp(220px, 26vw, 380px);
-          height: 220px;
-          pointer-events: none;
-          z-index: 1;
-          user-select: none;
-          overflow: hidden;
-        }
-
-        @media (min-width: 1600px) {
-          .team-detail-petals {
-            top: -32px;
-            right: -32px;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .team-detail-petals {
-            top: -16px;
-            right: -16px;
-            width: 200px;
-            height: 180px;
+            width: clamp(280px, 80vw, 420px);
+            opacity: 0.85;
           }
         }
 
@@ -435,11 +374,13 @@ export default function GroupDetailPage() {
         }
 
         .team-stat-card-box {
-          background: #FFFFFF;
+          background: rgba(255, 252, 246, 0.88);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
           border-radius: 22px;
           border: 1px solid rgba(0, 0, 0, 0.06);
           border-left: 4px solid var(--crimson);
-          box-shadow: 0 2px 14px rgba(22, 22, 26, 0.04);
+          box-shadow: 0 4px 20px rgba(22, 22, 26, 0.05);
           padding: 20px 22px 18px 22px;
           position: relative;
           overflow: hidden;
@@ -447,6 +388,18 @@ export default function GroupDetailPage() {
           flex-direction: column;
           justifyContent: space-between;
           min-height: 120px;
+        }
+
+        .team-roster-card {
+          background: rgba(255, 252, 246, 0.88);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          border-radius: 24px;
+          border: 1px solid rgba(0, 0, 0, 0.06);
+          box-shadow: 0 4px 24px rgba(22, 22, 26, 0.05);
+          padding: 22px 24px 18px 24px;
+          position: relative;
+          z-index: 2;
         }
 
         @media (max-width: 768px) {
@@ -522,40 +475,33 @@ export default function GroupDetailPage() {
       </svg>
 
       {/* =========================================================================
-          BACKGROUND ARTWORK: Pagoda + Red Sun + Sakura Branch + Drifting Petals
+          TOP-OF-PAGE ARTWORK: Red Sun Peeking Above Banner + Top-Right Sakura Branch
           ========================================================================= */}
-      <div className="team-detail-bg-art" aria-hidden="true">
-        <img
-          src="/assets/art/header-banner.webp"
-          alt=""
-          aria-hidden="true"
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "contain",
-            objectPosition: "right top",
-            display: "block",
-            mixBlendMode: "multiply",
-            opacity: 0.88,
-          }}
-        />
+      <div className="team-top-art-wrap" aria-hidden="true">
+        <picture>
+          <source
+            media="(max-width: 768px)"
+            srcSet="/assets/art/page-top-art-mobile.webp 1200w"
+            type="image/webp"
+          />
+          <source
+            srcSet="/assets/art/page-top-art.webp 2400w"
+            type="image/webp"
+          />
+          <img
+            src="/assets/art/page-top-art.webp"
+            alt=""
+            aria-hidden="true"
+            loading="eager"
+            decoding="async"
+            style={{
+              width: "100%",
+              height: "auto",
+              display: "block",
+            }}
+          />
+        </picture>
       </div>
-
-      {/* Cherry blossom branch in top-right corner */}
-      <img
-        src="/assets/art/sakura-branch.webp"
-        alt=""
-        aria-hidden="true"
-        className="team-detail-sakura-branch"
-      />
-
-      {/* Falling sakura petals overlay (confined strictly to top-right branch area) */}
-      <img
-        src="/assets/art/falling-petals.svg"
-        alt=""
-        aria-hidden="true"
-        className="team-detail-petals"
-      />
 
       {/* =========================================================================
           1. BACK LINK: "<- Back to all teams"
@@ -589,16 +535,16 @@ export default function GroupDetailPage() {
         className="team-banner-card"
         style={{
           position: "relative",
-          background: "#141416",
+          background: "#141214",
           borderRadius: 28,
           overflow: "hidden",
-          padding: "22px 28px",
-          border: "1px solid rgba(179, 32, 42, 0.45)",
-          boxShadow: "0 4px 24px rgba(0, 0, 0, 0.28), 0 0 24px rgba(179, 32, 42, 0.12)",
+          padding: "20px 28px",
+          border: "1px solid rgba(255, 255, 255, 0.08)",
+          boxShadow: "0 4px 24px rgba(0, 0, 0, 0.28)",
           zIndex: 2,
         }}
       >
-        {/* Dark Torii Gate & Misty Mountain Background Image with Red Brush Accents */}
+        {/* Dark Torii Gate & Misty Mountain Background Image */}
         <div
           aria-hidden="true"
           style={{
@@ -608,29 +554,41 @@ export default function GroupDetailPage() {
             zIndex: 0,
           }}
         >
-          <img
-            src="/assets/art/team-banner-bg.webp"
-            alt=""
-            aria-hidden="true"
-            style={{
-              position: "absolute",
-              right: 0,
-              top: 0,
-              bottom: 0,
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              objectPosition: "right center",
-              opacity: 0.92,
-            }}
-          />
+          <picture>
+            <source
+              media="(max-width: 768px)"
+              srcSet="/assets/art/banner-art-mobile.webp 1200w"
+              type="image/webp"
+            />
+            <source
+              srcSet="/assets/art/banner-art.webp 2400w"
+              type="image/webp"
+            />
+            <img
+              src="/assets/art/banner-art.webp"
+              alt=""
+              aria-hidden="true"
+              loading="eager"
+              decoding="async"
+              style={{
+                position: "absolute",
+                right: 0,
+                top: 0,
+                bottom: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                objectPosition: "right center",
+              }}
+            />
+          </picture>
           {/* Subtle gradient vignette to keep text on left ultra crisp */}
           <div
             style={{
               position: "absolute",
               inset: 0,
               background:
-                "linear-gradient(to right, #141416 0%, #141416 28%, rgba(20, 20, 22, 0.85) 48%, rgba(20, 20, 22, 0.25) 75%, rgba(20, 20, 22, 0.05) 100%)",
+                "linear-gradient(to right, #141214 0%, #141214 36%, rgba(20, 18, 20, 0.88) 50%, rgba(20, 18, 20, 0.2) 75%, transparent 100%)",
             }}
           />
         </div>
@@ -1025,7 +983,7 @@ export default function GroupDetailPage() {
       <div
         className="team-roster-card"
         style={{
-          background: "#FFFFFF",
+          background: "rgba(255, 252, 246, 0.88)",
           borderRadius: 24,
           border: "1px solid rgba(0, 0, 0, 0.06)",
           boxShadow: "0 4px 20px rgba(22, 22, 26, 0.05)",

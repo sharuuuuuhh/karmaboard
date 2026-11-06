@@ -66,6 +66,8 @@ export default function AppShell({ children }) {
           overflowX: "hidden",
           padding: "24px 24px 0 24px",
           backgroundColor: "var(--bg)",
+          backgroundImage: "url('/assets/art/paper-texture.webp')",
+          backgroundRepeat: "repeat",
           minWidth: 0,
         }}
         className="app-main-panel"
