@@ -96,23 +96,43 @@ module.exports = async function handler(req, res) {
   try {
     const supabase = getSupabase();
 
-    // 1. Load all tracked MUIDs from students table
-    const { data: students, error: fetchErr } = await supabase
-      .from("students")
-      .select("muid");
-
-    if (fetchErr) {
-      return res.status(500).json({ error: fetchErr.message });
-    }
-    if (!students || students.length === 0) {
-      return res.status(200).json({ message: "No students to sync", updated: [] });
+    // Parse request body for chunked sync support
+    let body = req.body;
+    if (typeof body === "string") {
+      try {
+        body = JSON.parse(body);
+      } catch (e) {
+        body = {};
+      }
     }
 
-    // 2. Hit muLearn API concurrently in efficient batches of 25
-    const BATCH = 25;
+    const requestedMuids = Array.isArray(body?.muids) ? body.muids : null;
+    const isLastBatch = body?.isLastBatch !== undefined ? Boolean(body.isLastBatch) : (requestedMuids === null);
+
+    // 1. Determine list of MUIDs to sync
+    let targetStudents = [];
+    if (requestedMuids && requestedMuids.length > 0) {
+      targetStudents = requestedMuids.map((m) => ({ muid: m }));
+    } else {
+      const { data: students, error: fetchErr } = await supabase
+        .from("students")
+        .select("muid");
+
+      if (fetchErr) {
+        return res.status(500).json({ error: fetchErr.message });
+      }
+      targetStudents = students || [];
+    }
+
+    if (targetStudents.length === 0) {
+      return res.status(200).json({ message: "No students to sync", synced: 0, failed: [] });
+    }
+
+    // 2. Hit muLearn API concurrently in safe batches of 8 to avoid rate limits/timeouts
+    const BATCH = 8;
     const results = [];
-    for (let i = 0; i < students.length; i += BATCH) {
-      const batch = students.slice(i, i + BATCH);
+    for (let i = 0; i < targetStudents.length; i += BATCH) {
+      const batch = targetStudents.slice(i, i + BATCH);
       const batchResults = await Promise.all(batch.map((s) => fetchOne(s.muid)));
       results.push(...batchResults);
     }
@@ -124,7 +144,7 @@ module.exports = async function handler(req, res) {
     const today = now.toISOString().split("T")[0]; // YYYY-MM-DD
     const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`;
 
-    const successfulResults = results.filter((r) => r.ok);
+    const successfulResults = results.filter((r) => r.ok && r.karma !== null);
 
     // Fetch latest snapshot BEFORE current month for each student
     const { data: preMonthSnapshots } = await supabase
@@ -162,9 +182,11 @@ module.exports = async function handler(req, res) {
     // 5. Snapshot today's karma into karma_history (only first snapshot of the day)
     try {
       if (successfulResults.length > 0) {
+        const muids = successfulResults.map((r) => r.muid);
         const { data: existingToday } = await supabase
           .from("karma_history")
           .select("muid")
+          .in("muid", muids)
           .eq("recorded_at", today);
 
         const alreadySnapped = new Set(
@@ -188,55 +210,57 @@ module.exports = async function handler(req, res) {
       console.warn("Failed to snapshot karma_history:", histErr.message);
     }
 
-    // 6. Update Campus Details (non-blocking with short timeout)
-    try {
-      const CAMPUS_CODE = process.env.CAMPUS_CODE || "TLY";
-      const leaderboardRes = await fetch(
-        "https://mulearn.org/api/v1/leaderboard/college/",
-        { signal: AbortSignal.timeout(4000) }
-      );
-      if (leaderboardRes.ok) {
-        const leaderboardJson = await leaderboardRes.json();
-        const colleges = leaderboardJson?.response ?? [];
-        const campusIndex = colleges.findIndex((c) => c.code === CAMPUS_CODE);
+    // 6. Update Campus Details (runs when it's the last batch or full sync)
+    if (isLastBatch) {
+      try {
+        const CAMPUS_CODE = process.env.CAMPUS_CODE || "TLY";
+        const leaderboardRes = await fetch(
+          "https://mulearn.org/api/v1/leaderboard/college/",
+          { signal: AbortSignal.timeout(4000) }
+        );
+        if (leaderboardRes.ok) {
+          const leaderboardJson = await leaderboardRes.json();
+          const colleges = leaderboardJson?.response ?? [];
+          const campusIndex = colleges.findIndex((c) => c.code === CAMPUS_CODE);
 
-        if (campusIndex !== -1) {
-          const campusData = colleges[campusIndex];
-          const campusRank = campusIndex + 1;
-          const campusKarma = campusData.total_karma ?? 0;
-          const campusTotalMembers = campusData.total_students ?? 0;
+          if (campusIndex !== -1) {
+            const campusData = colleges[campusIndex];
+            const campusRank = campusIndex + 1;
+            const campusKarma = campusData.total_karma ?? 0;
+            const campusTotalMembers = campusData.total_students ?? 0;
 
-          const { count: localActiveCount } = await supabase
-            .from("students")
-            .select("*", { count: "exact", head: true })
-            .gt("karma", 0);
+            const { count: localActiveCount } = await supabase
+              .from("students")
+              .select("*", { count: "exact", head: true })
+              .gt("karma", 0);
 
-          const { data: existingDetails } = await supabase
-            .from("campus_details")
-            .select("*")
-            .order("id", { ascending: false })
-            .limit(1);
-
-          const updatePayload = {
-            rank: campusRank,
-            karma: campusKarma,
-            active_members: localActiveCount ?? 0,
-            total_members: campusTotalMembers,
-            updated_at: new Date().toISOString(),
-          };
-
-          if (existingDetails && existingDetails.length > 0) {
-            await supabase
+            const { data: existingDetails } = await supabase
               .from("campus_details")
-              .update(updatePayload)
-              .eq("id", existingDetails[0].id);
-          } else {
-            await supabase.from("campus_details").insert(updatePayload);
+              .select("*")
+              .order("id", { ascending: false })
+              .limit(1);
+
+            const updatePayload = {
+              rank: campusRank,
+              karma: campusKarma,
+              active_members: localActiveCount ?? 0,
+              total_members: campusTotalMembers,
+              updated_at: new Date().toISOString(),
+            };
+
+            if (existingDetails && existingDetails.length > 0) {
+              await supabase
+                .from("campus_details")
+                .update(updatePayload)
+                .eq("id", existingDetails[0].id);
+            } else {
+              await supabase.from("campus_details").insert(updatePayload);
+            }
           }
         }
+      } catch (campusErr) {
+        // Non-critical, ignore timeout
       }
-    } catch (campusErr) {
-      // Non-critical, ignore timeout
     }
 
     return res.status(200).json({

@@ -1233,14 +1233,35 @@ class KarmaStore {
     this.lastSyncedAt = new Date().toISOString();
 
     try {
-      const syncUrl =
-        typeof window !== "undefined" && window.location.hostname === "localhost"
-          ? "https://karmaboard-delta.vercel.app/api/sync-karma"
-          : "/api/sync-karma";
+      const isLocalhost =
+        typeof window !== "undefined" &&
+        (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+      const syncUrl = isLocalhost
+        ? "https://karmaboard-delta.vercel.app/api/sync-karma"
+        : "/api/sync-karma";
 
-      await fetch(syncUrl, { method: "POST" }).catch(() => {});
+      let allMuids = (this.members || []).map((m) => m.muid).filter(Boolean);
+      if (allMuids.length === 0 && isSupabaseConfigured && supabase) {
+        const { data } = await supabase.from("students").select("muid");
+        allMuids = (data || []).map((s) => s.muid).filter(Boolean);
+      }
+
+      if (allMuids.length > 0) {
+        const CHUNK_SIZE = 15;
+        for (let i = 0; i < allMuids.length; i += CHUNK_SIZE) {
+          const chunk = allMuids.slice(i, i + CHUNK_SIZE);
+          const isLastBatch = i + CHUNK_SIZE >= allMuids.length;
+          await fetch(syncUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ muids: chunk, isLastBatch }),
+          }).catch((err) => console.warn("Sync batch failed:", err));
+        }
+      } else {
+        await fetch(syncUrl, { method: "POST" }).catch(() => {});
+      }
     } catch (e) {
-      // non-blocking
+      console.warn("Sync error:", e);
     }
 
     if (isSupabaseConfigured && supabase) {
