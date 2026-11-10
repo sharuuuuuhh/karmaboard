@@ -19,9 +19,25 @@ CREATE TABLE IF NOT EXISTS monthly_archives (
   monthly_rank  INTEGER,                -- Campus monthly rank
   department    TEXT,
   team          TEXT,
-  created_at    TIMESTAMPTZ DEFAULT NOW(),
-  CONSTRAINT monthly_archives_month_muid_key UNIQUE (archive_month, muid)
+  created_at    TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Ensure unique constraint exists on (archive_month, muid) even if table was already created
+DO $$
+BEGIN
+  -- Deduplicate rows if any duplicates were previously inserted
+  DELETE FROM monthly_archives a USING monthly_archives b
+  WHERE a.id < b.id 
+    AND a.archive_month = b.archive_month 
+    AND a.muid = b.muid;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'monthly_archives_month_muid_key'
+  ) THEN
+    ALTER TABLE monthly_archives 
+      ADD CONSTRAINT monthly_archives_month_muid_key UNIQUE (archive_month, muid);
+  END IF;
+END $$;
 
 -- Index for fast historical queries
 CREATE INDEX IF NOT EXISTS monthly_archives_month_muid_idx 
