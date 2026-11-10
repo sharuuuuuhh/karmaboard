@@ -37,9 +37,10 @@ function extract(data) {
 
 async function fetchOne(muid) {
   try {
+    const cleanTarget = (muid || "").toLowerCase().replace(/@mulearn$/, "").trim();
     // 1. Primary: muLearn user search API is fast, reliable, and supports both public & private profiles
     const searchRes = await fetch(
-      `https://mulearn.org/api/v1/dashboard/user/search/?search=${encodeURIComponent(muid)}`,
+      `https://mulearn.org/api/v1/dashboard/user/search/?search=${encodeURIComponent(cleanTarget)}`,
       {
         headers: { Accept: "application/json" },
         signal: AbortSignal.timeout(6000),
@@ -48,9 +49,10 @@ async function fetchOne(muid) {
     if (searchRes.ok) {
       const searchJson = await searchRes.json();
       const results = searchJson?.response?.data ?? [];
-      const found = results.find(
-        (r) => r.muid?.toLowerCase() === muid.toLowerCase()
-      );
+      const found = results.find((r) => {
+        const cleanFound = (r.muid || "").toLowerCase().replace(/@mulearn$/, "").trim();
+        return cleanFound === cleanTarget;
+      });
       if (found) {
         const karma =
           found.karma !== undefined && found.karma !== null
@@ -58,7 +60,7 @@ async function fetchOne(muid) {
             : null;
         return {
           muid,
-          ok: karma !== null,
+          ok: karma !== null && !isNaN(karma),
           karma,
           rank: null,
           full_name: found.full_name ?? null,

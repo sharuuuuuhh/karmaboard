@@ -224,11 +224,19 @@ class KarmaStore {
         }
       };
 
+      const fetchArchives = async () => {
+        try {
+          return await supabase.from("monthly_archives").select("*");
+        } catch (e) {
+          return { data: [] };
+        }
+      };
+
       const [campusRes, studentsRes, monthlyRpcRes, archivesRes, hist1, hist2, hist3, hist4, hist5, hist6] = await Promise.all([
         supabase.from("campus_details").select("*").order("id", { ascending: false }).limit(1),
         supabase.from("students").select("*").order("karma", { ascending: false }),
         fetchMonthlyRpc(),
-        supabase.from("monthly_archives").select("*").catch(() => ({ data: [] })),
+        fetchArchives(),
         supabase.from("karma_history").select("*").order("recorded_at", { ascending: false }).range(0, 999),
         supabase.from("karma_history").select("*").order("recorded_at", { ascending: false }).range(1000, 1999),
         supabase.from("karma_history").select("*").order("recorded_at", { ascending: false }).range(2000, 2999),
@@ -427,6 +435,24 @@ class KarmaStore {
     return { earned, lastTime };
   }
 
+  getArchivedMemberKarma(mem, monthOffset) {
+    if (!this.monthlyArchives || this.monthlyArchives.length === 0 || monthOffset >= 0) return 0;
+    const mInfo = getMonthBoundaries(monthOffset);
+    const targetYear = mInfo.start.getFullYear();
+    const m = mInfo.start.getMonth() + 1;
+    const targetMonth = m < 10 ? `0${m}` : `${m}`;
+    const targetPrefix = `${targetYear}-${targetMonth}`;
+    const cleanMemMuid = (mem?.muid || "").toLowerCase().replace(/@mulearn$/, "").trim();
+    if (!cleanMemMuid) return 0;
+
+    const row = this.monthlyArchives.find((a) => {
+      const archMonth = a.archive_month || "";
+      const cleanArchMuid = (a.muid || "").toLowerCase().replace(/@mulearn$/, "").trim();
+      return archMonth.startsWith(targetPrefix) && cleanArchMuid === cleanMemMuid;
+    });
+    return row ? (row.monthly_karma || 0) : 0;
+  }
+
   getLeaderboard({ period = "week", view = "individuals", weekOffset = 0, monthOffset = 0, skipUnderdog = false }) {
     let currentWindow = null;
     let previousWindow = null;
@@ -462,15 +488,7 @@ class KarmaStore {
         } else {
           const stats = this.getMemberKarmaInWindow(mem.id, currentWindow.start, currentWindow.end, mem.muid);
           const baseMonthly = (period === "month" && monthOffset === 0 && mem.monthly_karma > 0) ? mem.monthly_karma : 0;
-          let archiveKarma = 0;
-          if (period === "month" && monthOffset < 0 && this.monthlyArchives?.length > 0) {
-            const mInfo = getMonthBoundaries(monthOffset);
-            const mKey = `${mInfo.key}-01`;
-            const row = this.monthlyArchives.find(
-              (a) => a.archive_month === mKey && (a.muid?.toLowerCase() === mem.muid?.toLowerCase() || a.user_id === mem.id)
-            );
-            if (row) archiveKarma = row.monthly_karma || 0;
-          }
+          const archiveKarma = this.getArchivedMemberKarma(mem, monthOffset);
           karma = Math.max(baseMonthly, archiveKarma, stats.earned);
           lastTime = stats.lastTime || (karma > 0 ? Date.now() - 3600000 : 0);
         }
@@ -575,15 +593,7 @@ class KarmaStore {
         g.lastTime = Math.max(g.lastTime, Date.now() - 3600000);
       } else {
         const stats = this.getMemberKarmaInWindow(mem.id, currentWindow.start, currentWindow.end, mem.muid);
-        let archiveKarma = 0;
-        if (period === "month" && monthOffset < 0 && this.monthlyArchives?.length > 0) {
-          const mInfo = getMonthBoundaries(monthOffset);
-          const mKey = `${mInfo.key}-01`;
-          const row = this.monthlyArchives.find(
-            (a) => a.archive_month === mKey && (a.muid?.toLowerCase() === mem.muid?.toLowerCase() || a.user_id === mem.id)
-          );
-          if (row) archiveKarma = row.monthly_karma || 0;
-        }
+        const archiveKarma = this.getArchivedMemberKarma(mem, monthOffset);
         g.karma += Math.max(archiveKarma, stats.earned);
         g.lastTime = Math.max(g.lastTime, stats.lastTime);
       }
@@ -1195,15 +1205,7 @@ class KarmaStore {
       } else {
         const s = this.getMemberKarmaInWindow(m.id, start, end, m.muid);
         const baseMonthly = (period === "month" && monthOffset === 0 && m.monthly_karma > 0) ? m.monthly_karma : 0;
-        let archiveKarma = 0;
-        if (period === "month" && monthOffset < 0 && this.monthlyArchives?.length > 0) {
-          const mInfo = getMonthBoundaries(monthOffset);
-          const mKey = `${mInfo.key}-01`;
-          const row = this.monthlyArchives.find(
-            (a) => a.archive_month === mKey && (a.muid?.toLowerCase() === m.muid?.toLowerCase() || a.user_id === m.id)
-          );
-          if (row) archiveKarma = row.monthly_karma || 0;
-        }
+        const archiveKarma = this.getArchivedMemberKarma(m, monthOffset);
         karma = Math.max(baseMonthly, archiveKarma, s.earned);
         lastTime = s.lastTime;
       }
