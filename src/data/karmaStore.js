@@ -215,7 +215,7 @@ class KarmaStore {
       const today = new Date();
       const currentMonthStart = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-01`;
 
-      // Parallel fetch from Supabase: campus_details, all students, monthly karma RPC, and all 3 pages of karma_history
+      // Parallel fetch from Supabase: campus_details, all students, monthly karma RPC, monthly_archives, and all pages of karma_history
       const fetchMonthlyRpc = async () => {
         try {
           return await supabase.rpc("get_students_with_monthly_karma", { p_start_date: currentMonthStart });
@@ -224,14 +224,20 @@ class KarmaStore {
         }
       };
 
-      const [campusRes, studentsRes, monthlyRpcRes, hist1, hist2, hist3] = await Promise.all([
+      const [campusRes, studentsRes, monthlyRpcRes, archivesRes, hist1, hist2, hist3, hist4, hist5, hist6] = await Promise.all([
         supabase.from("campus_details").select("*").order("id", { ascending: false }).limit(1),
         supabase.from("students").select("*").order("karma", { ascending: false }),
         fetchMonthlyRpc(),
+        supabase.from("monthly_archives").select("*").catch(() => ({ data: [] })),
         supabase.from("karma_history").select("*").order("recorded_at", { ascending: false }).range(0, 999),
         supabase.from("karma_history").select("*").order("recorded_at", { ascending: false }).range(1000, 1999),
         supabase.from("karma_history").select("*").order("recorded_at", { ascending: false }).range(2000, 2999),
+        supabase.from("karma_history").select("*").order("recorded_at", { ascending: false }).range(3000, 3999),
+        supabase.from("karma_history").select("*").order("recorded_at", { ascending: false }).range(4000, 4999),
+        supabase.from("karma_history").select("*").order("recorded_at", { ascending: false }).range(5000, 5999),
       ]);
+
+      this.monthlyArchives = archivesRes?.data || [];
 
       if (campusRes.data && campusRes.data.length > 0) {
         const c = campusRes.data[0];
@@ -310,11 +316,14 @@ class KarmaStore {
         this.groups = groupList.length > 0 ? groupList : REAL_GROUPS;
         this.members = liveMembers;
 
-        // Process real karma events from karma_history
+        // Process real karma events from karma_history across all fetched pages
         const allHistory = [
           ...(hist1.data || []),
           ...(hist2.data || []),
           ...(hist3.data || []),
+          ...(hist4.data || []),
+          ...(hist5.data || []),
+          ...(hist6.data || []),
         ];
 
         const histByMuid = new Map();
@@ -328,18 +337,18 @@ class KarmaStore {
           const member = liveMembers.find((m) => m.muid.toLowerCase() === muid.toLowerCase());
           records.sort((a, b) => a.recorded_at.localeCompare(b.recorded_at));
 
-          // If student joined in/after November (earliest snapshot >= 2026-11-01), they started with 0 karma,
-          // so records[0] is their first earned karma event!
-          const joinedInNov = records[0]?.recorded_at >= "2026-11-01";
-          const startIndex = joinedInNov ? 0 : 1;
-          let prevKarma = joinedInNov ? 0 : (records[0]?.karma || 0);
+          // If student joined after initial launch (earliest snapshot >= 2026-09-01),
+          // their starting karma is counted as their initial event on their join date
+          const joinedAfterLaunch = records[0]?.recorded_at >= "2026-09-01";
+          const startIndex = joinedAfterLaunch ? 0 : 1;
+          let prevKarma = joinedAfterLaunch ? 0 : (records[0]?.karma || 0);
 
           for (let i = startIndex; i < records.length; i++) {
             const rec = records[i];
             const delta = rec.karma - prevKarma;
             if (delta > 0) {
               realEvents.push({
-                id: `kh-${rec.id}`,
+                id: `kh-${rec.id || i}-${muid}`,
                 member_id: member ? member.id : muid,
                 member_name: member ? member.name : muid,
                 muid,
@@ -453,7 +462,16 @@ class KarmaStore {
         } else {
           const stats = this.getMemberKarmaInWindow(mem.id, currentWindow.start, currentWindow.end, mem.muid);
           const baseMonthly = (period === "month" && monthOffset === 0 && mem.monthly_karma > 0) ? mem.monthly_karma : 0;
-          karma = Math.max(baseMonthly, stats.earned);
+          let archiveKarma = 0;
+          if (period === "month" && monthOffset < 0 && this.monthlyArchives?.length > 0) {
+            const mInfo = getMonthBoundaries(monthOffset);
+            const mKey = `${mInfo.key}-01`;
+            const row = this.monthlyArchives.find(
+              (a) => a.archive_month === mKey && (a.muid?.toLowerCase() === mem.muid?.toLowerCase() || a.user_id === mem.id)
+            );
+            if (row) archiveKarma = row.monthly_karma || 0;
+          }
+          karma = Math.max(baseMonthly, archiveKarma, stats.earned);
           lastTime = stats.lastTime || (karma > 0 ? Date.now() - 3600000 : 0);
         }
 
@@ -556,8 +574,17 @@ class KarmaStore {
         g.karma += mem.monthly_karma;
         g.lastTime = Math.max(g.lastTime, Date.now() - 3600000);
       } else {
-        const stats = this.getMemberKarmaInWindow(mem.id, currentWindow.start, currentWindow.end);
-        g.karma += stats.earned;
+        const stats = this.getMemberKarmaInWindow(mem.id, currentWindow.start, currentWindow.end, mem.muid);
+        let archiveKarma = 0;
+        if (period === "month" && monthOffset < 0 && this.monthlyArchives?.length > 0) {
+          const mInfo = getMonthBoundaries(monthOffset);
+          const mKey = `${mInfo.key}-01`;
+          const row = this.monthlyArchives.find(
+            (a) => a.archive_month === mKey && (a.muid?.toLowerCase() === mem.muid?.toLowerCase() || a.user_id === mem.id)
+          );
+          if (row) archiveKarma = row.monthly_karma || 0;
+        }
+        g.karma += Math.max(archiveKarma, stats.earned);
         g.lastTime = Math.max(g.lastTime, stats.lastTime);
       }
     });
@@ -576,7 +603,7 @@ class KarmaStore {
       this.members.forEach((mem) => {
         const g = prevGroupSums.get(mem.group_id);
         if (!g) return;
-        const stats = this.getMemberKarmaInWindow(mem.id, previousWindow.start, previousWindow.end);
+        const stats = this.getMemberKarmaInWindow(mem.id, previousWindow.start, previousWindow.end, mem.muid);
         g.karma += stats.earned;
         g.lastTime = Math.max(g.lastTime, stats.lastTime);
       });
@@ -1104,7 +1131,7 @@ class KarmaStore {
         if (weekOffset === 0 && member.monthly_karma > 0) {
           earned = Math.round(member.monthly_karma * 0.45);
         } else {
-          const stats = this.getMemberKarmaInWindow(member.id, start, end);
+          const stats = this.getMemberKarmaInWindow(member.id, start, end, member.muid);
           earned = stats.earned;
         }
 
@@ -1168,7 +1195,16 @@ class KarmaStore {
       } else {
         const s = this.getMemberKarmaInWindow(m.id, start, end, m.muid);
         const baseMonthly = (period === "month" && monthOffset === 0 && m.monthly_karma > 0) ? m.monthly_karma : 0;
-        karma = Math.max(baseMonthly, s.earned);
+        let archiveKarma = 0;
+        if (period === "month" && monthOffset < 0 && this.monthlyArchives?.length > 0) {
+          const mInfo = getMonthBoundaries(monthOffset);
+          const mKey = `${mInfo.key}-01`;
+          const row = this.monthlyArchives.find(
+            (a) => a.archive_month === mKey && (a.muid?.toLowerCase() === m.muid?.toLowerCase() || a.user_id === m.id)
+          );
+          if (row) archiveKarma = row.monthly_karma || 0;
+        }
+        karma = Math.max(baseMonthly, archiveKarma, s.earned);
         lastTime = s.lastTime;
       }
       totalGroupPeriodKarma += karma;
