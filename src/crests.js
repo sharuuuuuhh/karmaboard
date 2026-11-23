@@ -19,6 +19,20 @@ import crestOffgrid128 from "./assets/crests/crest-offgrid-128.webp";
 import crestOffgrid384 from "./assets/crests/crest-offgrid-384.webp";
 import crestMuverse128 from "./assets/crests/crest-muverse-128.webp";
 import crestMuverse384 from "./assets/crests/crest-muverse-384.webp";
+import crestMuniverse128 from "./assets/crests/crest-muniverse-128.webp";
+import crestMuniverse384 from "./assets/crests/crest-muniverse-384.webp";
+import crestInfinitea128 from "./assets/crests/crest-infinitea-128.webp";
+import crestInfinitea384 from "./assets/crests/crest-infinitea-384.webp";
+import crestKaizen128 from "./assets/crests/crest-kaizen-128.webp";
+import crestKaizen384 from "./assets/crests/crest-kaizen-384.webp";
+import crestLadecima128 from "./assets/crests/crest-ladecima-128.webp";
+import crestLadecima384 from "./assets/crests/crest-ladecima-384.webp";
+import crestSfc128 from "./assets/crests/crest-sfc-128.webp";
+import crestSfc384 from "./assets/crests/crest-sfc-384.webp";
+import crestKratos128 from "./assets/crests/crest-kratos-128.webp";
+import crestKratos384 from "./assets/crests/crest-kratos-384.webp";
+import crestNexus128 from "./assets/crests/crest-nexus-128.webp";
+import crestNexus384 from "./assets/crests/crest-nexus-384.webp";
 import { getGroupToken } from "./utils/groupTokens";
 
 /**
@@ -39,11 +53,20 @@ export const CREST_REGISTRY = {
   techashi: { "128": crestTechashi128, "384": crestTechashi384 },
   offgrid: { "128": crestOffgrid128, "384": crestOffgrid384 },
   muverse: { "128": crestMuverse128, "384": crestMuverse384 },
+  muniverse: { "128": crestMuniverse128, "384": crestMuniverse384 },
+  "m-universe": { "128": crestMuniverse128, "384": crestMuniverse384 },
+  infinitea: { "128": crestInfinitea128, "384": crestInfinitea384 },
+  kaizen: { "128": crestKaizen128, "384": crestKaizen384 },
+  ladecima: { "128": crestLadecima128, "384": crestLadecima384 },
+  "la-decima": { "128": crestLadecima128, "384": crestLadecima384 },
+  sfc: { "128": crestSfc128, "384": crestSfc384 },
+  kratos: { "128": crestKratos128, "384": crestKratos384 },
+  "kratos-learn": { "128": crestKratos128, "384": crestKratos384 },
+  nexus: { "128": crestNexus128, "384": crestNexus384 },
 };
 
 /**
- * Normalizes any group identifier, slug, or object into canonical slug:
- * 'leads' | 'creative' | 'operation' | 'marketing' | 'media' | 'content' | 'tech' | 'techashi' | 'offgrid' | 'muverse'
+ * Normalizes any group identifier, slug, or object into canonical slug
  */
 export function normalizeGroupSlug(groupOrName) {
   if (!groupOrName) return "tech";
@@ -62,6 +85,13 @@ export function normalizeGroupSlug(groupOrName) {
   if (clean === "techashi" || clean === "techaschi") return "techashi";
   if (clean === "offgrid" || clean === "off-grid") return "offgrid";
   if (clean === "muverse" || clean === "uverse") return "muverse";
+  if (clean === "muniverse" || clean === "m-universe") return "muniverse";
+  if (clean === "infinitea") return "infinitea";
+  if (clean === "kaizen") return "kaizen";
+  if (clean === "la-decima" || clean === "ladecima" || clean === "decima") return "ladecima";
+  if (clean === "sfc") return "sfc";
+  if (clean === "kratos" || clean === "kratos-learn" || clean === "kratoslearn") return "kratos";
+  if (clean === "nexus") return "nexus";
   return clean || "tech";
 }
 
@@ -86,7 +116,10 @@ export function getGroupDisplayName(groupOrName) {
     nexus: "NEXUS",
     kaizen: "KAIZEN",
     muniverse: "MUniverse",
+    ladecima: "La Decima",
     "la-decima": "La Decima",
+    kratos: "KRATOS LEARN",
+    "kratos-learn": "KRATOS LEARN",
   };
   return map[slug] || (typeof groupOrName === "string" ? groupOrName.replace(/^grp-/i, "").trim() : "Team");
 }

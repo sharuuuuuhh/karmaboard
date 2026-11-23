@@ -73,6 +73,34 @@ describe("Crest Component & Registry", () => {
     expect(img3.getAttribute("srcSet")).toContain("crest-muverse-128.webp");
   });
 
+  test("renders official crests for new groups: SFC, KAIZEN, NEXUS, MUniverse, INFINITEA, La Decima, KRATOS", () => {
+    const newGroups = ["sfc", "kaizen", "nexus", "muniverse", "infinitea", "ladecima", "kratos"];
+    newGroups.forEach((g) => {
+      expect(CREST_REGISTRY[g]).toBeDefined();
+    });
+
+    const { container: cSfc } = render(<Crest group="SFC" size="md" />);
+    expect(cSfc.querySelector("img").getAttribute("srcSet")).toContain("crest-sfc-128.webp");
+
+    const { container: cKaizen } = render(<Crest group="KAIZEN" size="md" />);
+    expect(cKaizen.querySelector("img").getAttribute("srcSet")).toContain("crest-kaizen-128.webp");
+
+    const { container: cNexus } = render(<Crest group="NEXUS" size="md" />);
+    expect(cNexus.querySelector("img").getAttribute("srcSet")).toContain("crest-nexus-128.webp");
+
+    const { container: cMuniverse } = render(<Crest group="MUniverse" size="md" />);
+    expect(cMuniverse.querySelector("img").getAttribute("srcSet")).toContain("crest-muniverse-128.webp");
+
+    const { container: cInfinitea } = render(<Crest group="INFINITEA" size="md" />);
+    expect(cInfinitea.querySelector("img").getAttribute("srcSet")).toContain("crest-infinitea-128.webp");
+
+    const { container: cDecima } = render(<Crest group="La Decima" size="md" />);
+    expect(cDecima.querySelector("img").getAttribute("srcSet")).toContain("crest-ladecima-128.webp");
+
+    const { container: cKratos } = render(<Crest group="KRATOS LEARN" size="md" />);
+    expect(cKratos.querySelector("img").getAttribute("srcSet")).toContain("crest-kratos-128.webp");
+  });
+
   test("renders small colored dot when size is under 28px", () => {
     const { container } = render(<Crest group="creative" size={16} />);
     const dotWrap = container.querySelector(".crest-dot");
