@@ -38,6 +38,7 @@ export default function LeaderboardPage() {
   const [filter, setFilter] = useState(initialFilter);
 
   const handleFilterSelect = (newFilter) => {
+    setView("individuals");
     setFilter(newFilter);
     setSearchParams(
       (prev) => {
@@ -46,6 +47,9 @@ export default function LeaderboardPage() {
           p.delete("filter");
         } else {
           p.set("filter", newFilter);
+        }
+        if (p.has("view")) {
+          p.delete("view");
         }
         return p;
       },
@@ -202,9 +206,6 @@ export default function LeaderboardPage() {
           .show-on-mobile-flex {
             display: flex !important;
           }
-          .leaderboard-standings-mobile-tab {
-            display: inline-flex !important;
-          }
           .leaderboard-desktop-standings-col {
             display: none !important;
           }
@@ -225,9 +226,6 @@ export default function LeaderboardPage() {
           }
         }
         @media (min-width: 769px) {
-          .leaderboard-standings-mobile-tab {
-            display: none !important;
-          }
           .show-on-mobile-flex {
             display: none !important;
           }
@@ -274,7 +272,7 @@ export default function LeaderboardPage() {
             >
               {/* Left Controls: 3 Filter Tabs + View Switcher */}
               <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", maxWidth: "100%" }}>
-                {/* 3 Sorts / Filters: All, Teams, Groups (+ Standings on Mobile) */}
+                {/* 3 Sorts / Filters: All, Teams, Groups */}
                 <div
                   role="tablist"
                   aria-label="Filter leaderboard"
@@ -291,26 +289,11 @@ export default function LeaderboardPage() {
                     { id: "all", label: "All", count: filterCounts.all },
                     { id: "teams", label: "Teams", count: filterCounts.teams },
                     { id: "groups", label: "Groups", count: filterCounts.groups },
-                    {
-                      id: "standings",
-                      label: "Team Standings",
-                      count: groupStandings.length,
-                      className: "leaderboard-standings-mobile-tab",
-                    },
                   ].map((opt) => {
-                    const isActive =
-                      opt.id === "standings"
-                        ? view === "groups"
-                        : view === "individuals" && filter === opt.id;
+                    const isActive = view === "individuals" && filter === opt.id;
 
                     const handleTabClick = () => {
-                      if (opt.id === "standings") {
-                        setView("groups");
-                        handleFilterSelect("all");
-                      } else {
-                        setView("individuals");
-                        handleFilterSelect(opt.id);
-                      }
+                      handleFilterSelect(opt.id);
                     };
 
                     return (
@@ -319,7 +302,6 @@ export default function LeaderboardPage() {
                         type="button"
                         role="tab"
                         aria-selected={isActive}
-                        className={opt.className || ""}
                         onClick={handleTabClick}
                         style={{
                           padding: "6px 14px",
@@ -331,7 +313,7 @@ export default function LeaderboardPage() {
                           background: isActive ? "var(--ink)" : "#FFFFFF",
                           border: isActive ? "1px solid var(--ink)" : "1px solid var(--border)",
                           cursor: "pointer",
-                          display: opt.className ? undefined : "inline-flex",
+                          display: "inline-flex",
                           alignItems: "center",
                           gap: 6,
                           whiteSpace: "nowrap",

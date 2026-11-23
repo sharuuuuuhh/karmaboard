@@ -19,6 +19,7 @@ describe("LeaderboardPage", () => {
     expect(screen.getByRole("tab", { name: /All/i })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: /Teams/i })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: /Groups/i })).toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: /Team Standings/i })).not.toBeInTheDocument();
   });
 
   test("filters leaderboard standings by All, Teams, and Groups", () => {
