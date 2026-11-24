@@ -24,9 +24,11 @@ export default function PeriodCalendarPopover({
     }
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
     }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
     };
   }, [isOpen]);
 
@@ -79,6 +81,9 @@ export default function PeriodCalendarPopover({
           z-index: 99999;
           animation: fadeIn 0.18s ease-out;
         }
+        .period-calendar-backdrop {
+          display: none;
+        }
         @media (max-width: 768px) {
           .period-calendar-popover-root {
             display: block !important;
@@ -89,14 +94,24 @@ export default function PeriodCalendarPopover({
             justify-content: space-between !important;
           }
           .period-calendar-popover-dropdown {
-            position: fixed !important;
-            top: 70px !important;
+            position: absolute !important;
+            top: calc(100% + 8px) !important;
             left: 50% !important;
             right: auto !important;
             transform: translateX(-50%) !important;
             max-width: calc(100vw - 24px) !important;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25) !important;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.18) !important;
             z-index: 999999 !important;
+          }
+          .period-calendar-backdrop {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.15);
+            z-index: 99998;
           }
         }
       `}</style>
@@ -229,17 +244,24 @@ export default function PeriodCalendarPopover({
 
       {/* Pop-up Glass Calendar */}
       {isOpen && (
-        <div className="period-calendar-popover-dropdown">
-          <GlassCalendar
-            activePeriod={period}
-            selectedDate={currentSelectedDate}
-            onPeriodChange={(newPeriod) => {
-              handlePeriodTab(newPeriod);
-            }}
-            onMonthChange={handleMonthChange}
-            onDateSelect={handleDatePick}
+        <>
+          <div
+            className="period-calendar-backdrop"
+            onClick={() => setIsOpen(false)}
+            aria-hidden="true"
           />
-        </div>
+          <div className="period-calendar-popover-dropdown">
+            <GlassCalendar
+              activePeriod={period}
+              selectedDate={currentSelectedDate}
+              onPeriodChange={(newPeriod) => {
+                handlePeriodTab(newPeriod);
+              }}
+              onMonthChange={handleMonthChange}
+              onDateSelect={handleDatePick}
+            />
+          </div>
+        </>
       )}
     </div>
   );

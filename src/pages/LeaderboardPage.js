@@ -195,6 +195,10 @@ export default function LeaderboardPage() {
             padding: 12px 14px !important;
             gap: 10px !important;
           }
+          .leaderboard-period-wrap {
+            width: 100% !important;
+            display: flex !important;
+          }
           .leaderboard-search-input-wrap {
             max-width: 100% !important;
             width: 100% !important;
@@ -355,7 +359,10 @@ export default function LeaderboardPage() {
               </div>
 
               {/* Date / Period Selector Button in the exact same level! */}
-              <div style={{ display: "inline-flex", alignItems: "center" }}>
+              <div
+                className="leaderboard-period-wrap"
+                style={{ display: "inline-flex", alignItems: "center" }}
+              >
                 <PeriodCalendarPopover
                   period={period}
                   offset={offset}

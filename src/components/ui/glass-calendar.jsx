@@ -126,6 +126,8 @@ export const GlassCalendar = React.forwardRef(
           borderRadius: "20px",
           padding: "20px",
           width: "320px",
+          maxWidth: "calc(100vw - 32px)",
+          boxSizing: "border-box",
           color: "var(--ink)",
           fontFamily: "var(--font-body)",
           zIndex: 1000,
