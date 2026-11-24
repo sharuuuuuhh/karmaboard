@@ -34,6 +34,7 @@ export default function PeriodCalendarPopover({
 
   const handlePeriodTab = (newPeriod) => {
     onPeriodChange?.(newPeriod);
+    setIsOpen(false);
   };
 
   const handleDatePick = (date) => {
